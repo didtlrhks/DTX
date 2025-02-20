@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'liver_fibrosis_result_page.dart';
 
 class LiverFibrosisPage extends StatelessWidget {
   const LiverFibrosisPage({super.key});
@@ -9,21 +11,29 @@ class LiverFibrosisPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('간섬유화 위험도'),
       ),
-      body: const SafeArea(
+      body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 '간섬유화 위험도 분석',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 20),
-              // 여기에 간섬유화 위험도 관련 내용을 추가하시면 됩니다
+              const SizedBox(height: 20),
+              // 결과 페이지로 이동하는 버튼 추가
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Get.to(() => const LiverFibrosisResultPage());
+                  },
+                  child: const Text('간섬유화 위험도 분석하기'),
+                ),
+              ),
             ],
           ),
         ),
