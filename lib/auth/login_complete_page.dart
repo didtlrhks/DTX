@@ -1,8 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../screens/liver_fibrosis_page.dart';
 
 class LoginCompletePage extends StatelessWidget {
   const LoginCompletePage({super.key});
+
+  void _showLoadingAndNavigate() async {
+    // 로딩 다이얼로그 표시
+    Get.dialog(
+      const Center(
+        child: CircularProgressIndicator(),
+      ),
+      barrierDismissible: false,
+    );
+
+    // 3초 대기
+    await Future.delayed(const Duration(seconds: 3));
+
+    // 로딩 다이얼로그 닫기
+    Get.back();
+
+    // 간섬유화 위험도 페이지로 이동 (이전 페이지들 모두 삭제)
+    Get.offAll(() => const LiverFibrosisPage());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +50,7 @@ class LoginCompletePage extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               ElevatedButton(
-                onPressed: () {
-                  // 시작하기 버튼 클릭 시 동작
-                },
+                onPressed: _showLoadingAndNavigate,
                 child: const Text('시작하기'),
               ),
               const SizedBox(height: 16),
