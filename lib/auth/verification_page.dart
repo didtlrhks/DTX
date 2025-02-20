@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'login_complete_page.dart';
 
 class VerificationPage extends StatelessWidget {
   const VerificationPage({super.key});
@@ -48,7 +50,7 @@ class VerificationPage extends StatelessWidget {
               const SizedBox(height: 26),
               ElevatedButton(
                 onPressed: () {
-                  // 인증 처리 로직
+                  Get.to(() => const LoginCompletePage());
                 },
                 child: const Text('인증하기'),
               ),
