@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class VerificationPage extends StatelessWidget {
   const VerificationPage({super.key});
@@ -38,7 +37,15 @@ class VerificationPage extends StatelessWidget {
                 ),
                 keyboardType: TextInputType.phone,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              const TextField(
+                decoration: InputDecoration(
+                  labelText: '병원코드입력',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 26),
               ElevatedButton(
                 onPressed: () {
                   // 인증 처리 로직
