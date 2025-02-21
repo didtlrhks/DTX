@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'emotion_survey_end_page.dart';
 
 class EmotionSurveyStartPage extends StatelessWidget {
   const EmotionSurveyStartPage({super.key});
@@ -37,6 +38,7 @@ class EmotionSurveyStartPage extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       // 2번 설문페이지로 이동
+                      Get.off(() => const EmotionSurveyEndPage());
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,

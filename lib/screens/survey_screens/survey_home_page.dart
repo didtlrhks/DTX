@@ -1,9 +1,9 @@
 import 'package:dtxproject/screens/survey_screens/exercise_survey_start_page.dart';
-import 'package:dtxproject/screens/survey_screens/alcohol_survey_start_page.dart';
-import 'package:dtxproject/screens/survey_screens/emotion_survey_start_page.dart';
+import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_start_page.dart';
+import 'package:dtxproject/screens/survey_screens/emotion_survey/emotion_survey_start_page.dart';
 import 'package:dtxproject/screens/survey_screens/lifequality_survey_start_page.dart';
 import 'package:flutter/material.dart';
-import 'diet_survey_start_page.dart';
+import 'diet_survey/diet_survey_start_page.dart';
 import 'sleep_survey_start_page.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
@@ -46,16 +46,22 @@ class SurveyHomePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 30),
-                Card(
-                  child: ListTile(
-                    title: const Text('식단 설문조사'),
-                    subtitle: const Text('일반적인 건강 상태 체크'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                      Get.to(() => const DietSurveyStartPage());
-                    },
-                  ),
-                ),
+                Obx(() => Card(
+                      color: surveyController.isDietSurveyCompleted.value
+                          ? Colors.green[100]
+                          : null,
+                      child: ListTile(
+                        title: const Text('식단 설문조사'),
+                        subtitle: const Text('평소 식습관 체크'),
+                        trailing: surveyController.isDietSurveyCompleted.value
+                            ? const Icon(Icons.check_circle,
+                                color: Colors.green)
+                            : const Icon(Icons.arrow_forward_ios),
+                        onTap: () {
+                          Get.to(() => const DietSurveyStartPage());
+                        },
+                      ),
+                    )),
                 const SizedBox(height: 16),
                 Card(
                   child: ListTile(
@@ -98,17 +104,23 @@ class SurveyHomePage extends StatelessWidget {
                       ),
                     )),
                 const SizedBox(height: 16),
-                Card(
-                  child: ListTile(
-                    title: const Text('감정 설문조사'),
-                    subtitle: const Text('평소 식습관 체크'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                      Get.to(() =>
-                          const EmotionSurveyStartPage()); // TODO: 감정 설문 페이지로 이동
-                    },
-                  ),
-                ),
+                Obx(() => Card(
+                      color: surveyController.isEmotionSurveyCompleted.value
+                          ? Colors.green[100]
+                          : null,
+                      child: ListTile(
+                        title: const Text('술 설문조사'),
+                        subtitle: const Text('평소 식습관 체크'),
+                        trailing:
+                            surveyController.isEmotionSurveyCompleted.value
+                                ? const Icon(Icons.check_circle,
+                                    color: Colors.green)
+                                : const Icon(Icons.arrow_forward_ios),
+                        onTap: () {
+                          Get.to(() => const EmotionSurveyStartPage());
+                        },
+                      ),
+                    )),
                 const SizedBox(height: 16),
                 Card(
                   child: ListTile(
