@@ -7,6 +7,7 @@ import 'diet_survey/diet_survey_start_page.dart';
 import 'sleep_survey/sleep_survey_start_page.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
+import 'package:dtxproject/screens/survey_screens/survey_result_page.dart';
 
 class SurveyHomePage extends StatelessWidget {
   const SurveyHomePage({super.key});
@@ -158,14 +159,29 @@ class SurveyHomePage extends StatelessWidget {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: surveyController.isAllSurveysCompleted.value
-                            ? () {
-                                // 2번 설문페이지로 이동
+                            ? () async {
+                                // 로딩 다이얼로그 표시
+                                Get.dialog(
+                                  const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  barrierDismissible: false,
+                                );
+
+                                // 2초 대기 (로딩 효과)
+                                await Future.delayed(
+                                    const Duration(seconds: 2));
+
+                                // 로딩 다이얼로그 닫기
+                                Get.back();
+
+                                // 결과 페이지로 이동
+                                Get.offAll(() => const SurveyResultPage());
                               }
                             : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           foregroundColor: Colors.white,
-                          // 비활성화된 버튼의 스타일
                           disabledBackgroundColor: Colors.grey[300],
                           disabledForegroundColor: Colors.grey[600],
                         ),
