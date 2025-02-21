@@ -77,7 +77,7 @@ class SurveyHomePage extends StatelessWidget {
                 Card(
                   child: ListTile(
                     title: const Text('운동 설문조사'),
-                    subtitle: const Text('평소 식습관 체크'),
+                    subtitle: const Text('평소 운동 체크'),
                     trailing: const Icon(Icons.arrow_forward_ios),
                     onTap: () {
                       Get.to(() =>
@@ -92,7 +92,7 @@ class SurveyHomePage extends StatelessWidget {
                           : null,
                       child: ListTile(
                         title: const Text('술 설문조사'),
-                        subtitle: const Text('평소 식습관 체크'),
+                        subtitle: const Text('평소 술 섭취 체크'),
                         trailing:
                             surveyController.isAlcoholSurveyCompleted.value
                                 ? const Icon(Icons.check_circle,
@@ -109,8 +109,8 @@ class SurveyHomePage extends StatelessWidget {
                           ? Colors.green[100]
                           : null,
                       child: ListTile(
-                        title: const Text('술 설문조사'),
-                        subtitle: const Text('평소 식습관 체크'),
+                        title: const Text('감정 설문조사'),
+                        subtitle: const Text('평소 감정변화 체크'),
                         trailing:
                             surveyController.isEmotionSurveyCompleted.value
                                 ? const Icon(Icons.check_circle,
