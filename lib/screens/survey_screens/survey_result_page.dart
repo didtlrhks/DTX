@@ -14,9 +14,29 @@ class SurveyResultPage extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            final surveyController = Get.find<SurveyController>();
-            surveyController.resetAllSurveys();
-            Get.back();
+            Get.dialog(
+              AlertDialog(
+                title: const Text('설문조사 나가기'),
+                content: const Text('설문조사를 종료하시겠습니까?\n모든 응답이 초기화됩니다.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Get.back(); // 다이얼로그 닫기
+                    },
+                    child: const Text('취소'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      final surveyController = Get.find<SurveyController>();
+                      surveyController.resetAllSurveys();
+                      Get.back(); // 다이얼로그 닫기
+                      Get.back(); // 이전 페이지로 이동
+                    },
+                    child: const Text('확인'),
+                  ),
+                ],
+              ),
+            );
           },
         ),
       ),
