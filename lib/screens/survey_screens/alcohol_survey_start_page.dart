@@ -37,7 +37,7 @@ class AlcoholSurveyStartPage extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.to(
+                      Get.off(
                           () => const AlcoholSurveyEndPage()); // 2번 설문페이지로 이동
                     },
                     style: ElevatedButton.styleFrom(

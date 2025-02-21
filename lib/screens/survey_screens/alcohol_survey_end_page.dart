@@ -54,7 +54,7 @@ class AlcoholSurveyEndPage extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       surveyController.completeAlcoholSurvey();
-                      Get.offAll(() => const SurveyHomePage());
+                      Get.back();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,

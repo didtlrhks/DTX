@@ -18,6 +18,10 @@ class SurveyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('설문조사'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
