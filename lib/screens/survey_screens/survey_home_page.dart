@@ -1,7 +1,7 @@
 import 'package:dtxproject/screens/survey_screens/exercise_survey/exercise_survey_start_page.dart';
 import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_start_page.dart';
 import 'package:dtxproject/screens/survey_screens/emotion_survey/emotion_survey_start_page.dart';
-import 'package:dtxproject/screens/survey_screens/lifequality_survey_start_page.dart';
+import 'package:dtxproject/screens/survey_screens/lifequality_survey/lifequality_survey_start_page.dart';
 import 'package:flutter/material.dart';
 import 'diet_survey/diet_survey_start_page.dart';
 import 'sleep_survey_start_page.dart';
@@ -66,7 +66,7 @@ class SurveyHomePage extends StatelessWidget {
                 Card(
                   child: ListTile(
                     title: const Text('수면 설문조사'),
-                    subtitle: const Text('일상적인 생활습관 체크'),
+                    subtitle: const Text('일상적인 수면 습관 체크'),
                     trailing: const Icon(Icons.arrow_forward_ios),
                     onTap: () {
                       Get.to(() => const SleepSurveyStartPage());
@@ -128,17 +128,24 @@ class SurveyHomePage extends StatelessWidget {
                       ),
                     )),
                 const SizedBox(height: 16),
-                Card(
-                  child: ListTile(
-                    title: const Text('삶의 질 설문조사'),
-                    subtitle: const Text('평소 식습관 체크'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                      Get.to(() =>
-                          const LifeQualitySurveyStartPage()); // TODO: 삶의 질 설문 페이지로 이동
-                    },
-                  ),
-                ),
+                Obx(() => Card(
+                      color: surveyController.isLifeQualitySurveyCompleted.value
+                          ? Colors.green[100]
+                          : null,
+                      child: ListTile(
+                        title: const Text('삶의 질 설문조사'),
+                        subtitle: const Text('평소 생활 질 체크'),
+                        trailing:
+                            surveyController.isLifeQualitySurveyCompleted.value
+                                ? const Icon(Icons.check_circle,
+                                    color: Colors.green)
+                                : const Icon(Icons.arrow_forward_ios),
+                        onTap: () {
+                          Get.to(() =>
+                              const LifeQualitySurveyStartPage()); // TODO: 삶의 질 설문 페이지로 이동
+                        },
+                      ),
+                    )),
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,

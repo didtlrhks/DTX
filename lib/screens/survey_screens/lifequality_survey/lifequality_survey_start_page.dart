@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:dtxproject/screens/survey_screens/lifequality_survey/lifequality_survey_end_page.dart';
 
 class LifeQualitySurveyStartPage extends StatelessWidget {
   const LifeQualitySurveyStartPage({super.key});
@@ -36,7 +37,7 @@ class LifeQualitySurveyStartPage extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      // 2번 설문페이지로 이동
+                      Get.off(() => const LifeQualitySurveyEndPage());
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
