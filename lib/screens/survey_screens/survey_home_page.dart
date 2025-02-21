@@ -4,7 +4,7 @@ import 'package:dtxproject/screens/survey_screens/emotion_survey/emotion_survey_
 import 'package:dtxproject/screens/survey_screens/lifequality_survey/lifequality_survey_start_page.dart';
 import 'package:flutter/material.dart';
 import 'diet_survey/diet_survey_start_page.dart';
-import 'sleep_survey_start_page.dart';
+import 'sleep_survey/sleep_survey_start_page.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
 
@@ -63,16 +63,22 @@ class SurveyHomePage extends StatelessWidget {
                       ),
                     )),
                 const SizedBox(height: 16),
-                Card(
-                  child: ListTile(
-                    title: const Text('수면 설문조사'),
-                    subtitle: const Text('일상적인 수면 습관 체크'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                      Get.to(() => const SleepSurveyStartPage());
-                    },
-                  ),
-                ),
+                Obx(() => Card(
+                      color: surveyController.isSleepSurveyCompleted.value
+                          ? Colors.green[100]
+                          : null,
+                      child: ListTile(
+                        title: const Text('수면 설문조사'),
+                        subtitle: const Text('일상적인 수면 습관 체크'),
+                        trailing: surveyController.isSleepSurveyCompleted.value
+                            ? const Icon(Icons.check_circle,
+                                color: Colors.green)
+                            : const Icon(Icons.arrow_forward_ios),
+                        onTap: () {
+                          Get.to(() => const SleepSurveyStartPage());
+                        },
+                      ),
+                    )),
                 const SizedBox(height: 16),
                 Obx(() => Card(
                       color: surveyController.isExerciseSurveyCompleted.value
@@ -147,23 +153,30 @@ class SurveyHomePage extends StatelessWidget {
                       ),
                     )),
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // 2번 설문페이지로 이동
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text(
-                      '다음',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ),
+                Obx(() => SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: surveyController.isAllSurveysCompleted.value
+                            ? () {
+                                // 2번 설문페이지로 이동
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          // 비활성화된 버튼의 스타일
+                          disabledBackgroundColor: Colors.grey[300],
+                          disabledForegroundColor: Colors.grey[600],
+                        ),
+                        child: Text(
+                          surveyController.isAllSurveysCompleted.value
+                              ? '다음'
+                              : '모든 설문을 완료해주세요',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    )),
               ],
             ),
           ),

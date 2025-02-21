@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:dtxproject/screens/survey_screens/sleep_survey/sleep_survey_end_page.dart';
 
 class SleepSurveyStartPage extends StatelessWidget {
   const SleepSurveyStartPage({super.key});
@@ -36,7 +37,7 @@ class SleepSurveyStartPage extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      // 2번 설문페이지로 이동
+                      Get.off(() => const SleepSurveyEndPage());
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,

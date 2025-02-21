@@ -8,6 +8,30 @@ class SurveyController extends GetxController {
   final RxBool isEmotionSurveyCompleted = false.obs;
   final RxBool isLifeQualitySurveyCompleted = false.obs;
 
+  // 모든 설문이 완료되었는지 확인하는 computed 변수
+  final Rx<bool> isAllSurveysCompleted = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // 각 설문 완료 상태가 변경될 때마다 전체 완료 상태 확인
+    ever(isDietSurveyCompleted, (_) => _checkAllSurveysCompleted());
+    ever(isSleepSurveyCompleted, (_) => _checkAllSurveysCompleted());
+    ever(isExerciseSurveyCompleted, (_) => _checkAllSurveysCompleted());
+    ever(isAlcoholSurveyCompleted, (_) => _checkAllSurveysCompleted());
+    ever(isEmotionSurveyCompleted, (_) => _checkAllSurveysCompleted());
+    ever(isLifeQualitySurveyCompleted, (_) => _checkAllSurveysCompleted());
+  }
+
+  void _checkAllSurveysCompleted() {
+    isAllSurveysCompleted.value = isDietSurveyCompleted.value &&
+        isSleepSurveyCompleted.value &&
+        isExerciseSurveyCompleted.value &&
+        isAlcoholSurveyCompleted.value &&
+        isEmotionSurveyCompleted.value &&
+        isLifeQualitySurveyCompleted.value;
+  }
+
   void completeAlcoholSurvey() {
     isAlcoholSurveyCompleted.value = true;
   }
@@ -26,6 +50,10 @@ class SurveyController extends GetxController {
 
   void completeLifeQualitySurvey() {
     isLifeQualitySurveyCompleted.value = true;
+  }
+
+  void completeSleepSurvey() {
+    isSleepSurveyCompleted.value = true;
   }
 }
 
