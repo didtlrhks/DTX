@@ -1,5 +1,7 @@
 import 'package:dtxproject/screens/survey_screens/exercise_survey_start_page.dart';
 import 'package:dtxproject/screens/survey_screens/alcohol_survey_start_page.dart';
+import 'package:dtxproject/screens/survey_screens/emotion_survey_start_page.dart';
+import 'package:dtxproject/screens/survey_screens/lifequality_survey_start_page.dart';
 import 'package:flutter/material.dart';
 import 'diet_survey_start_page.dart';
 import 'sleep_survey_start_page.dart';
@@ -89,7 +91,8 @@ class SurveyHomePage extends StatelessWidget {
                     subtitle: const Text('평소 식습관 체크'),
                     trailing: const Icon(Icons.arrow_forward_ios),
                     onTap: () {
-                      // TODO: 감정 설문 페이지로 이동
+                      Get.to(() =>
+                          const EmotionSurveyStartPage()); // TODO: 감정 설문 페이지로 이동
                     },
                   ),
                 ),
@@ -100,11 +103,29 @@ class SurveyHomePage extends StatelessWidget {
                     subtitle: const Text('평소 식습관 체크'),
                     trailing: const Icon(Icons.arrow_forward_ios),
                     onTap: () {
-                      // TODO: 삶의 질 설문 페이지로 이동
+                      Get.to(() =>
+                          const LifeQualitySurveyStartPage()); // TODO: 삶의 질 설문 페이지로 이동
                     },
                   ),
                 ),
                 const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // 2번 설문페이지로 이동
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text(
+                      '다음',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

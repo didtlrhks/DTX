@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'alcohol_survey_end_page.dart';
 
-class AlcoholSurveyStartPage extends StatelessWidget {
-  const AlcoholSurveyStartPage({super.key});
+class EmotionSurveyStartPage extends StatelessWidget {
+  const EmotionSurveyStartPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('알코올 설문조사'),
+        title: const Text('감정 설문조사'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -23,7 +22,7 @@ class AlcoholSurveyStartPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  '알코올 설문조사',
+                  '감정 설문조사',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -37,8 +36,7 @@ class AlcoholSurveyStartPage extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.to(
-                          () => const AlcoholSurveyEndPage()); // 2번 설문페이지로 이동
+                      // 2번 설문페이지로 이동
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
