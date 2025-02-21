@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:dtxproject/screens/survey_screens/behavior_goals_onboarding_page.dart';
 
 class BehaviorGoalsGuidePage extends StatelessWidget {
   const BehaviorGoalsGuidePage({super.key});
@@ -36,15 +37,6 @@ class BehaviorGoalsGuidePage extends StatelessWidget {
                 _buildGoalCard('음주 행동 목표', '주 2회 이하로 음주량 조절하기'),
                 _buildGoalCard('감정 행동 목표', '하루 한 번 감정 일기 쓰기'),
                 const SizedBox(height: 30),
-                ElevatedButton(
-                  onPressed: () {
-                    // 다음 페이지로 이동하는 로직
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  child: const Text('다음'),
-                ),
               ],
             ),
           ),
@@ -54,26 +46,55 @@ class BehaviorGoalsGuidePage extends StatelessWidget {
   }
 
   Widget _buildGoalCard(String title, String content) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+    return InkWell(
+      onTap: () {
+        Get.dialog(
+          AlertDialog(
+            title: Text(title),
+            content: const Text('이 행동 목표를 수행할 수 있으신가요?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Get.back(); // 다이얼로그 닫기
+                  Get.to(
+                    () => const BehaviorGoalsOnboardingPage(),
+                    arguments: {
+                      'goalTitle': title,
+                      'goalContent': content,
+                    },
+                  );
+                },
+                child: const Text('가능'),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              content,
-              style: const TextStyle(fontSize: 16),
-            ),
-          ],
+              TextButton(
+                onPressed: () => Get.back(), // 다이얼로그 닫기
+                child: const Text('좀 힘듦'),
+              ),
+            ],
+          ),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 16),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                content,
+                style: const TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
         ),
       ),
     );
