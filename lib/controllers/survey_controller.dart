@@ -54,4 +54,16 @@ class SurveyController extends GetxController {
   void completeSleepSurvey() {
     isSleepSurveyCompleted.value = true;
   }
+
+  void resetAllSurveys() {
+    isAlcoholSurveyCompleted.value = false;
+    isDietSurveyCompleted.value = false;
+    isSleepSurveyCompleted.value = false;
+    isExerciseSurveyCompleted.value = false;
+    isEmotionSurveyCompleted.value = false;
+    isLifeQualitySurveyCompleted.value = false;
+    isAllSurveysCompleted.value = false;
+
+    update();
+  }
 }

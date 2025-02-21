@@ -176,7 +176,7 @@ class SurveyHomePage extends StatelessWidget {
                                 Get.back();
 
                                 // 결과 페이지로 이동
-                                Get.offAll(() => const SurveyResultPage());
+                                Get.to(() => const SurveyResultPage());
                               }
                             : null,
                         style: ElevatedButton.styleFrom(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
+import 'package:dtxproject/screens/survey_screens/behavior_goals_guide_page.dart';
 
 class SurveyResultPage extends StatelessWidget {
   const SurveyResultPage({super.key});
@@ -10,24 +11,31 @@ class SurveyResultPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('설문조사 결과'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            final surveyController = Get.find<SurveyController>();
+            surveyController.resetAllSurveys();
+            Get.back();
+          },
+        ),
       ),
-      body: const SafeArea(
+      body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   '설문조사 결과 분석',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 20),
-                // 여기에 결과 내용을 추가할 수 있습니다
-                Card(
+                const SizedBox(height: 20),
+                const Card(
                   child: Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Text(
@@ -36,6 +44,17 @@ class SurveyResultPage extends StatelessWidget {
                     ),
                   ),
                 ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Get.to(() => const BehaviorGoalsGuidePage());
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                  child: const Text('다음'),
+                ),
+                const SizedBox(height: 12),
               ],
             ),
           ),
