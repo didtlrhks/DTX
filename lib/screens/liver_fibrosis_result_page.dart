@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'survey_home_page.dart';
+import 'survey_screens/survey_home_page.dart';
 
 class LiverFibrosisResultPage extends StatelessWidget {
   const LiverFibrosisResultPage({super.key});
