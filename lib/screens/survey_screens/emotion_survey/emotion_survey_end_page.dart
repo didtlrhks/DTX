@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/screens/survey_screens/survey_home_page.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
+import 'package:dtxproject/screens/survey_screens/emotion_survey/emotion_survey_start_page.dart';
 
 class EmotionSurveyEndPage extends StatelessWidget {
   const EmotionSurveyEndPage({super.key});
@@ -15,7 +16,9 @@ class EmotionSurveyEndPage extends StatelessWidget {
         title: const Text('감정 설문조사'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Get.off(() => const EmotionSurveyStartPage());
+          },
         ),
       ),
       body: SafeArea(

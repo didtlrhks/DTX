@@ -1,4 +1,4 @@
-import 'package:dtxproject/screens/survey_screens/exercise_survey_start_page.dart';
+import 'package:dtxproject/screens/survey_screens/exercise_survey/exercise_survey_start_page.dart';
 import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_start_page.dart';
 import 'package:dtxproject/screens/survey_screens/emotion_survey/emotion_survey_start_page.dart';
 import 'package:dtxproject/screens/survey_screens/lifequality_survey_start_page.dart';
@@ -74,17 +74,23 @@ class SurveyHomePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Card(
-                  child: ListTile(
-                    title: const Text('운동 설문조사'),
-                    subtitle: const Text('평소 운동 체크'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                      Get.to(() =>
-                          const ExerciseSurveyStartPage()); // TODO: 운동 설문 페이지로 이동
-                    },
-                  ),
-                ),
+                Obx(() => Card(
+                      color: surveyController.isExerciseSurveyCompleted.value
+                          ? Colors.green[100]
+                          : null,
+                      child: ListTile(
+                        title: const Text('운동 설문조사'),
+                        subtitle: const Text('평소 운동 체크'),
+                        trailing:
+                            surveyController.isExerciseSurveyCompleted.value
+                                ? const Icon(Icons.check_circle,
+                                    color: Colors.green)
+                                : const Icon(Icons.arrow_forward_ios),
+                        onTap: () {
+                          Get.to(() => const ExerciseSurveyStartPage());
+                        },
+                      ),
+                    )),
                 const SizedBox(height: 16),
                 Obx(() => Card(
                       color: surveyController.isAlcoholSurveyCompleted.value

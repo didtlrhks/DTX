@@ -19,6 +19,10 @@ class SurveyController extends GetxController {
   void completeEmotionSurvey() {
     isEmotionSurveyCompleted.value = true;
   }
+
+  void completeExerciseSurvey() {
+    isExerciseSurveyCompleted.value = true;
+  }
 }
 
 //   void completeSleepSurvey() {

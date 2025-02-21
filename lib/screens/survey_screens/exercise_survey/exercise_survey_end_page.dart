@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/screens/survey_screens/survey_home_page.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
-import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_start_page.dart';
+import 'package:dtxproject/screens/survey_screens/exercise_survey/exercise_survey_start_page.dart';
 
-class AlcoholSurveyEndPage extends StatelessWidget {
-  const AlcoholSurveyEndPage({super.key});
+class ExerciseSurveyEndPage extends StatelessWidget {
+  const ExerciseSurveyEndPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,11 +13,11 @@ class AlcoholSurveyEndPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('알코올 설문조사'),
+        title: const Text('운동 설문조사'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Get.off(() => const AlcoholSurveyStartPage());
+            Get.off(() => const ExerciseSurveyStartPage());
           },
         ),
       ),
@@ -56,7 +56,7 @@ class AlcoholSurveyEndPage extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      surveyController.completeAlcoholSurvey();
+                      surveyController.completeExerciseSurvey();
                       Get.back();
                     },
                     style: ElevatedButton.styleFrom(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/screens/survey_screens/survey_home_page.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
+import 'package:dtxproject/screens/survey_screens/diet_survey/diet_survey_start_page.dart';
 
 class DietSurveyEndPage extends StatelessWidget {
   const DietSurveyEndPage({super.key});
@@ -12,10 +13,12 @@ class DietSurveyEndPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('알코올 설문조사'),
+        title: const Text('식단 설문조사'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Get.off(() => const DietSurveyStartPage());
+          },
         ),
       ),
       body: SafeArea(
