@@ -6,12 +6,15 @@ import 'package:flutter/material.dart';
 import 'diet_survey_start_page.dart';
 import 'sleep_survey_start_page.dart';
 import 'package:get/get.dart';
+import 'package:dtxproject/controllers/survey_controller.dart';
 
 class SurveyHomePage extends StatelessWidget {
   const SurveyHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final surveyController = Get.find<SurveyController>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('설문조사'),
@@ -73,17 +76,23 @@ class SurveyHomePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Card(
-                  child: ListTile(
-                    title: const Text('술 설문조사'),
-                    subtitle: const Text('평소 식습관 체크'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                      Get.to(() =>
-                          const AlcoholSurveyStartPage()); // TODO: 술 설문 페이지로 이동
-                    },
-                  ),
-                ),
+                Obx(() => Card(
+                      color: surveyController.isAlcoholSurveyCompleted.value
+                          ? Colors.green[100]
+                          : null,
+                      child: ListTile(
+                        title: const Text('술 설문조사'),
+                        subtitle: const Text('평소 식습관 체크'),
+                        trailing:
+                            surveyController.isAlcoholSurveyCompleted.value
+                                ? const Icon(Icons.check_circle,
+                                    color: Colors.green)
+                                : const Icon(Icons.arrow_forward_ios),
+                        onTap: () {
+                          Get.to(() => const AlcoholSurveyStartPage());
+                        },
+                      ),
+                    )),
                 const SizedBox(height: 16),
                 Card(
                   child: ListTile(

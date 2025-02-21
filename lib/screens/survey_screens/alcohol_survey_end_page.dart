@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/screens/survey_screens/survey_home_page.dart';
+import 'package:dtxproject/controllers/survey_controller.dart';
 
 class AlcoholSurveyEndPage extends StatelessWidget {
   const AlcoholSurveyEndPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final surveyController = Get.find<SurveyController>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('알코올 설문조사'),
@@ -50,7 +53,8 @@ class AlcoholSurveyEndPage extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.to(() => const SurveyHomePage()); // 설문조사 홈 페이지로 이동
+                      surveyController.completeAlcoholSurvey();
+                      Get.offAll(() => const SurveyHomePage());
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,

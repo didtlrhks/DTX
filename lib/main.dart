@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'onboarding.dart';
+import 'controllers/survey_controller.dart';
 
 void main() {
+  Get.put(SurveyController());
   runApp(const MyApp());
 }
 
