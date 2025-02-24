@@ -3,6 +3,20 @@ import 'package:flutter/material.dart';
 class CardNewsPage extends StatelessWidget {
   const CardNewsPage({super.key});
 
+  // 랜덤한 색상 리스트 생성
+  final List<Color> _mockColors = const [
+    Colors.blue,
+    Colors.red,
+    Colors.green,
+    Colors.orange,
+    Colors.purple,
+    Colors.teal,
+    Colors.pink,
+    Colors.indigo,
+    Colors.amber,
+    Colors.cyan,
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,11 +31,10 @@ class CardNewsPage extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 16),
             child: Column(
               children: [
-                Image.asset(
-                  'assets/images/placeholder.png', // 실제 이미지로 교체 필요
+                Container(
                   height: 200,
                   width: double.infinity,
-                  fit: BoxFit.cover,
+                  color: _mockColors[index], // 색상 배열에서 색상 선택
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16),

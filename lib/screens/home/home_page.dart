@@ -6,6 +6,7 @@ import 'package:dtxproject/screens/input/weight_input_page.dart';
 import 'package:dtxproject/screens/input/diet_input_page.dart';
 import 'package:dtxproject/screens/input/exercise_input_page.dart';
 import 'package:dtxproject/screens/behavior_goals/behavior_goals_onboarding_page.dart';
+import 'package:dtxproject/screens/checklist/checklist_page.dart';
 
 class HomePage extends StatelessWidget {
   final String? goalTitle;
@@ -89,6 +90,62 @@ class HomePage extends StatelessWidget {
 
                 const SizedBox(height: 16),
 
+                // 진행 중인 목표 섹션
+                Row(
+                  children: [
+                    if (goalTitle != null && goalTitle!.isNotEmpty)
+                      const Expanded(
+                        child: Card(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '결과목표',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text("4kg 감량",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                Text("2025.02.24 ~ 2025.03.24"),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    Expanded(
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                '현재 진행중인 목표',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(goalTitle!,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                              if (goalContent != null) Text(goalContent!),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
                 // 대시보드 섹션
                 Card(
                   child: Padding(
@@ -100,7 +157,7 @@ class HomePage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
-                              '오늘의 대시보드',
+                              '주간 활동',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -114,19 +171,39 @@ class HomePage extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
 
-                        // 결과 목표 & 행동 목표
-                        if (goalTitle != null && goalTitle!.isNotEmpty)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('현재 진행중인 목표'),
-                              Text(goalTitle!,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                              if (goalContent != null) Text(goalContent!),
-                              const SizedBox(height: 16),
-                            ],
-                          ),
+                        // 깃허브 스타일 주간 활동 그리드
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: List.generate(7, (index) {
+                            // 임시 랜덤 데이터 (실제로는 실제 데이터로 대체해야 함)
+                            final intensity = index % 3;
+                            return Column(
+                              children: [
+                                Container(
+                                  width: 30,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    color: intensity == 0
+                                        ? Colors.grey[300]
+                                        : intensity == 1
+                                            ? Colors.green[300]
+                                            : Colors.green[700],
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  ['월', '화', '수', '목', '금', '토', '일'][index],
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            );
+                          }),
+                        ),
+
+                        const SizedBox(height: 16),
+                        const Divider(),
+                        const SizedBox(height: 16),
 
                         // 입력 섹션들
                         _buildInputSection(
@@ -159,27 +236,13 @@ class HomePage extends StatelessWidget {
 
                 const SizedBox(height: 16),
 
-                // 기존 카드들
-                Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.track_changes),
-                    title: const Text('행동 목표'),
-                    subtitle: const Text('나의 행동 목표를 설정하고 관리하세요'),
-                    onTap: () {
-                      Get.to(() => const BehaviorGoalsOnboardingPage());
-                    },
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.checklist),
                     title: const Text('체크리스트'),
                     subtitle: const Text('오늘의 할 일을 체크하세요'),
                     onTap: () {
-                      Navigator.pushNamed(context, '/checklist');
+                      Get.to(() => const ChecklistPage());
                     },
                   ),
                 ),
