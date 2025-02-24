@@ -81,7 +81,7 @@ class BehaviorGoalsOnboardingPage extends StatelessWidget {
                             TextButton(
                               onPressed: () {
                                 Get.back(); // 다이얼로그 닫기
-                                Get.to(() => HomePage(
+                                Get.offAll(() => HomePage(
                                       goalTitle: goalTitle,
                                       goalContent: goalContent,
                                     ));
