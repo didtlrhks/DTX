@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
-import 'package:dtxproject/screens/survey_screens/behavior_goals_guide_page.dart';
+import 'package:dtxproject/screens/behavior_goals/behavior_goals_guide_page.dart';
 
 class SurveyResultPage extends StatelessWidget {
   const SurveyResultPage({super.key});

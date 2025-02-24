@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:dtxproject/screens/survey_screens/behavior_goals_onboarding_page.dart';
+import 'package:dtxproject/screens/behavior_goals/behavior_goals_onboarding_page.dart';
 
 class BehaviorGoalsGuidePage extends StatelessWidget {
   const BehaviorGoalsGuidePage({super.key});

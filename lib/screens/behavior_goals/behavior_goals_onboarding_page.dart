@@ -1,3 +1,4 @@
+import 'package:dtxproject/screens/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -68,8 +69,28 @@ class BehaviorGoalsOnboardingPage extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // TODO: 목표 저장 및 다음 단계로 이동
-                      Get.toNamed('/home');
+                      Get.dialog(
+                        AlertDialog(
+                          title: const Text('목표 설정 완료'),
+                          content: const Text('설정한 목표로 시작하시겠습니까?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Get.back(),
+                              child: const Text('취소'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Get.back(); // 다이얼로그 닫기
+                                Get.to(() => HomePage(
+                                      goalTitle: goalTitle,
+                                      goalContent: goalContent,
+                                    ));
+                              },
+                              child: const Text('다음'),
+                            ),
+                          ],
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
