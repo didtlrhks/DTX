@@ -103,3 +103,4 @@ class ChecklistItem {
     this.score = 5,
   });
 }
+// 체크리스트 추가 화면 추가 필요
