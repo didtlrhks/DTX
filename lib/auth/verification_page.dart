@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'login_complete_page.dart';
-import '../services/api_service.dart';
+import '../controllers/auth_controller.dart';
 
 class VerificationPage extends StatefulWidget {
   const VerificationPage({super.key});
@@ -11,11 +11,11 @@ class VerificationPage extends StatefulWidget {
 }
 
 class _VerificationPageState extends State<VerificationPage> {
+  final _authController = Get.put(AuthController());
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _patientIdController = TextEditingController();
-  bool _isLoading = false;
 
   Future<void> _verifyPatient() async {
     if (_nameController.text.isEmpty ||
@@ -31,40 +31,30 @@ class _VerificationPageState extends State<VerificationPage> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    final result = await _authController.register(
+      username: _nameController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
+      patientId: _patientIdController.text,
+    );
 
-    try {
-      final result = await ApiService.registerUser(
-        username: _nameController.text,
-        email: _emailController.text,
-        password: _passwordController.text,
-        patientId: _patientIdController.text,
+    if (result['success']) {
+      Get.snackbar(
+        '성공',
+        result['message'],
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green[100],
+        duration: const Duration(seconds: 2),
       );
-
-      if (result['success']) {
-        Get.snackbar(
-          '성공',
-          result['message'],
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green[100],
-          duration: const Duration(seconds: 2),
-        );
-        Get.to(() => const LoginCompletePage());
-      } else {
-        Get.snackbar(
-          '오류',
-          result['message'],
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 5),
-          backgroundColor: Colors.red[100],
-        );
-      }
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      Get.to(() => const LoginCompletePage());
+    } else {
+      Get.snackbar(
+        '오류',
+        result['message'],
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 5),
+        backgroundColor: Colors.red[100],
+      );
     }
   }
 
@@ -132,12 +122,14 @@ class _VerificationPageState extends State<VerificationPage> {
                   ),
                 ),
                 const SizedBox(height: 26),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _verifyPatient,
-                  child: _isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text('가입하기'),
-                ),
+                Obx(() => ElevatedButton(
+                      onPressed: _authController.isLoading.value
+                          ? null
+                          : _verifyPatient,
+                      child: _authController.isLoading.value
+                          ? const CircularProgressIndicator()
+                          : const Text('가입하기'),
+                    )),
               ],
             ),
           ),
