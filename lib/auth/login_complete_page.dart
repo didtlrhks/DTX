@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../screens/liver_fibrosis_page.dart';
+import '../screens/loading_page.dart';
 import '../controllers/auth_controller.dart';
 
 class LoginCompletePage extends StatelessWidget {
@@ -27,9 +27,9 @@ class LoginCompletePage extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Get.offAll(() => const LiverFibrosisPage());
+                Get.off(() => const LoadingPage());
               },
-              child: const Text('간섬유화 위험도 분석 시작하기'),
+              child: const Text('시작하기'),
             ),
           ],
         ),

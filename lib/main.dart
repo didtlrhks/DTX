@@ -1,10 +1,12 @@
+import 'package:dtxproject/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'onboarding.dart';
+import 'auth/verification_page.dart';
+import 'controllers/auth_controller.dart';
+import 'controllers/liver_controller.dart';
 import 'controllers/survey_controller.dart';
 
 void main() {
-  Get.put(SurveyController());
   runApp(const MyApp());
 }
 
@@ -13,10 +15,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // AuthController 초기화
+    Get.put(AuthController());
+    Get.put(LiverController());
+    Get.put(SurveyController());
+
     return GetMaterialApp(
-      title: '앱 이름',
+      title: 'DTX Project',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        useMaterial3: true,
       ),
       home: const OnboardingPage(),
     );
