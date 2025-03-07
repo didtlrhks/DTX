@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'liver_fibrosis_result_page.dart';
+import 'input/weight_input_page.dart';
 import '../controllers/auth_controller.dart';
 import '../controllers/liver_controller.dart';
+import 'survey_screens/survey_home_page.dart';
 
 class LiverFibrosisPage extends StatelessWidget {
   const LiverFibrosisPage({super.key});
@@ -618,7 +619,7 @@ class LiverFibrosisPage extends StatelessWidget {
               height: 56,
               child: ElevatedButton(
                 onPressed: () {
-                  Get.to(() => const LiverFibrosisResultPage());
+                  Get.to(() => const WeightInputPage());
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
