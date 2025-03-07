@@ -7,30 +7,36 @@ import '../controllers/liver_controller.dart';
 class LiverFibrosisPage extends StatelessWidget {
   const LiverFibrosisPage({super.key});
 
-  Color _getHSIColor(double value) {
-    if (value < 30) return const Color(0xFFFFDB4B); // 옅은 노랑
-    if (value > 36) return Colors.red;
-    return const Color(0xFFFFA500); // 황색
-  }
+  // Color _getHSIColor(double value) {
+  //   if (value < 30) return const Color(0xFFFFDB4B); // 옅은 노랑
+  //   if (value > 36) return Colors.red;
+  //   return const Color(0xFFFFA500); // 황색
+  // }
 
   Color _getFLIColor(double value) {
-    if (value < 30) return const Color(0xFFFFDB4B); // 옅은 노랑
-    if (value > 60) return Colors.red;
-    return const Color(0xFFFFA500); // 황색
+    if (value < -1.455) return const Color(0xFFFFDB4B); // 옅은 노랑 (지방간 가능성 낮음)
+    if (value > 0.676) return Colors.red; // 빨강 (지방간 가능성 높음)
+    return const Color(0xFFFFA500); // 황색 (중간)
   }
 
-  Color _getTrafficLightColor(double hsiValue, double fliValue) {
-    Color hsiColor = _getHSIColor(hsiValue);
-    Color fliColor = _getFLIColor(fliValue);
+  Color _getFibrosisColor(double value) {
+    if (value < 1.3) return const Color(0xFFFFDB4B); // 옅은 노랑 (섬유화 위험 낮음)
+    if (value > 2.67) return Colors.red; // 빨강 (섬유화 위험 높음)
+    return const Color(0xFFFFA500); // 황색 (중간)
+  }
 
-    // 둘 다 옅은 노랑색인 경우
-    if (hsiColor == const Color(0xFFFFDB4B) &&
-        fliColor == const Color(0xFFFFDB4B)) {
-      return const Color(0xFFFFDB4B);
-    }
+  Color _getTrafficLightColor(double fliValue, double fibrosisValue) {
+    Color fliColor = _getFLIColor(fliValue);
+    Color fibrosisColor = _getFibrosisColor(fibrosisValue);
+
     // 하나라도 빨간색인 경우
-    if (hsiColor == Colors.red || fliColor == Colors.red) {
+    if (fibrosisColor == Colors.red || fliColor == Colors.red) {
       return Colors.red;
+    }
+    // 둘 다 옅은 노랑색인 경우
+    if (fliColor == const Color(0xFFFFDB4B) &&
+        fibrosisColor == const Color(0xFFFFDB4B)) {
+      return const Color(0xFFFFDB4B);
     }
     // 나머지 경우 (황색)
     return const Color(0xFFFFA500);
@@ -74,11 +80,12 @@ class LiverFibrosisPage extends StatelessWidget {
         const spacing = 20.0;
 
         final liverController = Get.find<LiverController>();
-        final hsiValue =
-            liverController.liverData.value?.indices.hsi.value ?? 0;
+        final fibrosisValue =
+            liverController.liverData.value?.indices.fibrosis.value ?? 0;
         final fliValue =
             liverController.liverData.value?.indices.fli.value ?? 0;
-        final trafficLightColor = _getTrafficLightColor(hsiValue, fliValue);
+        final trafficLightColor =
+            _getTrafficLightColor(fliValue, fibrosisValue);
 
         Widget buildCircle(Color color) {
           return Container(
@@ -141,8 +148,9 @@ class LiverFibrosisPage extends StatelessWidget {
     );
   }
 
-  Widget _buildIndexBar(String title, String subtitle, double value,
-      {bool isHSI = false}) {
+  Widget _buildIndexBar(
+      String title, String subtitle, double value, String interpretation,
+      {bool isFLI = false}) {
     return Stack(
       children: [
         Container(
@@ -155,20 +163,38 @@ class LiverFibrosisPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
             child: Row(
               children: [
-                Text.rich(
-                  TextSpan(
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      TextSpan(
-                        text: title,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontFamily: 'Pretendard',
-                          fontWeight: FontWeight.w400,
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: title,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontFamily: 'Pretendard',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            TextSpan(
+                              text: subtitle,
+                              style: const TextStyle(
+                                color: Color(0xFF8E8E8E),
+                                fontSize: 12,
+                                fontFamily: 'Pretendard',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      TextSpan(
-                        text: subtitle,
+                      const SizedBox(height: 4),
+                      Text(
+                        interpretation,
                         style: const TextStyle(
                           color: Color(0xFF8E8E8E),
                           fontSize: 12,
@@ -179,9 +205,8 @@ class LiverFibrosisPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Spacer(),
                 Text(
-                  value.toStringAsFixed(isHSI ? 2 : 3),
+                  value.toStringAsFixed(2),
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 20,
@@ -200,7 +225,7 @@ class LiverFibrosisPage extends StatelessWidget {
             width: 350,
             height: 9,
             decoration: BoxDecoration(
-              color: isHSI ? _getHSIColor(value) : _getFLIColor(value),
+              color: isFLI ? _getFLIColor(value) : _getFibrosisColor(value),
               borderRadius: const BorderRadius.all(Radius.circular(9 / 2)),
             ),
           ),
@@ -234,12 +259,10 @@ class LiverFibrosisPage extends StatelessWidget {
               return const Center(child: Text('데이터가 없습니다.'));
             }
 
-            final hsiValue = liverData.indices.hsi.value;
             final fliValue = liverData.indices.fli.value;
-            final trafficLightColor = _getTrafficLightColor(hsiValue, fliValue);
-
-            print('HSI Value: $hsiValue');
-            print('FLI Value: $fliValue');
+            final fibrosisValue = liverData.indices.fibrosis.value;
+            final trafficLightColor =
+                _getTrafficLightColor(fliValue, fibrosisValue);
 
             return Stack(
               alignment: Alignment.topCenter,
@@ -303,10 +326,16 @@ class LiverFibrosisPage extends StatelessWidget {
                         const SizedBox(height: 40),
                         Column(
                           children: [
-                            _buildIndexBar('간 지방증 지수', '(HSI)', hsiValue,
-                                isHSI: true),
+                            _buildIndexBar('지방간 지수', '(FLI)', fliValue,
+                                liverData.indices.fli.interpretation,
+                                isFLI: true),
                             const SizedBox(height: 12),
-                            _buildIndexBar('지방간 지수', '(FLI)', fliValue),
+                            _buildIndexBar(
+                              '섬유화 지수',
+                              '(Fibrosis)',
+                              fibrosisValue,
+                              liverData.indices.fibrosis.interpretation,
+                            ),
                           ],
                         ),
                         const SizedBox(height: 40),

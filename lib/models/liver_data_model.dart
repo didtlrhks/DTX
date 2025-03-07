@@ -23,17 +23,17 @@ class LiverData {
 
 class Indices {
   final IndexData fli;
-  final IndexData hsi;
+  final IndexData fibrosis;
 
   Indices({
     required this.fli,
-    required this.hsi,
+    required this.fibrosis,
   });
 
   factory Indices.fromJson(Map<String, dynamic> json) {
     return Indices(
       fli: IndexData.fromJson(json['fli']),
-      hsi: IndexData.fromJson(json['hsi']),
+      fibrosis: IndexData.fromJson(json['fibrosis']),
     );
   }
 }
@@ -56,32 +56,32 @@ class IndexData {
 }
 
 class ReferenceValues {
-  final double triglyceride;
-  final double bmi;
-  final double ggt;
-  final double waistCircumference;
-  final double alt;
+  final int age;
   final double ast;
+  final double alt;
+  final int plt;
+  final double bmi;
+  final double albumin;
   final bool hasDiabetes;
 
   ReferenceValues({
-    required this.triglyceride,
-    required this.bmi,
-    required this.ggt,
-    required this.waistCircumference,
-    required this.alt,
+    required this.age,
     required this.ast,
+    required this.alt,
+    required this.plt,
+    required this.bmi,
+    required this.albumin,
     required this.hasDiabetes,
   });
 
   factory ReferenceValues.fromJson(Map<String, dynamic> json) {
     return ReferenceValues(
-      triglyceride: json['triglyceride'].toDouble(),
-      bmi: json['bmi'].toDouble(),
-      ggt: json['ggt'].toDouble(),
-      waistCircumference: json['waist_circumference'].toDouble(),
-      alt: json['alt'].toDouble(),
+      age: json['age'],
       ast: json['ast'].toDouble(),
+      alt: json['alt'].toDouble(),
+      plt: json['plt'],
+      bmi: json['bmi'].toDouble(),
+      albumin: json['albumin'].toDouble(),
       hasDiabetes: json['has_diabetes'],
     );
   }
