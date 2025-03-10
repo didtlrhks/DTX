@@ -256,12 +256,31 @@ class HomePage extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            '매일 미션',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Row(
+                            children: [
+                              // 매일 미션 왼쪽 원 위치 조정 (카드 왼쪽 원과 중심 일직선 맞춤)
+                              SizedBox(
+                                width: 12,
+                                child: Center(
+                                  child: Container(
+                                    width: 12,
+                                    height: 12,
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFF707070),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              const Text(
+                                '매일 미션',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                           // 채팅상담 버튼 크기 조정 (148x47)
                           SizedBox(
@@ -342,70 +361,132 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildMissionItem(String title, bool hasSwitch) {
-    return Container(
-      width: 332, // 너비 332로 설정
-      height: 77, // 높이 77로 설정
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 2,
-            offset: const Offset(0, 1),
+    // 토글 상태를 관리하기 위한 RxBool 변수
+    final RxBool isToggled = false.obs;
+
+    return Stack(
+      children: [
+        // 원들의 중심을 연결하는 직사각형 (배경에 위치)
+        Positioned(
+          left: 4, // 원의 중심에 맞춤
+          top: 12, // 상단 원 아래에 패딩 추가
+          child: Container(
+            width: 4,
+            height: 73, // 카드 높이와 마진을 고려한 높이
+            color: const Color(0xFFD3D3D3), // 연한 회색
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ),
+        // 기존 Row 위젯
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+            // 카드 외부에 원 배치 (중심이 매일 미션 원과 일직선 맞춤)
+            SizedBox(
+              width: 12,
+              child: Center(
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF707070),
+                    shape: BoxShape.circle,
+                  ),
+                ),
               ),
             ),
-            if (hasSwitch)
-              Container(
-                width: 70,
-                height: 30,
+            const SizedBox(width: 5),
+            // 카드 컨테이너
+            Expanded(
+              child: Container(
+                width: 315,
+                height: 77, // 높이 77로 설정
+                margin: const EdgeInsets.symmetric(vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Stack(
-                  children: [
-                    const Center(
-                      child: Text(
-                        '단식',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.black54,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        width: 30,
-                        height: 30,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
+                  color: const Color(0xFFE0E0E0), // 회색 배경으로 변경
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 2,
+                      offset: const Offset(0, 1),
                     ),
                   ],
                 ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      if (hasSwitch)
+                        Obx(() => GestureDetector(
+                              onTap: () {
+                                isToggled.value = !isToggled.value;
+                              },
+                              child: Container(
+                                width: 70,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color(0xFF707070), // 더 어두운 회색으로 변경
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    // 단식 텍스트 위치 조정
+                                    AnimatedPositioned(
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      left: isToggled.value ? 10 : null,
+                                      right: isToggled.value ? null : 10,
+                                      top: 0,
+                                      bottom: 0,
+                                      child: const Center(
+                                        child: Text(
+                                          '단식',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color:
+                                                Colors.white, // 텍스트 색상 흰색으로 변경
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    // 원형 버튼 위치 조정
+                                    AnimatedAlign(
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      alignment: isToggled.value
+                                          ? Alignment.centerRight
+                                          : Alignment.centerLeft,
+                                      child: Container(
+                                        width: 30,
+                                        height: 30,
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )),
+                    ],
+                  ),
+                ),
               ),
+            ),
           ],
         ),
-      ),
+      ],
     );
   }
 }
