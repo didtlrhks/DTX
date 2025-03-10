@@ -619,7 +619,7 @@ class LiverFibrosisPage extends StatelessWidget {
               height: 56,
               child: ElevatedButton(
                 onPressed: () {
-                  Get.to(() => const WeightInputPage());
+                  Get.to(() => WeightInputPage());
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,

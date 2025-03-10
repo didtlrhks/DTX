@@ -210,7 +210,7 @@ class HomePage extends StatelessWidget {
                           icon: Icons.monitor_weight,
                           title: '체중 입력',
                           onTap: () {
-                            Get.to(() => const WeightInputPage());
+                            Get.to(() => WeightInputPage());
                           },
                         ),
                         const SizedBox(height: 8),
