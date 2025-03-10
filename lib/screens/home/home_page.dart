@@ -1,12 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-// import 'package:dtxproject/screens/settings/settings_page.dart';
-// import 'package:dtxproject/screens/card_news/card_news_page.dart';
-// import 'package:dtxproject/screens/input/weight_input_page.dart';
-// import 'package:dtxproject/screens/input/diet_input_page.dart';
-// import 'package:dtxproject/screens/input/exercise_input_page.dart';
-// import 'package:dtxproject/screens/behavior_goals/behavior_goals_onboarding_page.dart';
-// import 'package:dtxproject/screens/checklist/checklist_page.dart';
 import 'package:dtxproject/controllers/auth_controller.dart';
 
 class HomePage extends StatelessWidget {
@@ -94,7 +87,7 @@ class HomePage extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      '포인트',
+                                      '목표체중',
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.grey,
@@ -141,9 +134,7 @@ class HomePage extends StatelessWidget {
                           ],
                         ),
                       ),
-
                       const SizedBox(height: 2),
-
                       Row(
                         children: [
                           Container(
@@ -211,10 +202,7 @@ class HomePage extends StatelessWidget {
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 2),
-
-                      // 모아보기 버튼
                       Container(
                         width: 134,
                         height: 72,
@@ -232,17 +220,13 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
                       ),
-
-                      // 모아보기와 바 사이의 패딩 66으로 조정
                       const SizedBox(height: 66),
-
-                      // 바 7개로 변경
                       SizedBox(
                         height: 30,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: List.generate(
-                            7, // 바 개수를 7개로 변경
+                            7,
                             (index) => Container(
                               width: 20,
                               height: 2,
@@ -257,18 +241,16 @@ class HomePage extends StatelessWidget {
               ],
             ),
 
-            // 하단 영역 (회색 배경)
             Expanded(
               child: Container(
                 color: Colors.grey[100],
                 child: Column(
                   children: [
-                    // 매일 미션 헤더 (고정)
                     Padding(
                       padding: const EdgeInsets.only(
                         left: 20,
                         right: 20,
-                        top: 18, // 상단 패딩 18픽셀로 조정
+                        top: 18,
                         bottom: 16,
                       ),
                       child: Row(
@@ -281,16 +263,32 @@ class HomePage extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Switch(
-                            value: true,
-                            onChanged: (value) {},
-                            activeColor: Colors.grey[600],
+                          // 채팅상담 버튼 크기 조정 (148x47)
+                          SizedBox(
+                            width: 148,
+                            height: 47,
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                // 채팅상담 기능 구현
+                              },
+                              icon: const Icon(Icons.chat_bubble_outline,
+                                  size: 16),
+                              label: const Text('채팅상담'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
+                                textStyle: const TextStyle(fontSize: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
-
-                    // 미션 아이템들 (스크롤 가능)
                     Expanded(
                       child: SingleChildScrollView(
                         child: Padding(
@@ -298,7 +296,6 @@ class HomePage extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // 미션 아이템들
                               _buildMissionItem('아침 기록', true),
                               _buildMissionItem('점심 기록', true),
                               _buildMissionItem('저녁 기록', true),
@@ -306,14 +303,6 @@ class HomePage extends StatelessWidget {
                               _buildMissionItem('운동 기록', false),
                               _buildMissionItem('오늘 하루 별점리뷰', false),
                               _buildMissionItem('체중 기록', false),
-
-                              // 추가 미션 아이템들 (스크롤 테스트용)
-                              _buildMissionItem('추가 미션 1', false),
-                              _buildMissionItem('추가 미션 2', false),
-                              _buildMissionItem('추가 미션 3', false),
-                              _buildMissionItem('추가 미션 4', false),
-                              _buildMissionItem('추가 미션 5', false),
-
                               const SizedBox(height: 16),
                             ],
                           ),
@@ -354,6 +343,8 @@ class HomePage extends StatelessWidget {
 
   Widget _buildMissionItem(String title, bool hasSwitch) {
     return Container(
+      width: 332, // 너비 332로 설정
+      height: 77, // 높이 77로 설정
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -367,39 +358,50 @@ class HomePage extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                const Icon(Icons.circle, size: 8, color: Colors.black),
-                const SizedBox(width: 12),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             if (hasSwitch)
-              Row(
-                children: [
-                  const Text(
-                    '완료',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
+              Container(
+                width: 70,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Stack(
+                  children: [
+                    const Center(
+                      child: Text(
+                        '단식',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
-                  ),
-                  Switch(
-                    value: false,
-                    onChanged: (value) {},
-                    activeColor: Colors.grey[600],
-                  ),
-                ],
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
           ],
         ),
