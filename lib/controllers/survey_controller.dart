@@ -7,6 +7,7 @@ class SurveyController extends GetxController {
   final RxBool isExerciseSurveyCompleted = false.obs;
   final RxBool isEmotionSurveyCompleted = false.obs;
   final RxBool isLifeQualitySurveyCompleted = false.obs;
+  final RxBool isSickSurveyCompleted = false.obs;
 
   final Rx<bool> isAllSurveysCompleted = false.obs;
 
@@ -20,6 +21,7 @@ class SurveyController extends GetxController {
     ever(isAlcoholSurveyCompleted, (_) => _checkAllSurveysCompleted());
     ever(isEmotionSurveyCompleted, (_) => _checkAllSurveysCompleted());
     ever(isLifeQualitySurveyCompleted, (_) => _checkAllSurveysCompleted());
+    ever(isSickSurveyCompleted, (_) => _checkAllSurveysCompleted());
   }
 
   void _checkAllSurveysCompleted() {
@@ -28,7 +30,8 @@ class SurveyController extends GetxController {
         isExerciseSurveyCompleted.value &&
         isAlcoholSurveyCompleted.value &&
         isEmotionSurveyCompleted.value &&
-        isLifeQualitySurveyCompleted.value;
+        isLifeQualitySurveyCompleted.value &&
+        isSickSurveyCompleted.value;
   }
 
   void completeAlcoholSurvey() {
@@ -55,6 +58,10 @@ class SurveyController extends GetxController {
     isSleepSurveyCompleted.value = true;
   }
 
+  void completeSickSurvey() {
+    isSickSurveyCompleted.value = true;
+  }
+
   void resetAllSurveys() {
     isAlcoholSurveyCompleted.value = false;
     isDietSurveyCompleted.value = false;
@@ -62,6 +69,7 @@ class SurveyController extends GetxController {
     isExerciseSurveyCompleted.value = false;
     isEmotionSurveyCompleted.value = false;
     isLifeQualitySurveyCompleted.value = false;
+    isSickSurveyCompleted.value = false;
     isAllSurveysCompleted.value = false;
 
     update();

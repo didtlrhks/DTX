@@ -2,6 +2,7 @@ import 'package:dtxproject/screens/survey_screens/exercise_survey/exercise_surve
 import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_start_page.dart';
 import 'package:dtxproject/screens/survey_screens/emotion_survey/emotion_survey_start_page.dart';
 import 'package:dtxproject/screens/survey_screens/lifequality_survey/lifequality_survey_start_page.dart';
+import 'package:dtxproject/screens/survey_screens/sick_survey/sick_survey_start_page.dart';
 import 'package:flutter/material.dart';
 import 'diet_survey/diet_survey_start_page.dart';
 import 'sleep_survey/sleep_survey_start_page.dart';
@@ -26,6 +27,7 @@ class SurveyHomePage extends GetView<SurveyController> {
                 onTap: () => Get.back(),
                 child: Container(
                   padding: const EdgeInsets.only(top: 8, bottom: 12),
+                  alignment: Alignment.centerLeft,
                   child: const Icon(
                     Icons.arrow_back_ios,
                     color: Colors.black,
@@ -33,160 +35,147 @@ class SurveyHomePage extends GetView<SurveyController> {
                   ),
                 ),
               ),
-              const Text(
-                '방금 목표를 달성할',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  height: 1.2,
-                ),
-              ),
-              const Text(
-                '방법을 매일 알려드릴게요.',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  height: 1.2,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                '그 동안 실천한 방법 점검과 함께\n앞으로 실천할 방법을 찾아봐요.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 32),
               Expanded(
                 child: SingleChildScrollView(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final cardWidth = (constraints.maxWidth - 12) / 2;
-                      return Obx(
-                        () => Wrap(
-                          spacing: 12,
-                          runSpacing: 12,
-                          alignment: WrapAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: cardWidth,
-                              child: _buildSurveyCard(
-                                '운동 설문',
-                                '운동 실천',
-                                '소요시간 4분 30초',
-                                () => Get.to(
-                                    () => const ExerciseSurveyStartPage()),
-                                controller.isExerciseSurveyCompleted.value,
-                              ),
-                            ),
-                            SizedBox(
-                              width: cardWidth,
-                              child: _buildSurveyCard(
-                                '식단 설문',
-                                '식단 실천',
-                                '소요시간 4분 30초',
-                                () => Get.to(() => const DietSurveyStartPage()),
-                                controller.isDietSurveyCompleted.value,
-                              ),
-                            ),
-                            SizedBox(
-                              width: cardWidth,
-                              child: _buildSurveyCard(
-                                '수면 설문',
-                                '수면 실천',
-                                '소요시간 2분 30초',
-                                () =>
-                                    Get.to(() => const SleepSurveyStartPage()),
-                                controller.isSleepSurveyCompleted.value,
-                              ),
-                            ),
-                            SizedBox(
-                              width: cardWidth,
-                              child: _buildSurveyCard(
-                                '삶의 질 설문',
-                                '삶의 질 실천',
-                                '소요시간 3분 30초',
-                                () => Get.to(
-                                    () => const LifeQualitySurveyStartPage()),
-                                controller.isLifeQualitySurveyCompleted.value,
-                              ),
-                            ),
-                            SizedBox(
-                              width: cardWidth,
-                              child: _buildSurveyCard(
-                                '감정 설문',
-                                '감정 실천',
-                                '소요시간 40초',
-                                () => Get.to(
-                                    () => const EmotionSurveyStartPage()),
-                                controller.isEmotionSurveyCompleted.value,
-                              ),
-                            ),
-                            SizedBox(
-                              width: cardWidth,
-                              child: _buildSurveyCard(
-                                '술 설문',
-                                '술 실천',
-                                '소요시간 40초',
-                                () => Get.to(
-                                    () => const AlcoholSurveyStartPage()),
-                                controller.isAlcoholSurveyCompleted.value,
-                              ),
-                            ),
-                            SizedBox(
-                              width: cardWidth,
-                              child: _buildSurveyCard(
-                                '질병 설문',
-                                '질병 실천',
-                                '소요시간 40초',
-                                () => Get.to(
-                                    () => const AlcoholSurveyStartPage()),
-                                false,
-                              ),
-                            ),
-                          ],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '방금 목표를 달성할',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          height: 1.2,
                         ),
-                      );
-                    },
+                      ),
+                      const Text(
+                        '방법을 매일 알려드릴게요.',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          height: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        '그 동안 실천한 방법 점검과 함께\n앞으로 실천할 방법을 찾아봐요.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          return GetX<SurveyController>(
+                            builder: (_) => Wrap(
+                              spacing: 12,
+                              runSpacing: 12,
+                              alignment: WrapAlignment.start,
+                              children: [
+                                _buildSurveyCard(
+                                  '운동 설문',
+                                  '운동 실천',
+                                  '소요시간 4분 30초',
+                                  () => Get.to(
+                                      () => const ExerciseSurveyStartPage()),
+                                  controller.isExerciseSurveyCompleted.value,
+                                ),
+                                _buildSurveyCard(
+                                  '식단 설문',
+                                  '식단 실천',
+                                  '소요시간 4분 30초',
+                                  () =>
+                                      Get.to(() => const DietSurveyStartPage()),
+                                  controller.isDietSurveyCompleted.value,
+                                ),
+                                _buildSurveyCard(
+                                  '수면 설문',
+                                  '수면 실천',
+                                  '소요시간 2분 30초',
+                                  () => Get.to(
+                                      () => const SleepSurveyStartPage()),
+                                  controller.isSleepSurveyCompleted.value,
+                                ),
+                                _buildSurveyCard(
+                                  '삶의 질 설문',
+                                  '삶의 질 실천',
+                                  '소요시간 3분 30초',
+                                  () => Get.to(
+                                      () => const LifeQualitySurveyStartPage()),
+                                  controller.isLifeQualitySurveyCompleted.value,
+                                ),
+                                _buildSurveyCard(
+                                  '감정 설문',
+                                  '감정 실천',
+                                  '소요시간 40초',
+                                  () => Get.to(
+                                      () => const EmotionSurveyStartPage()),
+                                  controller.isEmotionSurveyCompleted.value,
+                                ),
+                                _buildSurveyCard(
+                                  '술 설문',
+                                  '술 실천',
+                                  '소요시간 40초',
+                                  () => Get.to(
+                                      () => const AlcoholSurveyStartPage()),
+                                  controller.isAlcoholSurveyCompleted.value,
+                                ),
+                                _buildSurveyCard(
+                                  '질병 설문',
+                                  '질병 실천',
+                                  '소요시간 40초',
+                                  () =>
+                                      Get.to(() => const SickSurveyStartPage()),
+                                  controller.isSickSurveyCompleted.value,
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      GetX<SurveyController>(
+                        builder: (_) => SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: controller.isAllSurveysCompleted.value
+                                ? () async {
+                                    Get.dialog(
+                                      const Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                      barrierDismissible: false,
+                                    );
+                                    await Future.delayed(
+                                        const Duration(seconds: 2));
+                                    Get.back();
+                                    Get.to(() => const SurveyResultPage());
+                                  }
+                                : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              disabledBackgroundColor: Colors.grey[300],
+                              disabledForegroundColor: Colors.grey[600],
+                            ),
+                            child: Text(
+                              controller.isAllSurveysCompleted.value
+                                  ? '다음'
+                                  : '모든 설문을 완료해주세요',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              Obx(() => SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: controller.isAllSurveysCompleted.value
-                          ? () async {
-                              Get.dialog(
-                                const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                                barrierDismissible: false,
-                              );
-                              await Future.delayed(const Duration(seconds: 2));
-                              Get.back();
-                              Get.to(() => const SurveyResultPage());
-                            }
-                          : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        disabledBackgroundColor: Colors.grey[300],
-                        disabledForegroundColor: Colors.grey[600],
-                      ),
-                      child: Text(
-                        controller.isAllSurveysCompleted.value
-                            ? '다음'
-                            : '모든 설문을 완료해주세요',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  )),
             ],
           ),
         ),
