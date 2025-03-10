@@ -40,6 +40,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_datetime_picker_plus: ^2.2.0
   numberpicker: ^2.1.2
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
