@@ -15,7 +15,7 @@ class _SickSurveyEndPageState extends State<SickSurveyEndPage> {
   @override
   void initState() {
     super.initState();
-    // 설문 완료 상태 업데이트 - build 메서드 밖에서 처리
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.completeSickSurvey();
     });
@@ -26,16 +26,15 @@ class _SickSurveyEndPageState extends State<SickSurveyEndPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => Get.back(),
-                child: Container(
-                  padding: const EdgeInsets.only(top: 8, bottom: 12),
-                  alignment: Alignment.centerLeft,
+        child: Column(
+          children: [
+            // 뒤로가기 버튼
+            Padding(
+              padding: const EdgeInsets.only(left: 20, top: 8, bottom: 12),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: GestureDetector(
+                  onTap: () => Get.back(),
                   child: const Icon(
                     Icons.arrow_back_ios,
                     color: Colors.black,
@@ -43,8 +42,12 @@ class _SickSurveyEndPageState extends State<SickSurveyEndPage> {
                   ),
                 ),
               ),
-              Expanded(
-                child: Center(
+            ),
+            // 중앙 콘텐츠
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -61,6 +64,7 @@ class _SickSurveyEndPageState extends State<SickSurveyEndPage> {
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
                       const Text(
@@ -69,6 +73,7 @@ class _SickSurveyEndPageState extends State<SickSurveyEndPage> {
                           fontSize: 16,
                           color: Colors.grey,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 32),
                       SizedBox(
@@ -94,8 +99,8 @@ class _SickSurveyEndPageState extends State<SickSurveyEndPage> {
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

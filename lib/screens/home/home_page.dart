@@ -7,6 +7,7 @@ import 'package:dtxproject/screens/input/diet_input_page.dart';
 import 'package:dtxproject/screens/input/exercise_input_page.dart';
 import 'package:dtxproject/screens/behavior_goals/behavior_goals_onboarding_page.dart';
 import 'package:dtxproject/screens/checklist/checklist_page.dart';
+import 'package:dtxproject/controllers/auth_controller.dart';
 
 class HomePage extends StatelessWidget {
   final String? goalTitle;
@@ -20,263 +21,376 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthController authController = Get.find<AuthController>();
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      '안녕하세요!',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.settings),
-                      onPressed: () {
-                        Get.to(() => const SettingsPage());
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // 카드뉴스 섹션
-                SizedBox(
-                  height: 200,
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            '오늘의 건강 컨텐츠',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Expanded(
-                            child: PageView.builder(
-                              itemCount: 3, // 예시로 3개의 카드뉴스
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    Get.to(() => const CardNewsPage());
-                                  },
-                                  child: Card(
-                                    child: Center(
-                                      child: Text('카드뉴스 ${index + 1}'),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // 진행 중인 목표 섹션
-                Row(
-                  children: [
-                    if (goalTitle != null && goalTitle!.isNotEmpty)
-                      const Expanded(
-                        child: Card(
-                          child: Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '결과목표',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text("4kg 감량",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                Text("2025.02.24 ~ 2025.03.24"),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    Expanded(
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: Colors.white,
+      appBar: null, // 앱바 제거
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // 상단 흰색 배경 영역
+            Container(
+              color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 사용자 이름 (오른쪽 상단)
+                  SizedBox(height: MediaQuery.of(context).padding.top + 10),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Obx(() => Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text(
-                                '현재 진행중인 목표',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                              Text(
+                                '부민병원, ${authController.user.value?.username ?? "사용자"}',
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              const SizedBox(height: 8),
-                              Text(goalTitle!,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                              if (goalContent != null) Text(goalContent!),
+                              const SizedBox(width: 4),
+                              CircleAvatar(
+                                radius: 12,
+                                backgroundColor: Colors.grey[300],
+                                child: const Icon(Icons.person,
+                                    size: 16, color: Colors.grey),
+                              ),
                             ],
-                          ),
-                        ),
-                      ),
+                          )),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 16),
+                  ),
 
-                // 대시보드 섹션
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // 점수 표시 영역
+                        Padding(
+                          padding: const EdgeInsets.only(top: 17, bottom: 17),
+                          child: Row(
+                            children: [
+                              // 왼쪽 원형 점수 (71x71)
+                              Container(
+                                width: 71,
+                                height: 71,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: Colors.grey[300]!, width: 2),
+                                ),
+                                child: const Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        '85',
+                                        style: TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        '포인트',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(width: 16),
+
+                              // 오른쪽 운동 시간 카드 (261x77)
+                              Container(
+                                width: 261,
+                                height: 77,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.grey[300]!),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(12),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        '오늘 목표 / 누적',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        '하루 30분 걷기',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // 날짜 및 카드 뉴스 영역
+                        const SizedBox(height: 2),
+
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              '주간 활동',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                            // 날짜 표시
+                            Container(
+                              width: 52,
+                              height: 77,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '오늘',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                  const Text(
+                                    '07',
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    '화요일',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            Text(
-                              DateTime.now().toString().substring(0, 10),
-                              style: const TextStyle(color: Colors.grey),
+
+                            const SizedBox(width: 16),
+
+                            // 카드 뉴스 영역
+                            Container(
+                              width: 80,
+                              height: 77,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '카드',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    '뉴스',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
 
-                        // 깃허브 스타일 주간 활동 그리드
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: List.generate(7, (index) {
-                            // 임시 랜덤 데이터 (실제로는 실제 데이터로 대체해야 함)
-                            final intensity = index % 3;
-                            return Column(
-                              children: [
-                                Container(
-                                  width: 30,
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    color: intensity == 0
-                                        ? Colors.grey[300]
-                                        : intensity == 1
-                                            ? Colors.green[300]
-                                            : Colors.green[700],
-                                    borderRadius: BorderRadius.circular(4),
+                        const SizedBox(height: 2),
+
+                        // 모아보기 버튼
+                        Container(
+                          width: 134,
+                          height: 72,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              '모아보기',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 2),
+
+                        // 식물 일러스트 영역
+                        Container(
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: List.generate(
+                              6,
+                              (index) => Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(
+                                    index % 2 == 0 ? Icons.spa : Icons.grass,
+                                    color: Colors.green,
+                                    size: 24 + (index % 3) * 4,
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  ['월', '화', '수', '목', '금', '토', '일'][index],
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                              ],
-                            );
-                          }),
-                        ),
-
-                        const SizedBox(height: 16),
-                        const Divider(),
-                        const SizedBox(height: 16),
-
-                        // 입력 섹션들
-                        _buildInputSection(
-                          icon: Icons.monitor_weight,
-                          title: '체중 입력',
-                          onTap: () {
-                            Get.to(() => WeightInputPage());
-                          },
-                        ),
-                        const SizedBox(height: 8),
-                        _buildInputSection(
-                          icon: Icons.restaurant,
-                          title: '식단 입력',
-                          onTap: () {
-                            Get.to(() => const DietInputPage());
-                          },
-                        ),
-                        const SizedBox(height: 8),
-                        _buildInputSection(
-                          icon: Icons.fitness_center,
-                          title: '운동 입력',
-                          onTap: () {
-                            Get.to(() => const ExerciseInputPage());
-                          },
+                                  Container(
+                                    width: 20,
+                                    height: 2,
+                                    color: Colors.brown[300],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-
-                const SizedBox(height: 16),
-
-                Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.checklist),
-                    title: const Text('체크리스트'),
-                    subtitle: const Text('오늘의 할 일을 체크하세요'),
-                    onTap: () {
-                      Get.to(() => const ChecklistPage());
-                    },
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+
+            // 하단 회색 배경 영역 (꽃 아래부터)
+            Container(
+              color: Colors.grey[100],
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 24),
+
+                    // 미션 섹션
+                    Column(
+                      children: [
+                        // 미션 헤더
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                '매일 미션',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Switch(
+                                value: true,
+                                onChanged: (value) {},
+                                activeColor: Colors.grey[600],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // 미션 아이템들
+                        _buildMissionItem('아침 기록', true),
+                        _buildMissionItem('점심 기록', true),
+                        _buildMissionItem('저녁 기록', true),
+                        _buildMissionItem('간식/야식 기록', true),
+                        _buildMissionItem('운동 기록', false),
+                        _buildMissionItem('오늘 하루 별점리뷰', false),
+                        _buildMissionItem('체중 기록', false),
+
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildInputSection({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(8),
-        ),
+  Widget _buildMissionItem(String title, bool hasSwitch) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 2,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(icon, size: 24),
-            const SizedBox(width: 12),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 16),
+            Row(
+              children: [
+                const Icon(Icons.circle, size: 8, color: Colors.black),
+                const SizedBox(width: 12),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-            const Spacer(),
-            const Icon(Icons.arrow_forward_ios, size: 16),
+            if (hasSwitch)
+              Row(
+                children: [
+                  const Text(
+                    '완료',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Switch(
+                    value: false,
+                    onChanged: (value) {},
+                    activeColor: Colors.grey[600],
+                  ),
+                ],
+              ),
           ],
         ),
       ),
