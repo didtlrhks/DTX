@@ -410,11 +410,17 @@ class HomePage extends StatelessWidget {
                           isToggled.value = !isToggled.value;
                         },
                         child: Container(
-                          width: 70,
-                          height: 30,
+                          width: 78,
+                          height: 35,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF707070),
+                            color: isToggled.value
+                                ? Colors.white
+                                : const Color(0xFF707070),
                             borderRadius: BorderRadius.circular(15),
+                            border: isToggled.value
+                                ? Border.all(
+                                    color: const Color(0xFFD9D9D9), width: 1)
+                                : null,
                           ),
                           child: Stack(
                             children: [
@@ -424,12 +430,15 @@ class HomePage extends StatelessWidget {
                                 right: isToggled.value ? null : 10,
                                 top: 0,
                                 bottom: 0,
-                                child: const Center(
+                                child: Center(
                                   child: Text(
                                     '단식',
                                     style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.white,
+                                      fontFamily: 'Paperlogy',
+                                      fontSize: 13,
+                                      color: isToggled.value
+                                          ? const Color(0xFF000000)
+                                          : const Color(0xFF353535),
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -440,12 +449,23 @@ class HomePage extends StatelessWidget {
                                 alignment: isToggled.value
                                     ? Alignment.centerRight
                                     : Alignment.centerLeft,
-                                child: Container(
-                                  width: 30,
-                                  height: 30,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 2),
+                                  child: Container(
+                                    width: 31,
+                                    height: 31,
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFFD9D9D9),
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Color(0x29000000),
+                                          blurRadius: 1,
+                                          offset: Offset(0, 1),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
