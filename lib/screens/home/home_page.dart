@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/auth_controller.dart';
+import 'package:dtxproject/utils/date_utils.dart'; // DateUtil 클래스 import
 
 class HomePage extends StatelessWidget {
   final String? goalTitle;
@@ -16,9 +17,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
 
-    final now = DateTime.now();
-    final day = now.day.toString().padLeft(2, '0');
-    final weekday = _getWeekdayInKorean(now.weekday);
+    // DateUtil 클래스를 사용하여 날짜 정보 가져오기
+    final dateInfo = DateUtil.getCurrentDateInfo();
+    final day = dateInfo['day']!;
+    final weekday = dateInfo['weekday']!;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -336,28 +338,6 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  // 요일을 한글로 변환하는 함수
-  String _getWeekdayInKorean(int weekday) {
-    switch (weekday) {
-      case 1:
-        return '월요일';
-      case 2:
-        return '화요일';
-      case 3:
-        return '수요일';
-      case 4:
-        return '목요일';
-      case 5:
-        return '금요일';
-      case 6:
-        return '토요일';
-      case 7:
-        return '일요일';
-      default:
-        return '';
-    }
   }
 
   Widget _buildMissionItem(String title, bool hasSwitch) {
