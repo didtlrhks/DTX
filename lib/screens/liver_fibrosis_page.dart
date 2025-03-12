@@ -1,3 +1,4 @@
+import 'package:dtxproject/screens/goal_weight_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'input/weight_input_page.dart';
@@ -619,7 +620,7 @@ class LiverFibrosisPage extends StatelessWidget {
               height: 56,
               child: ElevatedButton(
                 onPressed: () {
-                  Get.to(() => WeightInputPage());
+                  Get.to(() => GoalWeightPage());
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
