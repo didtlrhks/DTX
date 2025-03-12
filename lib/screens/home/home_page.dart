@@ -1,8 +1,26 @@
+import 'package:dtxproject/screens/input/breakfast_page.dart';
+import 'package:dtxproject/screens/input/daily_review.dart';
+import 'package:dtxproject/screens/input/dinner_page.dart';
+import 'package:dtxproject/screens/input/exercise_input_page.dart';
+import 'package:dtxproject/screens/input/launch_page.dart';
+import 'package:dtxproject/screens/input/snack_page.dart';
+import 'package:dtxproject/screens/input/weight_input_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:dtxproject/controllers/auth_controller.dart';
 import 'package:dtxproject/utils/date_utils.dart';
+
+// 미션 아이템 ID 상수 정의
+class MissionIds {
+  static const int breakfast = 1;
+  static const int lunch = 2;
+  static const int dinner = 3;
+  static const int snack = 4;
+  static const int exercise = 5;
+  static const int dailyReview = 6;
+  static const int weight = 7;
+}
 
 class HomePage extends StatelessWidget {
   final String? goalTitle;
@@ -286,8 +304,8 @@ class HomePage extends StatelessWidget {
                                     size: 16),
                                 label: const Text('채팅상담'),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
+                                  backgroundColor: const Color(0x00707070),
+                                  foregroundColor: Colors.black,
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 12),
                                   textStyle: const TextStyle(fontSize: 14),
@@ -311,20 +329,20 @@ class HomePage extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.only(top: 0),
                                 child: _buildTimelineMissionItem(
-                                    '아침 기록', true, true, false),
+                                    '아침 기록', MissionIds.breakfast, true, false),
                               ),
                               _buildTimelineMissionItem(
-                                  '점심 기록', true, false, false),
+                                  '점심 기록', MissionIds.lunch, false, false),
                               _buildTimelineMissionItem(
-                                  '저녁 기록', true, false, false),
+                                  '저녁 기록', MissionIds.dinner, false, false),
                               _buildTimelineMissionItem(
-                                  '간식/야식 기록', true, false, false),
+                                  '간식/야식 기록', MissionIds.snack, false, false),
                               _buildTimelineMissionItem(
-                                  '운동 기록', false, false, false),
+                                  '운동 기록', MissionIds.exercise, false, false),
+                              _buildTimelineMissionItem('오늘 하루 별점리뷰',
+                                  MissionIds.dailyReview, false, false),
                               _buildTimelineMissionItem(
-                                  '오늘 하루 별점리뷰', false, false, false),
-                              _buildTimelineMissionItem(
-                                  '체중 기록', false, false, true),
+                                  '체중 기록', MissionIds.weight, false, true),
                               const SizedBox(height: 16),
                             ],
                           ),
@@ -342,9 +360,7 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildTimelineMissionItem(
-      String title, bool hasSwitch, bool isFirst, bool isLast) {
-    final RxBool isToggled = false.obs;
-
+      String title, int missionId, bool isFirst, bool isLast) {
     return TimelineTile(
       isFirst: isFirst,
       isLast: isLast,
@@ -378,106 +394,76 @@ class HomePage extends StatelessWidget {
           minHeight: 85,
         ),
         padding: const EdgeInsets.only(left: 12, top: 4, bottom: 4),
-        child: Container(
-          width: double.infinity,
-          height: 77,
-          decoration: BoxDecoration(
-            color: const Color(0xFFE0E0E0),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 2,
-                offset: const Offset(0, 1),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
+        child: GestureDetector(
+          onTap: () {
+            _navigateToMissionPage(missionId);
+          },
+          child: Container(
+            width: double.infinity,
+            height: 77,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE0E0E0),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 2,
+                  offset: const Offset(0, 1),
                 ),
-                if (hasSwitch)
-                  Obx(() => GestureDetector(
-                        onTap: () {
-                          isToggled.value = !isToggled.value;
-                        },
-                        child: Container(
-                          width: 78,
-                          height: 35,
-                          decoration: BoxDecoration(
-                            color: isToggled.value
-                                ? Colors.white
-                                : const Color(0xFF707070),
-                            borderRadius: BorderRadius.circular(15),
-                            border: isToggled.value
-                                ? Border.all(
-                                    color: const Color(0xFFD9D9D9), width: 1)
-                                : null,
-                          ),
-                          child: Stack(
-                            children: [
-                              AnimatedPositioned(
-                                duration: const Duration(milliseconds: 200),
-                                left: isToggled.value ? 10 : null,
-                                right: isToggled.value ? null : 10,
-                                top: 0,
-                                bottom: 0,
-                                child: Center(
-                                  child: Text(
-                                    '단식',
-                                    style: TextStyle(
-                                      fontFamily: 'Paperlogy',
-                                      fontSize: 13,
-                                      color: isToggled.value
-                                          ? const Color(0xFF000000)
-                                          : const Color(0xFF353535),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              AnimatedAlign(
-                                duration: const Duration(milliseconds: 200),
-                                alignment: isToggled.value
-                                    ? Alignment.centerRight
-                                    : Alignment.centerLeft,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 2),
-                                  child: Container(
-                                    width: 31,
-                                    height: 31,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFFD9D9D9),
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Color(0x29000000),
-                                          blurRadius: 1,
-                                          offset: Offset(0, 1),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )),
               ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16,
+                    color: Colors.grey,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  // 미션 ID에 따라 적절한 페이지로 이동하는 메서드
+  void _navigateToMissionPage(int missionId) {
+    switch (missionId) {
+      case MissionIds.breakfast:
+        Get.to(() => BreakfastPage());
+        break;
+      case MissionIds.lunch:
+        Get.to(() => LaunchPage());
+        break;
+      case MissionIds.dinner:
+        Get.to(() => DinnerPage());
+        break;
+      case MissionIds.snack:
+        Get.to(() => SnackPage());
+        break;
+      case MissionIds.exercise:
+        Get.to(() => const ExerciseInputPage());
+        break;
+      case MissionIds.dailyReview:
+        Get.to(() => DailyReviewPage());
+        break;
+      case MissionIds.weight:
+        Get.to(() => WeightPage());
+        break;
+      default:
+        break;
+    }
   }
 }

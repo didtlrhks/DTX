@@ -26,7 +26,8 @@ class _GoalWeightPageState extends State<GoalWeightPage> {
   void initState() {
     super.initState();
     _calculateTargetWeight(); // 목표체중 계산
-    Future.delayed(Duration(milliseconds: 500), () => _startSlotAnimation());
+    Future.delayed(
+        const Duration(milliseconds: 500), () => _startSlotAnimation());
   }
 
   // 사용자 체중 불러오기(GetX에서 emr추출)
@@ -69,9 +70,9 @@ class _GoalWeightPageState extends State<GoalWeightPage> {
     }
   }
 
-  // 애니메이션 자동 실행 (3초)
+  // 애니메이션 자동 실행 (1초)
   void _startSlotAnimation() async {
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 1));
     setState(() => animationCompleted = true);
   }
 
@@ -111,7 +112,7 @@ class _GoalWeightPageState extends State<GoalWeightPage> {
               const SizedBox(height: 20),
 
               // 박스
-              Container(
+              SizedBox(
                 height: 382,
                 child: Stack(
                   children: [
@@ -172,7 +173,7 @@ class _GoalWeightPageState extends State<GoalWeightPage> {
 
               //하단 설명
               const Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   '현재 체중의 7% 이상 감량해야\n간의 염증 소견이 줄어들 수 있습니다.',
                   textAlign: TextAlign.center,
@@ -184,12 +185,11 @@ class _GoalWeightPageState extends State<GoalWeightPage> {
               ),
 
               const SizedBox(height: 20),
-
-              _buildNextButton(),
             ],
           ),
         ),
       ),
+      bottomNavigationBar: _buildNextButton(),
     );
   }
 
@@ -233,9 +233,9 @@ class _GoalWeightPageState extends State<GoalWeightPage> {
     );
   }
 
+  // 다음 버튼
   Widget _buildNextButton() {
-    return // 다음 버튼
-        Container(
+    return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFE0E0E0),
         boxShadow: [
@@ -255,7 +255,7 @@ class _GoalWeightPageState extends State<GoalWeightPage> {
             child: ElevatedButton(
               onPressed: () {
                 double userWeight = double.parse(
-                    "${hasHundreds ? targetHundreds : ''}${targetTens}${targetOnes}.${targetDecimal}");
+                    "${hasHundreds ? targetHundreds : ''}$targetTens$targetOnes.$targetDecimal");
                 Get.to(() => const SurveyHomePage(),
                     arguments: {'weight': userWeight});
               },
