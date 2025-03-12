@@ -10,6 +10,9 @@ import 'package:get/get.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:dtxproject/controllers/auth_controller.dart';
 import 'package:dtxproject/utils/date_utils.dart';
+// SharedPreferences 대신 메모리 저장소 사용
+// import 'package:shared_preferences/shared_preferences.dart';
+//import 'dart:convert';
 
 // 미션 아이템 ID 상수 정의
 class MissionIds {
@@ -20,6 +23,215 @@ class MissionIds {
   static const int exercise = 5;
   static const int dailyReview = 6;
   static const int weight = 7;
+}
+
+// 미션 데이터 저장소 인터페이스 - 나중에 서버 저장소로 교체 가능
+abstract class MissionStorage {
+  Future<void> saveMissions(
+      List<int> completedMissions, List<int> missionOrder, String date);
+  Future<Map<String, dynamic>?> loadMissions();
+  Future<void> clearMissions();
+}
+
+// 메모리 기반 임시 저장소 구현 (SharedPreferences 대신 사용)
+class MemoryMissionStorage implements MissionStorage {
+  // 싱글톤 패턴
+  static final MemoryMissionStorage _instance =
+      MemoryMissionStorage._internal();
+  factory MemoryMissionStorage() => _instance;
+  MemoryMissionStorage._internal();
+
+  // 메모리 저장소
+  Map<String, dynamic>? _data;
+
+  @override
+  Future<void> saveMissions(
+      List<int> completedMissions, List<int> missionOrder, String date) async {
+    _data = {
+      'completedMissions': completedMissions,
+      'missionOrder': missionOrder,
+      'missionDate': date,
+    };
+  }
+
+  @override
+  Future<Map<String, dynamic>?> loadMissions() async {
+    return _data;
+  }
+
+  @override
+  Future<void> clearMissions() async {
+    _data = null;
+  }
+}
+
+// 나중에 서버 저장소로 교체할 때 구현할 클래스
+// class ServerMissionStorage implements MissionStorage {
+//   @override
+//   Future<void> saveMissions(List<int> completedMissions, List<int> missionOrder, String date) async {
+//     // API 호출로 서버에 저장
+//   }
+//
+//   @override
+//   Future<Map<String, dynamic>?> loadMissions() async {
+//     // API 호출로 서버에서 불러오기
+//   }
+//
+//   @override
+//   Future<void> clearMissions() async {
+//     // API 호출로 서버에서 삭제
+//   }
+// }
+
+// 미션 컨트롤러 추가
+class MissionController extends GetxController {
+  // 완료된 미션 ID 목록
+  final RxList<int> completedMissions = <int>[].obs;
+
+  // 미션 순서 (기본 순서)
+  final RxList<int> missionOrder = <int>[
+    MissionIds.breakfast,
+    MissionIds.lunch,
+    MissionIds.dinner,
+    MissionIds.snack,
+    MissionIds.exercise,
+    MissionIds.dailyReview,
+    MissionIds.weight,
+  ].obs;
+
+  // 원래 미션 순서
+  final List<int> originalOrder = [
+    MissionIds.breakfast,
+    MissionIds.lunch,
+    MissionIds.dinner,
+    MissionIds.snack,
+    MissionIds.exercise,
+    MissionIds.dailyReview,
+    MissionIds.weight,
+  ];
+
+  // 미션 저장소
+  final MissionStorage _storage = MemoryMissionStorage();
+  // 서버 저장소로 변경할 때는 아래 줄의 주석을 해제하고 위 줄을 주석 처리
+  // final MissionStorage _storage = ServerMissionStorage();
+
+  @override
+  void onInit() {
+    super.onInit();
+    // 저장된 미션 상태 불러오기
+    loadMissionState();
+  }
+
+  // 미션 완료 처리
+  void completeMission(int missionId) {
+    // 이미 완료된 미션이 아니라면 추가
+    if (!completedMissions.contains(missionId)) {
+      completedMissions.add(missionId);
+
+      // 미션 순서 재배치 (완료된 미션을 맨 아래로)
+      missionOrder.remove(missionId);
+      missionOrder.add(missionId);
+
+      // 미션 상태 저장
+      saveMissionState();
+    }
+  }
+
+  // 미션 취소 처리
+  void cancelMission(int missionId) {
+    // 완료된 미션 목록에서 제거
+    completedMissions.remove(missionId);
+
+    // 미션 순서 재배치 (원래 순서로 돌아가기)
+    missionOrder.remove(missionId);
+
+    // 원래 순서에서의 위치 찾기
+    int originalIndex = originalOrder.indexOf(missionId);
+
+    // 현재 missionOrder에서 originalIndex보다 작은 인덱스를 가진 미션들의 수 계산
+    int insertIndex = 0;
+    for (int i = 0; i < originalIndex; i++) {
+      if (missionOrder.contains(originalOrder[i])) {
+        insertIndex++;
+      }
+    }
+
+    // 적절한 위치에 미션 삽입
+    if (insertIndex >= missionOrder.length) {
+      missionOrder.add(missionId);
+    } else {
+      missionOrder.insert(insertIndex, missionId);
+    }
+
+    // 미션 상태 저장
+    saveMissionState();
+  }
+
+  // 미션 완료 여부 확인
+  bool isMissionCompleted(int missionId) {
+    return completedMissions.contains(missionId);
+  }
+
+  // 미션 상태 저장
+  Future<void> saveMissionState() async {
+    try {
+      // 현재 날짜 가져오기
+      final currentDate = DateUtil.getCurrentDateInfo()['fullDate'] ?? '';
+
+      // 저장소에 저장
+      await _storage.saveMissions(
+          completedMissions.toList(), missionOrder.toList(), currentDate);
+    } catch (e) {
+      print('미션 상태 저장 오류: $e');
+    }
+  }
+
+  // 미션 상태 불러오기
+  Future<void> loadMissionState() async {
+    try {
+      // 저장소에서 불러오기
+      final data = await _storage.loadMissions();
+
+      // 데이터가 없으면 초기화
+      if (data == null) {
+        resetMissionState();
+        return;
+      }
+
+      // 저장된 날짜 확인
+      final savedDate = data['missionDate'] ?? '';
+      final currentDate = DateUtil.getCurrentDateInfo()['fullDate'] ?? '';
+
+      // 날짜가 바뀌었으면 미션 초기화
+      if (savedDate != currentDate) {
+        resetMissionState();
+        return;
+      }
+
+      // 완료된 미션 ID 목록 불러오기
+      final List<dynamic>? completedMissionsData = data['completedMissions'];
+      if (completedMissionsData != null) {
+        completedMissions.value =
+            completedMissionsData.map((e) => e as int).toList();
+      }
+
+      // 미션 순서 불러오기
+      final List<dynamic>? missionOrderData = data['missionOrder'];
+      if (missionOrderData != null) {
+        missionOrder.value = missionOrderData.map((e) => e as int).toList();
+      }
+    } catch (e) {
+      print('미션 상태 불러오기 오류: $e');
+      resetMissionState();
+    }
+  }
+
+  // 미션 상태 초기화
+  void resetMissionState() {
+    completedMissions.clear();
+    missionOrder.value = List.from(originalOrder);
+    saveMissionState();
+  }
 }
 
 class HomePage extends StatelessWidget {
@@ -35,6 +247,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
+    // 미션 컨트롤러 등록
+    final MissionController missionController = Get.put(MissionController());
 
     final dateInfo = DateUtil.getCurrentDateInfo();
     final day = dateInfo['day']!;
@@ -320,34 +534,16 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     Expanded(
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 0),
-                                child: _buildTimelineMissionItem(
-                                    '아침 기록', MissionIds.breakfast, true, false),
+                      child: Obx(() => SingleChildScrollView(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: _buildMissionItems(missionController),
                               ),
-                              _buildTimelineMissionItem(
-                                  '점심 기록', MissionIds.lunch, false, false),
-                              _buildTimelineMissionItem(
-                                  '저녁 기록', MissionIds.dinner, false, false),
-                              _buildTimelineMissionItem(
-                                  '간식/야식 기록', MissionIds.snack, false, false),
-                              _buildTimelineMissionItem(
-                                  '운동 기록', MissionIds.exercise, false, false),
-                              _buildTimelineMissionItem('오늘 하루 별점리뷰',
-                                  MissionIds.dailyReview, false, false),
-                              _buildTimelineMissionItem(
-                                  '체중 기록', MissionIds.weight, false, true),
-                              const SizedBox(height: 16),
-                            ],
-                          ),
-                        ),
-                      ),
+                            ),
+                          )),
                     ),
                   ],
                 ),
@@ -359,8 +555,63 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTimelineMissionItem(
-      String title, int missionId, bool isFirst, bool isLast) {
+  // 미션 아이템 목록 생성
+  List<Widget> _buildMissionItems(MissionController controller) {
+    final List<Widget> items = [];
+    final missionOrder = controller.missionOrder;
+
+    for (int i = 0; i < missionOrder.length; i++) {
+      final missionId = missionOrder[i];
+      final isFirst = i == 0;
+      final isLast = i == missionOrder.length - 1;
+
+      String title;
+      switch (missionId) {
+        case MissionIds.breakfast:
+          title = '아침 기록';
+          break;
+        case MissionIds.lunch:
+          title = '점심 기록';
+          break;
+        case MissionIds.dinner:
+          title = '저녁 기록';
+          break;
+        case MissionIds.snack:
+          title = '간식/야식 기록';
+          break;
+        case MissionIds.exercise:
+          title = '운동 기록';
+          break;
+        case MissionIds.dailyReview:
+          title = '오늘 하루 별점리뷰';
+          break;
+        case MissionIds.weight:
+          title = '체중 기록';
+          break;
+        default:
+          title = '미션';
+      }
+
+      items.add(
+        Padding(
+          padding: EdgeInsets.only(top: isFirst ? 0 : 0),
+          child: _buildTimelineMissionItem(
+            title,
+            missionId,
+            isFirst,
+            isLast,
+            controller.isMissionCompleted(missionId),
+          ),
+        ),
+      );
+    }
+
+    items.add(const SizedBox(height: 16));
+    return items;
+  }
+
+  Widget _buildTimelineMissionItem(String title, int missionId, bool isFirst,
+      bool isLast, bool isCompleted) {
     return TimelineTile(
       isFirst: isFirst,
       isLast: isLast,
@@ -370,8 +621,9 @@ class HomePage extends StatelessWidget {
         width: 8,
         height: 8,
         indicator: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFF707070),
+          decoration: BoxDecoration(
+            color:
+                isCompleted ? const Color(0xFF707070) : const Color(0xFF707070),
             shape: BoxShape.circle,
           ),
         ),
@@ -402,7 +654,9 @@ class HomePage extends StatelessWidget {
             width: double.infinity,
             height: 77,
             decoration: BoxDecoration(
-              color: const Color(0xFFE0E0E0),
+              color: isCompleted
+                  ? const Color(0xFF707070)
+                  : const Color(0xFFE0E0E0),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
@@ -419,15 +673,27 @@ class HomePage extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
+                      color: isCompleted ? Colors.white : Colors.black,
                     ),
                   ),
-                  const Icon(
-                    Icons.arrow_forward_ios,
-                    size: 16,
-                    color: Colors.grey,
+                  Container(
+                    width: 20,
+                    height: 20,
+                    color: Colors.transparent,
+                    child: isCompleted
+                        ? Image.asset(
+                            'assets/images/check_circle_bold.png',
+                            width: 20,
+                            height: 20,
+                          )
+                        : const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: Colors.grey,
+                          ),
                   ),
                 ],
               ),
@@ -442,25 +708,102 @@ class HomePage extends StatelessWidget {
   void _navigateToMissionPage(int missionId) {
     switch (missionId) {
       case MissionIds.breakfast:
-        Get.to(() => BreakfastPage());
+        Get.to(() => const BreakfastPage())?.then((result) {
+          if (result != null) {
+            final controller = Get.find<MissionController>();
+            if (result == 'cancel') {
+              // 아침 식사 기록 취소 처리
+              controller.cancelMission(MissionIds.breakfast);
+            } else {
+              // 아침 식사 기록 완료 처리
+              controller.completeMission(MissionIds.breakfast);
+            }
+          }
+        });
         break;
       case MissionIds.lunch:
-        Get.to(() => LaunchPage());
+        Get.to(() => const LaunchPage())?.then((result) {
+          if (result != null) {
+            final controller = Get.find<MissionController>();
+            if (result == 'cancel') {
+              // 점심 식사 기록 취소 처리
+              controller.cancelMission(MissionIds.lunch);
+            } else {
+              // 점심 식사 기록 완료 처리
+              controller.completeMission(MissionIds.lunch);
+            }
+          }
+        });
         break;
       case MissionIds.dinner:
-        Get.to(() => DinnerPage());
+        Get.to(() => const DinnerPage())?.then((result) {
+          if (result != null) {
+            final controller = Get.find<MissionController>();
+            if (result == 'cancel') {
+              // 저녁 식사 기록 취소 처리
+              controller.cancelMission(MissionIds.dinner);
+            } else {
+              // 저녁 식사 기록 완료 처리
+              controller.completeMission(MissionIds.dinner);
+            }
+          }
+        });
         break;
       case MissionIds.snack:
-        Get.to(() => SnackPage());
+        Get.to(() => const SnackPage())?.then((result) {
+          if (result != null) {
+            final controller = Get.find<MissionController>();
+            if (result == 'cancel') {
+              // 간식 기록 취소 처리
+              controller.cancelMission(MissionIds.snack);
+            } else {
+              // 간식 기록 완료 처리
+              controller.completeMission(MissionIds.snack);
+            }
+          }
+        });
         break;
       case MissionIds.exercise:
-        Get.to(() => const ExerciseInputPage());
+        Get.to(() => const ExerciseInputPage())?.then((result) {
+          if (result != null) {
+            final controller = Get.find<MissionController>();
+            if (result == 'cancel') {
+              // 운동 기록 취소 처리
+              controller.cancelMission(MissionIds.exercise);
+            } else {
+              // 운동 기록 완료 처리
+              controller.completeMission(MissionIds.exercise);
+            }
+          }
+        });
         break;
       case MissionIds.dailyReview:
-        Get.to(() => DailyReviewPage());
+        Get.to(() => DailyReviewPage())?.then((result) {
+          if (result != null) {
+            final controller = Get.find<MissionController>();
+            if (result == 'cancel') {
+              // 일일 리뷰 취소 처리
+              controller.cancelMission(MissionIds.dailyReview);
+            } else {
+              // 일일 리뷰 완료 처리
+              controller.completeMission(MissionIds.dailyReview);
+            }
+          }
+        });
         break;
       case MissionIds.weight:
-        Get.to(() => WeightPage());
+        Get.to(() => WeightPage())?.then((result) {
+          if (result != null) {
+            final controller = Get.find<MissionController>();
+            if (result == 'cancel') {
+              // 체중 기록 취소 처리
+              controller.cancelMission(MissionIds.weight);
+            } else {
+              // 체중 기록 완료 처리
+              controller.completeMission(MissionIds.weight);
+            }
+          }
+        });
         break;
       default:
         break;

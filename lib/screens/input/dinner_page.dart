@@ -1,239 +1,358 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class DinnerPage extends StatelessWidget {
-  // 식사 종류 목록
-  final List<String> foodCategories = [
-    '밥류',
-    '빵류',
-    '면류',
-    '국/찌개',
+class DinnerPage extends StatefulWidget {
+  const DinnerPage({super.key});
+
+  @override
+  State<DinnerPage> createState() => _DinnerPageState();
+}
+
+class _DinnerPageState extends State<DinnerPage> {
+  // 태그 목록
+  final List<String> tags = [
+    '한그릇 가득',
     '반찬',
-    '과일',
-    '음료',
-    '기타'
+    '1/3',
+    '1잔',
+    '1명',
+    '국물빼고',
+    '1개',
+    '한입',
+    '한조각',
+    '한봉지'
   ];
 
-  // 식사량 옵션
-  final List<String> portionSizes = ['소량', '보통', '많이'];
-
-  // 선택된 식사 종류와 양을 관리하는 RxList
-  static final RxList<Map<String, dynamic>> selectedFoods =
-      <Map<String, dynamic>>[].obs;
+  // 선택된 태그 관리
+  final RxList<String> selectedTags = <String>[].obs;
 
   // 텍스트 컨트롤러
-  static final TextEditingController foodNameController =
-      TextEditingController();
-  static final RxString selectedCategory = ''.obs;
-  static final RxString selectedPortion = '보통'.obs;
+  final TextEditingController textController = TextEditingController();
 
-  DinnerPage({super.key});
+  // 텍스트 필드 포커스 노드
+  final FocusNode focusNode = FocusNode();
+
+  // 텍스트 입력 여부 상태
+  final RxBool hasText = false.obs;
+
+  // 텍스트 길이가 일정 이상인지 상태
+  final RxBool isLongText = false.obs;
+
+  // 최대 글자 수
+  final int maxCharacters = 100;
+
+  // 텍스트 정렬 변경 기준 글자 수
+  final int alignmentChangeThreshold = 30;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 텍스트 변경 리스너 추가
+    textController.addListener(() {
+      hasText.value = textController.text.isNotEmpty;
+
+      // 텍스트 길이에 따라 정렬 방식 변경
+      isLongText.value = textController.text.length > alignmentChangeThreshold;
+
+      // 최대 글자 수 제한
+      if (textController.text.length > maxCharacters) {
+        textController.text = textController.text.substring(0, maxCharacters);
+        textController.selection = TextSelection.fromPosition(
+          TextPosition(offset: maxCharacters),
+        );
+      }
+    });
+
+    // 포커스 리스너 추가
+    focusNode.addListener(() {
+      if (focusNode.hasFocus && !hasText.value) {
+        // 포커스를 얻었을 때 플레이스홀더 숨기기
+        hasText.value = true;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // 컨트롤러와 포커스 노드 해제
+    textController.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('아침 식사 기록'),
+        title: const Text('저녁 기록하기',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
-        ),
+        centerTitle: true,
         actions: [
-          TextButton(
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.black54),
             onPressed: () {
-              // 저장 로직 구현
-              Get.back();
-              Get.snackbar('저장 완료', '아침 식사가 기록되었습니다.',
-                  snackPosition: SnackPosition.BOTTOM);
+              // 텍스트 필드 내용 삭제하고 취소 결과 반환
+              textController.clear();
+              Get.back(result: 'cancel');
+              Get.snackbar(
+                '기록 취소',
+                '저녁 식사 기록이 취소되었습니다.',
+                snackPosition: SnackPosition.BOTTOM,
+              );
             },
-            child: const Text('저장', style: TextStyle(color: Colors.blue)),
           ),
         ],
       ),
       body: Column(
         children: [
-          // 상단 정보 영역
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: Colors.grey[100],
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '오늘 아침 식사를 기록해주세요',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  '식사 시간과 음식 종류, 양을 입력해주세요.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    const Icon(Icons.access_time, size: 20, color: Colors.grey),
-                    const SizedBox(width: 8),
-                    const Text('식사 시간:'),
-                    const SizedBox(width: 8),
-                    TextButton(
-                      onPressed: () async {
-                        final TimeOfDay? selectedTime = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                        );
-                        // 시간 선택 로직 구현
-                      },
-                      child: const Text('07:30 AM'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // 식사 입력 영역
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
+            child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 음식 추가 폼
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[300]!),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          '음식 추가',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: foodNameController,
-                          decoration: const InputDecoration(
-                            labelText: '음식 이름',
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text('음식 종류'),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: foodCategories.map((category) {
-                            return Obx(() => ChoiceChip(
-                                  label: Text(category),
-                                  selected: selectedCategory.value == category,
-                                  onSelected: (selected) {
-                                    if (selected) {
-                                      selectedCategory.value = category;
-                                    }
-                                  },
-                                ));
-                          }).toList(),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text('식사량'),
-                        const SizedBox(height: 8),
-                        Obx(() => SegmentedButton<String>(
-                              segments: portionSizes
-                                  .map((size) => ButtonSegment<String>(
-                                      value: size, label: Text(size)))
-                                  .toList(),
-                              selected: {selectedPortion.value},
-                              onSelectionChanged: (Set<String> newSelection) {
-                                selectedPortion.value = newSelection.first;
-                              },
-                            )),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (foodNameController.text.isNotEmpty &&
-                                  selectedCategory.value.isNotEmpty) {
-                                selectedFoods.add({
-                                  'name': foodNameController.text,
-                                  'category': selectedCategory.value,
-                                  'portion': selectedPortion.value,
-                                });
-                                foodNameController.clear();
-                                selectedCategory.value = '';
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                            ),
-                            child: const Text('추가하기'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-                  const Text(
-                    '추가된 음식',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // 추가된 음식 목록
-                  Expanded(
-                    child: Obx(() => selectedFoods.isEmpty
-                        ? const Center(
-                            child: Text('추가된 음식이 없습니다.'),
-                          )
-                        : ListView.builder(
-                            itemCount: selectedFoods.length,
-                            itemBuilder: (context, index) {
-                              final food = selectedFoods[index];
-                              return Card(
-                                margin: const EdgeInsets.only(bottom: 8),
-                                child: ListTile(
-                                  title: Text(food['name']),
-                                  subtitle: Text(
-                                      '${food['category']} · ${food['portion']}'),
-                                  trailing: IconButton(
-                                    icon: const Icon(Icons.delete,
-                                        color: Colors.red),
-                                    onPressed: () {
-                                      selectedFoods.removeAt(index);
-                                    },
+                  // 입력 영역
+                  Center(
+                    child: Container(
+                      margin: const EdgeInsets.all(20),
+                      width: 349,
+                      height: 242,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: GestureDetector(
+                        onTap: () {
+                          focusNode.requestFocus();
+                        },
+                        child: Stack(
+                          children: [
+                            // 플레이스홀더 (텍스트가 없을 때만 표시)
+                            Obx(() => Visibility(
+                                  visible: !hasText.value,
+                                  child: const Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          '저녁은 뭘 드셨나요?',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black54,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          '예) 라면 반그릇, 단무지 3개, 도시락 248칼로리',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                )),
+
+                            // 텍스트 필드 - 중앙 정렬
+                            Center(
+                              child: Obx(() => Container(
+                                    width: isLongText.value ? 309 : 250,
+                                    height: isLongText.value ? 202 : 100,
+                                    alignment: isLongText.value
+                                        ? Alignment.topCenter
+                                        : const Alignment(
+                                            0, 0.8), // 커서를 더 아래로 이동
+                                    child: TextField(
+                                      controller: textController,
+                                      focusNode: focusNode,
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: '',
+                                        isCollapsed: true,
+                                        contentPadding: EdgeInsets.zero,
+                                      ),
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black87,
+                                      ),
+                                      maxLines: 9,
+                                      textAlign: isLongText.value
+                                          ? TextAlign.start
+                                          : TextAlign.center,
+                                      textAlignVertical: isLongText.value
+                                          ? TextAlignVertical.top
+                                          : TextAlignVertical.center,
+                                      maxLength: maxCharacters,
+                                      buildCounter: (context,
+                                              {required currentLength,
+                                              required isFocused,
+                                              maxLength}) =>
+                                          null,
+                                    ),
+                                  )),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // 태그 버튼들
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 10,
+                      children: tags.map((tag) {
+                        return GestureDetector(
+                          onTap: () {
+                            // 태그 텍스트를 현재 커서 위치에 삽입
+                            final currentText = textController.text;
+                            final selection = textController.selection;
+
+                            // 최대 글자 수 체크
+                            if (currentText.length + tag.length >
+                                maxCharacters) {
+                              Get.snackbar(
+                                '글자 수 제한',
+                                '최대 글자 수를 초과했습니다.',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.red[100],
+                                colorText: Colors.red[900],
                               );
-                            },
-                          )),
+                              return;
+                            }
+
+                            // 현재 커서 위치 또는 텍스트 끝에 태그 삽입
+                            final newText = selection.isValid
+                                ? currentText.substring(0, selection.start) +
+                                    tag +
+                                    currentText.substring(selection.end)
+                                : currentText + tag;
+
+                            // 새 커서 위치 계산
+                            final newCursorPosition = selection.isValid
+                                ? selection.start + tag.length
+                                : newText.length;
+
+                            // 텍스트 업데이트
+                            textController.value = TextEditingValue(
+                              text: newText,
+                              selection: TextSelection.collapsed(
+                                offset: newCursorPosition,
+                              ),
+                            );
+
+                            // 포커스 유지
+                            focusNode.requestFocus();
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              tag,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ],
               ),
+            ),
+          ),
+
+          // 하단 버튼 영역
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 56,
+                    margin: const EdgeInsets.only(right: 8),
+                    child: ElevatedButton(
+                      onPressed: () => Get.back(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey[300],
+                        foregroundColor: Colors.black,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        '취소',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 56,
+                    margin: const EdgeInsets.only(left: 8),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // 저장 로직
+                        final mealText = textController.text;
+                        if (mealText.isNotEmpty) {
+                          Get.back(result: mealText);
+                          Get.snackbar(
+                            '저장 완료',
+                            '저녁 식사가 기록되었습니다.',
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                        } else {
+                          Get.snackbar(
+                            '입력 필요',
+                            '저녁 식사 내용을 입력해주세요.',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.red[100],
+                            colorText: Colors.red[900],
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey[600],
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        '저장',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

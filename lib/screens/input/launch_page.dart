@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class LaunchPage extends StatelessWidget {
-  LaunchPage({super.key});
+class LaunchPage extends StatefulWidget {
+  const LaunchPage({super.key});
 
+  @override
+  State<LaunchPage> createState() => _LaunchPageState();
+}
+
+class _LaunchPageState extends State<LaunchPage> {
   // 태그 목록
   final List<String> tags = [
     '한그릇 가득',
@@ -27,6 +32,55 @@ class LaunchPage extends StatelessWidget {
   // 텍스트 필드 포커스 노드
   final FocusNode focusNode = FocusNode();
 
+  // 텍스트 입력 여부 상태
+  final RxBool hasText = false.obs;
+
+  // 텍스트 길이가 일정 이상인지 상태
+  final RxBool isLongText = false.obs;
+
+  // 최대 글자 수
+  final int maxCharacters = 100;
+
+  // 텍스트 정렬 변경 기준 글자 수
+  final int alignmentChangeThreshold = 30;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 텍스트 변경 리스너 추가
+    textController.addListener(() {
+      hasText.value = textController.text.isNotEmpty;
+
+      // 텍스트 길이에 따라 정렬 방식 변경
+      isLongText.value = textController.text.length > alignmentChangeThreshold;
+
+      // 최대 글자 수 제한
+      if (textController.text.length > maxCharacters) {
+        textController.text = textController.text.substring(0, maxCharacters);
+        textController.selection = TextSelection.fromPosition(
+          TextPosition(offset: maxCharacters),
+        );
+      }
+    });
+
+    // 포커스 리스너 추가
+    focusNode.addListener(() {
+      if (focusNode.hasFocus && !hasText.value) {
+        // 포커스를 얻었을 때 플레이스홀더 숨기기
+        hasText.value = true;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // 컨트롤러와 포커스 노드 해제
+    textController.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,8 +96,14 @@ class LaunchPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.delete_outline, color: Colors.black54),
             onPressed: () {
-              // 텍스트 필드 내용 삭제
+              // 텍스트 필드 내용 삭제하고 취소 결과 반환
               textController.clear();
+              Get.back(result: 'cancel');
+              Get.snackbar(
+                '기록 취소',
+                '점심 식사 기록이 취소되었습니다.',
+                snackPosition: SnackPosition.BOTTOM,
+              );
             },
           ),
         ],
@@ -55,50 +115,93 @@ class LaunchPage extends StatelessWidget {
               child: Column(
                 children: [
                   // 입력 영역
-                  Container(
-                    margin: const EdgeInsets.all(20),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          '점심은 뭘 드셨나요?',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black54,
-                          ),
+                  Center(
+                    child: Container(
+                      margin: const EdgeInsets.all(20),
+                      width: 349,
+                      height: 242,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: GestureDetector(
+                        onTap: () {
+                          focusNode.requestFocus();
+                        },
+                        child: Stack(
+                          children: [
+                            // 플레이스홀더 (텍스트가 없을 때만 표시)
+                            Obx(() => Visibility(
+                                  visible: !hasText.value,
+                                  child: const Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          '점심은 뭘 드셨나요?',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black54,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          '예) 라면 반그릇, 단무지 3개, 도시락 248칼로리',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )),
+
+                            // 텍스트 필드 - 중앙 정렬
+                            Center(
+                              child: Obx(() => Container(
+                                    width: isLongText.value ? 309 : 250,
+                                    height: isLongText.value ? 202 : 100,
+                                    alignment: isLongText.value
+                                        ? Alignment.topCenter
+                                        : const Alignment(
+                                            0, 0.8), // 커서를 더 아래로 이동
+                                    child: TextField(
+                                      controller: textController,
+                                      focusNode: focusNode,
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: '',
+                                        isCollapsed: true,
+                                        contentPadding: EdgeInsets.zero,
+                                      ),
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black87,
+                                      ),
+                                      maxLines: 9,
+                                      textAlign: isLongText.value
+                                          ? TextAlign.start
+                                          : TextAlign.center,
+                                      textAlignVertical: isLongText.value
+                                          ? TextAlignVertical.top
+                                          : TextAlignVertical.center,
+                                      maxLength: maxCharacters,
+                                      buildCounter: (context,
+                                              {required currentLength,
+                                              required isFocused,
+                                              maxLength}) =>
+                                          null,
+                                    ),
+                                  )),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          '예) 라면 반그릇, 단무지 3개, 도시락 248칼로리',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        // 텍스트 필드 추가
-                        TextField(
-                          controller: textController,
-                          focusNode: focusNode,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: '여기에 입력하세요',
-                            hintStyle: TextStyle(color: Colors.grey),
-                          ),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black87,
-                          ),
-                          maxLines: 5,
-                          minLines: 3,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
 
@@ -114,6 +217,19 @@ class LaunchPage extends StatelessWidget {
                             // 태그 텍스트를 현재 커서 위치에 삽입
                             final currentText = textController.text;
                             final selection = textController.selection;
+
+                            // 최대 글자 수 체크
+                            if (currentText.length + tag.length >
+                                maxCharacters) {
+                              Get.snackbar(
+                                '글자 수 제한',
+                                '최대 글자 수를 초과했습니다.',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.red[100],
+                                colorText: Colors.red[900],
+                              );
+                              return;
+                            }
 
                             // 현재 커서 위치 또는 텍스트 끝에 태그 삽입
                             final newText = selection.isValid
