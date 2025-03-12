@@ -69,9 +69,9 @@ class _GoalWeightPageState extends State<GoalWeightPage> {
     }
   }
 
-  // 애니메이션 자동 실행 (3초)
+  // 애니메이션 자동 실행 (1초)
   void _startSlotAnimation() async {
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 1));
     setState(() => animationCompleted = true);
   }
 
@@ -184,12 +184,11 @@ class _GoalWeightPageState extends State<GoalWeightPage> {
               ),
 
               const SizedBox(height: 20),
-
-              _buildNextButton(),
             ],
           ),
         ),
       ),
+      bottomNavigationBar: _buildNextButton(),
     );
   }
 
@@ -233,9 +232,9 @@ class _GoalWeightPageState extends State<GoalWeightPage> {
     );
   }
 
+  // 다음 버튼
   Widget _buildNextButton() {
-    return // 다음 버튼
-        Container(
+    return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFE0E0E0),
         boxShadow: [
