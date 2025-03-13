@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:dtxproject/controllers/exercise_controller.dart';
+import 'package:dtxproject/models/exercise_model.dart';
 
 class ExerciseCard {
   final String text;
   final int intensity;
   final DateTime createdAt;
+  final String? id;
   bool isSelected;
 
   ExerciseCard({
     required this.text,
     required this.intensity,
     required this.createdAt,
+    this.id,
     this.isSelected = false,
   });
 
@@ -41,6 +45,16 @@ class ExerciseCard {
         return '';
     }
   }
+
+  // ExerciseModel에서 ExerciseCard로 변환
+  static ExerciseCard fromModel(ExerciseModel model) {
+    return ExerciseCard(
+      id: model.id,
+      text: model.exercise_text,
+      intensity: ExerciseModel.intensityToInt(model.intensity),
+      createdAt: DateTime.parse(model.exercise_date),
+    );
+  }
 }
 
 class ExerciseInputPage extends StatefulWidget {
@@ -69,6 +83,12 @@ class _ExerciseInputPageState extends State<ExerciseInputPage> {
   // 삭제 모드 상태
   final RxBool isDeleteMode = false.obs;
 
+  // 로딩 상태
+  final RxBool isLoading = false.obs;
+
+  // 운동 컨트롤러
+  late ExerciseController exerciseController;
+
   // 선택된 강도에 따른 색상 반환
   Color getSelectedColor() {
     switch (selectedIntensity.value) {
@@ -91,6 +111,34 @@ class _ExerciseInputPageState extends State<ExerciseInputPage> {
     textController.addListener(() {
       hasText.value = textController.text.isNotEmpty;
     });
+
+    // 운동 컨트롤러 초기화
+    exerciseController = Get.put(ExerciseController());
+
+    // 서버에서 운동 기록 가져오기
+    _loadExercisesFromServer();
+  }
+
+  // 서버에서 운동 기록 가져오기
+  Future<void> _loadExercisesFromServer() async {
+    isLoading.value = true;
+
+    try {
+      await exerciseController.fetchExercises();
+
+      // 서버에서 가져온 운동 기록을 ExerciseCard로 변환
+      exerciseCards.value = exerciseController.exercises
+          .map((model) => ExerciseCard.fromModel(model))
+          .toList();
+    } catch (e) {
+      Get.snackbar(
+        '데이터 로딩 오류',
+        '운동 기록을 불러오는 중 오류가 발생했습니다: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   @override
@@ -102,26 +150,96 @@ class _ExerciseInputPageState extends State<ExerciseInputPage> {
   }
 
   // 운동 카드 추가
-  void addExerciseCard() {
+  Future<void> addExerciseCard() async {
     if (selectedIntensity.value > 0 && textController.text.isNotEmpty) {
-      final newCard = ExerciseCard(
-        text: textController.text,
-        intensity: selectedIntensity.value,
-        createdAt: DateTime.now(),
-      );
+      isLoading.value = true;
 
-      exerciseCards.add(newCard);
+      try {
+        // 서버에 운동 기록 추가
+        final success = await exerciseController.addExercise(
+          textController.text,
+          selectedIntensity.value,
+        );
 
-      // 입력 필드 초기화
-      textController.clear();
-      selectedIntensity.value = 0;
+        if (success) {
+          // 서버에서 최신 데이터 다시 가져오기
+          await _loadExercisesFromServer();
+
+          // 입력 필드 초기화
+          textController.clear();
+          selectedIntensity.value = 0;
+
+          Get.snackbar(
+            '저장 완료',
+            '운동 기록이 저장되었습니다.',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        } else {
+          Get.snackbar(
+            '저장 실패',
+            '운동 기록 저장 중 오류가 발생했습니다.',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
+      } catch (e) {
+        Get.snackbar(
+          '저장 오류',
+          '운동 기록 저장 중 오류가 발생했습니다: $e',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } finally {
+        isLoading.value = false;
+      }
     }
   }
 
   // 선택된 카드 삭제
-  void deleteSelectedCards() {
-    exerciseCards.removeWhere((card) => card.isSelected);
-    isDeleteMode.value = false;
+  Future<void> deleteSelectedCards() async {
+    final selectedIds = exerciseCards
+        .where((card) => card.isSelected && card.id != null)
+        .map((card) => card.id!)
+        .toList();
+
+    if (selectedIds.isEmpty) {
+      // 서버에 저장되지 않은 카드만 선택된 경우
+      exerciseCards.removeWhere((card) => card.isSelected);
+      isDeleteMode.value = false;
+      return;
+    }
+
+    isLoading.value = true;
+
+    try {
+      // 서버에서 선택된 운동 기록 삭제
+      final success =
+          await exerciseController.deleteMultipleExercises(selectedIds);
+
+      if (success) {
+        // 서버에서 최신 데이터 다시 가져오기
+        await _loadExercisesFromServer();
+
+        Get.snackbar(
+          '삭제 완료',
+          '선택한 운동 기록이 삭제되었습니다.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } else {
+        Get.snackbar(
+          '삭제 실패',
+          '운동 기록 삭제 중 오류가 발생했습니다.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        '삭제 오류',
+        '운동 기록 삭제 중 오류가 발생했습니다: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoading.value = false;
+      isDeleteMode.value = false;
+    }
   }
 
   // 삭제 모드 취소
@@ -196,316 +314,334 @@ class _ExerciseInputPageState extends State<ExerciseInputPage> {
                 )),
           ],
         ),
-        body: Column(
+        body: Stack(
           children: [
-            // 입력 영역 (항상 표시)
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // 텍스트 필드 (349x242 크기)
-                  Container(
-                    width: 349,
-                    height: 242,
-                    decoration: BoxDecoration(
-                      color: getSelectedColor(),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        focusNode.requestFocus();
-                      },
-                      child: Stack(
-                        children: [
-                          // 플레이스홀더 (텍스트가 없을 때만 표시)
-                          Visibility(
-                            visible: !hasText.value,
-                            child: const Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '오늘은 어떤 운동을 하셨나요?',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black54,
-                                    ),
-                                    textAlign: TextAlign.center,
+            Column(
+              children: [
+                // 입력 영역 (항상 표시)
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // 텍스트 필드 (349x242 크기)
+                      Container(
+                        width: 349,
+                        height: 242,
+                        decoration: BoxDecoration(
+                          color: getSelectedColor(),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: GestureDetector(
+                          onTap: () {
+                            focusNode.requestFocus();
+                          },
+                          child: Stack(
+                            children: [
+                              // 플레이스홀더 (텍스트가 없을 때만 표시)
+                              Visibility(
+                                visible: !hasText.value,
+                                child: const Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        '오늘은 어떤 운동을 하셨나요?',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black54,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        '예) 30분 걷기, 스트레칭 10분',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    '예) 30분 걷기, 스트레칭 10분',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                    ),
-                                    textAlign: TextAlign.center,
+                                ),
+                              ),
+
+                              // 텍스트 필드
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: TextField(
+                                  controller: textController,
+                                  focusNode: focusNode,
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: '',
                                   ),
-                                ],
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                  ),
+                                  maxLines: 10,
+                                  enabled: !isDeleteMode.value, // 삭제 모드에서는 비활성화
+                                ),
                               ),
-                            ),
-                          ),
-
-                          // 텍스트 필드
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: TextField(
-                              controller: textController,
-                              focusNode: focusNode,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                hintText: '',
-                              ),
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black87,
-                              ),
-                              maxLines: 10,
-                              enabled: !isDeleteMode.value, // 삭제 모드에서는 비활성화
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  // 타임라인과 원형 버튼 구현
-                  SizedBox(
-                    height: 120, // 원형 버튼과 텍스트를 포함할 충분한 높이
-                    child: Stack(
-                      children: [
-                        // 가로 선 (타임라인) - 원의 중심을 지나도록 배치
-                        Positioned(
-                          top: 40, // 원의 중심 높이 (원 높이의 절반)
-                          left: 0,
-                          right: 0,
-                          child: Container(
-                            height: 2,
-                            color: Colors.grey[300],
+                            ],
                           ),
                         ),
+                      ),
 
-                        // 운동 강도 선택 버튼들
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(height: 40),
+
+                      // 타임라인과 원형 버튼 구현
+                      SizedBox(
+                        height: 120, // 원형 버튼과 텍스트를 포함할 충분한 높이
+                        child: Stack(
                           children: [
-                            // 저강도 버튼
-                            _buildIntensityButton(1, "저"),
+                            // 가로 선 (타임라인) - 원의 중심을 지나도록 배치
+                            Positioned(
+                              top: 40, // 원의 중심 높이 (원 높이의 절반)
+                              left: 0,
+                              right: 0,
+                              child: Container(
+                                height: 2,
+                                color: Colors.grey[300],
+                              ),
+                            ),
 
-                            // 중강도 버튼
-                            _buildIntensityButton(2, "중"),
+                            // 운동 강도 선택 버튼들
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // 저강도 버튼
+                                _buildIntensityButton(1, "저"),
 
-                            // 고강도 버튼
-                            _buildIntensityButton(3, "고"),
+                                // 중강도 버튼
+                                _buildIntensityButton(2, "중"),
+
+                                // 고강도 버튼
+                                _buildIntensityButton(3, "고"),
+                              ],
+                            ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // 운동 카드 목록
-            Expanded(
-              child: Obx(() => exerciseCards.isEmpty
-                  ? const Center(
-                      child: Text(
-                        '운동 기록이 없습니다.\n운동 강도와 내용을 입력 후 저장해주세요.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
                       ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: exerciseCards.length,
-                      itemBuilder: (context, index) {
-                        final card = exerciseCards[index];
-                        return GestureDetector(
-                          onTap: () {
-                            if (isDeleteMode.value) {
-                              card.isSelected = !card.isSelected;
-                              exerciseCards.refresh();
-                            }
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            decoration: BoxDecoration(
-                              color: card.getColor().withOpacity(0.8),
-                              borderRadius: BorderRadius.circular(12),
-                              border: isDeleteMode.value && card.isSelected
-                                  ? Border.all(
-                                      color: Colors.red,
-                                      width: 2,
-                                    )
-                                  : null,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Row(
-                                children: [
-                                  // 선택 체크박스 (삭제 모드일 때만 표시)
-                                  if (isDeleteMode.value)
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 12),
-                                      child: Icon(
-                                        card.isSelected
-                                            ? Icons.check_circle
-                                            : Icons.circle_outlined,
-                                        color: card.isSelected
-                                            ? Colors.red
-                                            : Colors.black54,
-                                      ),
-                                    ),
+                    ],
+                  ),
+                ),
 
-                                  // 카드 내용
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
+                // 운동 카드 목록
+                Expanded(
+                  child: Obx(() => exerciseCards.isEmpty
+                      ? const Center(
+                          child: Text(
+                            '운동 기록이 없습니다.\n운동 강도와 내용을 입력 후 저장해주세요.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: exerciseCards.length,
+                          itemBuilder: (context, index) {
+                            final card = exerciseCards[index];
+                            return GestureDetector(
+                              onTap: () {
+                                if (isDeleteMode.value) {
+                                  card.isSelected = !card.isSelected;
+                                  exerciseCards.refresh();
+                                }
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                decoration: BoxDecoration(
+                                  color: card.getColor().withOpacity(0.8),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: isDeleteMode.value && card.isSelected
+                                      ? Border.all(
+                                          color: Colors.red,
+                                          width: 2,
+                                        )
+                                      : null,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Row(
+                                    children: [
+                                      // 선택 체크박스 (삭제 모드일 때만 표시)
+                                      if (isDeleteMode.value)
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 12),
+                                          child: Icon(
+                                            card.isSelected
+                                                ? Icons.check_circle
+                                                : Icons.circle_outlined,
+                                            color: card.isSelected
+                                                ? Colors.red
+                                                : Colors.black54,
+                                          ),
+                                        ),
+
+                                      // 카드 내용
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
                                                       horizontal: 8,
                                                       vertical: 4),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white
-                                                    .withOpacity(0.3),
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                              child: Text(
-                                                card.getIntensityText(),
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white
+                                                        .withOpacity(0.3),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                  ),
+                                                  child: Text(
+                                                    card.getIntensityText(),
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
+                                                const Spacer(),
+                                                Text(
+                                                  '${card.createdAt.hour.toString().padLeft(2, '0')}:${card.createdAt.minute.toString().padLeft(2, '0')}',
+                                                  style: const TextStyle(
+                                                    color: Colors.black54,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            const Spacer(),
+                                            const SizedBox(height: 8),
                                             Text(
-                                              '${card.createdAt.hour.toString().padLeft(2, '0')}:${card.createdAt.minute.toString().padLeft(2, '0')}',
+                                              card.text,
                                               style: const TextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 12,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500,
                                               ),
                                             ),
                                           ],
                                         ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          card.text,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        )),
+                ),
+
+                // 하단 버튼 영역
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Obx(() => isDeleteMode.value
+                      ? Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 56,
+                                margin: const EdgeInsets.only(right: 8),
+                                child: ElevatedButton(
+                                  onPressed: () => cancelDeleteMode(),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.grey[300],
+                                    foregroundColor: Colors.black,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    )),
-            ),
-
-            // 하단 버튼 영역
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Obx(() => isDeleteMode.value
-                  ? Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 56,
-                            margin: const EdgeInsets.only(right: 8),
-                            child: ElevatedButton(
-                              onPressed: () => cancelDeleteMode(),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.grey[300],
-                                foregroundColor: Colors.black,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: const Text(
-                                '취소',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                                  child: const Text(
+                                    '취소',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            height: 56,
-                            margin: const EdgeInsets.only(left: 8),
-                            child: ElevatedButton(
-                              onPressed: () => deleteSelectedCards(),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: const Text(
-                                '삭제',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                            Expanded(
+                              child: Container(
+                                height: 56,
+                                margin: const EdgeInsets.only(left: 8),
+                                child: ElevatedButton(
+                                  onPressed: () => deleteSelectedCards(),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    '삭제',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                    )
-                  : SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed:
-                            (selectedIntensity.value > 0 && hasText.value)
+                          ],
+                        )
+                      : SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: (selectedIntensity.value > 0 &&
+                                    hasText.value &&
+                                    !isLoading.value)
                                 ? () => addExerciseCard()
                                 : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[600],
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey[600],
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              disabledBackgroundColor: Colors.grey[400],
+                              disabledForegroundColor: Colors.white70,
+                            ),
+                            child: const Text(
+                              '저장',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                          disabledBackgroundColor: Colors.grey[400],
-                          disabledForegroundColor: Colors.white70,
-                        ),
-                        child: const Text(
-                          '저장',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    )),
+                        )),
+                ),
+              ],
             ),
+
+            // 로딩 인디케이터
+            Obx(() => isLoading.value
+                ? Container(
+                    color: Colors.black.withOpacity(0.3),
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : const SizedBox.shrink()),
           ],
         ),
       ),
@@ -534,7 +670,7 @@ class _ExerciseInputPageState extends State<ExerciseInputPage> {
           children: [
             GestureDetector(
               onTap: () {
-                if (!isDeleteMode.value) {
+                if (!isDeleteMode.value && !isLoading.value) {
                   selectedIntensity.value = intensity;
                 }
               },

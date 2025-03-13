@@ -5,9 +5,26 @@ import 'auth/verification_page.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/liver_controller.dart';
 import 'controllers/survey_controller.dart';
+import 'services/exercise_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 서비스 초기화
+  await initServices();
+
   runApp(const MyApp());
+}
+
+// 서비스 초기화 함수
+Future<void> initServices() async {
+  // AuthController 초기화
+  Get.put(AuthController());
+  Get.put(LiverController());
+  Get.put(SurveyController());
+
+  // ExerciseService 초기화
+  Get.put(ExerciseService());
 }
 
 class MyApp extends StatelessWidget {
@@ -15,11 +32,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // AuthController 초기화
-    Get.put(AuthController());
-    Get.put(LiverController());
-    Get.put(SurveyController());
-
     return GetMaterialApp(
       title: 'DTX Project',
       theme: ThemeData(
