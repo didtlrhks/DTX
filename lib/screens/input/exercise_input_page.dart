@@ -6,14 +6,12 @@ import 'package:dtxproject/models/exercise_model.dart';
 class ExerciseCard {
   final String text;
   final int intensity;
-  final DateTime createdAt;
   final String? id;
   bool isSelected;
 
   ExerciseCard({
     required this.text,
     required this.intensity,
-    required this.createdAt,
     this.id,
     this.isSelected = false,
   });
@@ -52,7 +50,6 @@ class ExerciseCard {
       id: model.id,
       text: model.exercise_text,
       intensity: ExerciseModel.intensityToInt(model.intensity),
-      createdAt: DateTime.parse(model.exercise_date),
     );
   }
 }
@@ -124,17 +121,55 @@ class _ExerciseInputPageState extends State<ExerciseInputPage> {
     isLoading.value = true;
 
     try {
+      print('서버에서 운동 기록 로딩 시작...');
       await exerciseController.fetchExercises();
 
       // 서버에서 가져온 운동 기록을 ExerciseCard로 변환
-      exerciseCards.value = exerciseController.exercises
-          .map((model) => ExerciseCard.fromModel(model))
-          .toList();
+      final fetchedExercises = exerciseController.exercises;
+      print('서버에서 가져온 운동 기록 수: ${fetchedExercises.length}');
+
+      // 운동 기록이 있으면 변환하여 표시
+      if (fetchedExercises.isNotEmpty) {
+        exerciseCards.value = fetchedExercises
+            .map((model) => ExerciseCard.fromModel(model))
+            .toList();
+
+        // 최신 기록이 위에 오도록 정렬 (id 기반으로 정렬)
+        exerciseCards.sort((a, b) {
+          // id가 없는 경우 처리
+          if (a.id == null || b.id == null) return 0;
+
+          // temp_ 형식의 임시 ID인 경우 밀리초 타임스탬프로 정렬
+          if (a.id!.startsWith('temp_') && b.id!.startsWith('temp_')) {
+            final aTime = int.tryParse(a.id!.substring(5)) ?? 0;
+            final bTime = int.tryParse(b.id!.substring(5)) ?? 0;
+            return bTime.compareTo(aTime); // 내림차순 정렬
+          }
+
+          // 서버에서 받은 ID는 일반적으로 최신 항목이 더 큰 값을 가짐
+          // 문자열 비교로 내림차순 정렬
+          return b.id!.compareTo(a.id!);
+        });
+
+        print('변환된 운동 카드 수: ${exerciseCards.length}');
+        if (exerciseCards.isNotEmpty) {
+          print(
+              '첫 번째 운동 카드: ${exerciseCards[0].text}, 강도: ${exerciseCards[0].intensity}');
+        }
+      } else {
+        exerciseCards.clear();
+        print('서버에서 가져온 운동 기록이 없습니다.');
+      }
     } catch (e) {
+      print('운동 기록 로딩 오류: $e');
+      exerciseCards.clear();
+
+      // 오류 메시지 표시 (짧은 시간만 표시)
       Get.snackbar(
         '데이터 로딩 오류',
-        '운동 기록을 불러오는 중 오류가 발생했습니다: $e',
+        '운동 기록을 불러오는 중 오류가 발생했습니다.',
         snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 2),
       );
     } finally {
       isLoading.value = false;
@@ -516,13 +551,6 @@ class _ExerciseInputPageState extends State<ExerciseInputPage> {
                                                   ),
                                                 ),
                                                 const Spacer(),
-                                                Text(
-                                                  '${card.createdAt.hour.toString().padLeft(2, '0')}:${card.createdAt.minute.toString().padLeft(2, '0')}',
-                                                  style: const TextStyle(
-                                                    color: Colors.black54,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
                                               ],
                                             ),
                                             const SizedBox(height: 8),

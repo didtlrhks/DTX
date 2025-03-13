@@ -20,10 +20,21 @@ class ExerciseController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // 사용자 ID 설정
-    if (_authController.user.value != null &&
-        _authController.user.value!.id != null) {
-      _exerciseService.setUserId(_authController.user.value!.id!);
+    try {
+      // 사용자 ID 설정
+      if (_authController.user.value != null &&
+          _authController.user.value!.id != null) {
+        _exerciseService.setUserId(_authController.user.value!.id!);
+        print('사용자 ID 설정: ${_authController.user.value!.id!}');
+      } else {
+        // 임시로 사용자 ID를 1로 설정 (테스트용)
+        _exerciseService.setUserId(1);
+        print('임시 사용자 ID 설정: 1');
+      }
+    } catch (e) {
+      // 오류 발생 시 임시 ID 사용
+      _exerciseService.setUserId(1);
+      print('사용자 ID 설정 오류, 임시 ID 사용: $e');
     }
 
     fetchExercises();
@@ -35,11 +46,25 @@ class ExerciseController extends GetxController {
     errorMessage.value = '';
 
     try {
+      print('운동 기록 조회 시작...');
       final fetchedExercises = await _exerciseService.getExercises();
+      print('조회된 운동 기록 수: ${fetchedExercises.length}');
+
+      // 조회된 데이터 설정
       exercises.value = fetchedExercises;
+
+      // 디버깅을 위해 조회된 데이터 출력
+      if (fetchedExercises.isNotEmpty) {
+        print(
+            '첫 번째 운동 기록: ${fetchedExercises[0].exercise_text}, 강도: ${fetchedExercises[0].intensity}');
+      } else {
+        print('조회된 운동 기록이 없습니다.');
+      }
     } catch (e) {
       errorMessage.value = e.toString();
-      print('Error fetching exercises: $e');
+      print('운동 기록 조회 오류: $e');
+      // 오류 발생 시 빈 목록으로 초기화
+      exercises.value = [];
     } finally {
       isLoading.value = false;
     }
@@ -59,12 +84,14 @@ class ExerciseController extends GetxController {
       print('Error adding exercise: $e');
 
       // 서버 오류 시 로컬에서만 추가 (임시 처리)
+      final now = DateTime.now();
       final tempExercise = ExerciseModel(
         exercise_text: text,
         intensity: ExerciseModel.intensityToString(intensity),
-        exercise_date: DateTime.now().toString().split(' ')[0],
+        exercise_date:
+            "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}",
         user_id: 0,
-        id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+        id: 'temp_${now.millisecondsSinceEpoch}',
       );
       exercises.add(tempExercise);
 
