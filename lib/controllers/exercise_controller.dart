@@ -107,12 +107,23 @@ class ExerciseController extends GetxController {
     errorMessage.value = '';
 
     try {
+      print('단일 삭제 시작: ID $id');
+
+      // 서버에 삭제 요청
       await _exerciseService.deleteExercise(id);
+
+      // 로컬 상태 업데이트
       exercises.removeWhere((exercise) => exercise.id == id);
+
+      print('단일 삭제 완료');
       return true;
     } catch (e) {
       errorMessage.value = e.toString();
-      print('Error deleting exercise: $e');
+      print('단일 삭제 오류: $e');
+
+      // 오류가 발생해도 UI에서는 삭제된 것처럼 처리 (사용자 경험 개선)
+      exercises.removeWhere((exercise) => exercise.id == id);
+
       return false;
     } finally {
       isLoading.value = false;
@@ -125,12 +136,23 @@ class ExerciseController extends GetxController {
     errorMessage.value = '';
 
     try {
+      print('다중 삭제 시작: ${ids.length}개');
+
+      // 서버에 삭제 요청
       await _exerciseService.deleteMultipleExercises(ids);
+
+      // 로컬 상태 업데이트
       exercises.removeWhere((exercise) => ids.contains(exercise.id));
+
+      print('다중 삭제 완료');
       return true;
     } catch (e) {
       errorMessage.value = e.toString();
-      print('Error deleting multiple exercises: $e');
+      print('다중 삭제 오류: $e');
+
+      // 오류가 발생해도 UI에서는 삭제된 것처럼 처리 (사용자 경험 개선)
+      //exercises.removeWhere((exercise) => ids.contains(exercise.id));
+
       return false;
     } finally {
       isLoading.value = false;

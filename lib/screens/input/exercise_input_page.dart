@@ -245,30 +245,47 @@ class _ExerciseInputPageState extends State<ExerciseInputPage> {
     isLoading.value = true;
 
     try {
-      // 서버에서 선택된 운동 기록 삭제
-      final success =
-          await exerciseController.deleteMultipleExercises(selectedIds);
+      print('선택된 운동 기록 삭제 시작: ${selectedIds.length}개');
 
-      if (success) {
-        // 서버에서 최신 데이터 다시 가져오기
-        await _loadExercisesFromServer();
-
-        Get.snackbar(
-          '삭제 완료',
-          '선택한 운동 기록이 삭제되었습니다.',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-      } else {
-        Get.snackbar(
-          '삭제 실패',
-          '운동 기록 삭제 중 오류가 발생했습니다.',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+      // 단일 삭제인 경우
+      if (selectedIds.length == 1) {
+        final success = await exerciseController.deleteExercise(selectedIds[0]);
+        if (success) {
+          print('단일 운동 기록 삭제 성공');
+        } else {
+          print('단일 운동 기록 삭제 실패');
+          throw Exception('Failed to delete exercise');
+        }
       }
+      // 다중 삭제인 경우
+      else {
+        final success =
+            await exerciseController.deleteMultipleExercises(selectedIds);
+        if (success) {
+          print('다중 운동 기록 삭제 성공');
+        } else {
+          print('다중 운동 기록 삭제 실패');
+          throw Exception('Failed to delete multiple exercises');
+        }
+      }
+
+      // 서버에서 최신 데이터 다시 가져오기
+      await _loadExercisesFromServer();
+
+      Get.snackbar(
+        '삭제 완료',
+        '선택한 운동 기록이 삭제되었습니다.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
+      print('삭제 오류: $e');
+
+      // 오류가 발생해도 UI에서는 삭제된 것처럼 처리 (사용자 경험 개선)
+      // exerciseCards.removeWhere((card) => card.isSelected);
+
       Get.snackbar(
         '삭제 오류',
-        '운동 기록 삭제 중 오류가 발생했습니다: $e',
+        '일부 운동 기록 삭제 중 오류가 발생했습니다.',
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {

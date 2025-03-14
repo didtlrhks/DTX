@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dtxproject/controllers/auth_controller.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:dtxproject/models/exercise_model.dart';
@@ -131,8 +132,12 @@ class ExerciseService extends GetxService {
   // 운동 기록 삭제
   Future<void> deleteExercise(String id) async {
     try {
+      // 새로운 API 엔드포인트 형식으로 URL 구성
+      final url = '$baseUrl/exercise/$id/user/$_userId';
+      print('삭제 요청 URL: $url');
+
       final response = await http.delete(
-        Uri.parse('$baseUrl/exercise/$id'),
+        Uri.parse(url),
         headers: _getHeaders(),
       );
 
@@ -150,19 +155,23 @@ class ExerciseService extends GetxService {
   // 여러 운동 기록 삭제
   Future<void> deleteMultipleExercises(List<String> ids) async {
     try {
+      // 새로운 API 엔드포인트 형식으로 URL 구성
+      final url = '$baseUrl/exercise/batch-delete/user/$_userId';
+      print('일괄 삭제 요청 URL: $url');
+
       final response = await http.post(
-        Uri.parse('$baseUrl/exercise/delete-multiple'),
+        Uri.parse(url),
         headers: _getHeaders(),
         body: json.encode({'ids': ids}),
       );
 
-      print('다중 삭제 응답: ${response.statusCode}, 응답 내용: ${response.body}');
+      print('일괄 삭제 응답: ${response.statusCode}, 응답 내용: ${response.body}');
 
       if (response.statusCode != 200) {
         throw Exception('Failed to delete exercises: ${response.statusCode}');
       }
     } catch (e) {
-      print('다중 삭제 오류: $e');
+      print('일괄 삭제 오류: $e');
       throw Exception('Error deleting exercises: $e');
     }
   }
