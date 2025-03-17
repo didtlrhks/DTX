@@ -103,27 +103,40 @@ class LunchController extends GetxController {
 
   // 점심 기록 삭제
   Future<bool> deleteLunch(String id) async {
-    isLoading.value = true;
-    errorMessage.value = '';
-
     try {
-      print('점심 기록 삭제 시작: ID $id');
+      isLoading.value = true;
+      errorMessage.value = '';
 
-      // 서버에 삭제 요청
+      print('🗑️ LunchController: 점심 기록 삭제 시작: ID $id');
+      print('삭제 전 lunches 목록 길이: ${lunches.length}');
+
+      // 삭제할 기록이 목록에 있는지 확인
+      final lunchToDelete = lunches.firstWhereOrNull((lunch) => lunch.id == id);
+      if (lunchToDelete != null) {
+        print('삭제할 기록 찾음: ${lunchToDelete.lunch_text}');
+      } else {
+        print('⚠️ 삭제할 기록을 lunches 목록에서 찾을 수 없음');
+      }
+
+      // LunchService의 deleteLunch 메서드 호출
+      print('LunchService.deleteLunch 호출 전');
       await _lunchService.deleteLunch(id);
+      print('LunchService.deleteLunch 호출 후');
 
-      // 로컬 상태 업데이트
+      // 성공적으로 삭제된 경우 lunches 리스트에서 해당 항목 제거
+      final removedCount = lunches.length;
       lunches.removeWhere((lunch) => lunch.id == id);
+      final afterRemoveCount = lunches.length;
 
-      print('점심 기록 삭제 완료');
+      print(
+          '삭제 후 lunches 목록 길이: $afterRemoveCount (제거된 항목: ${removedCount - afterRemoveCount})');
+      lunches.refresh(); // GetX 리스트 갱신
+
+      print('✅ 점심 기록 삭제 완료: ID $id');
       return true;
     } catch (e) {
       errorMessage.value = e.toString();
-      print('점심 기록 삭제 오류: $e');
-
-      // 오류가 발생해도 UI에서는 삭제된 것처럼 처리 (사용자 경험 개선)
-      lunches.removeWhere((lunch) => lunch.id == id);
-
+      print('❌ 점심 기록 삭제 오류: $e');
       return false;
     } finally {
       isLoading.value = false;

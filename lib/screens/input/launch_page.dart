@@ -2,6 +2,7 @@ import 'package:dtxproject/models/lunch_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/lunch_controller.dart';
+import 'package:dtxproject/services/lunch_service.dart';
 
 class LaunchPage extends StatefulWidget {
   final String? savedLunchText; // 저장된 점심 텍스트를 받을 파라미터 추가
@@ -244,19 +245,26 @@ class _LaunchPageState extends State<LaunchPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('점심 기록하기',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          '점심 기록하기',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
         centerTitle: true,
         actions: [
+          // 삭제 버튼 (기존 기록이 있을 때만 표시)
+
+          // 취소 버튼
           IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.black54),
+            icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () {
               // 텍스트 필드 내용 삭제하고 취소 결과 반환
               textController.clear();
               Get.back(result: 'cancel');
+              _directDelete(); // 여기서 실행이안되는데.?
+
               _safeShowSnackbar(
                 '기록 취소',
                 '점심 식사 기록이 취소되었습니다.',
@@ -524,5 +532,45 @@ class _LaunchPageState extends State<LaunchPage> {
         ],
       ),
     );
+  }
+
+  // 직접 삭제 실행 (다이얼로그 없이)
+  void _directDelete() async {
+    if (lunchIdToEdit == null) {
+      print('❌ 삭제 실패: lunchIdToEdit가 null입니다.');
+      _safeShowSnackbar(
+        '오류',
+        '삭제할 점심 기록이 없습니다.',
+        Colors.red[100]!,
+      );
+      return;
+    }
+
+    print('🗑️ 점심 기록 직접 삭제 시작: ID $lunchIdToEdit');
+    isLoading.value = true;
+
+    try {
+      final lunchService = Get.find<LunchService>();
+      await lunchService.deleteLunch(lunchIdToEdit!);
+
+      print('✅ 점심 기록 삭제 성공');
+      _safeShowSnackbar(
+        '삭제 완료',
+        '점심 식사 기록이 삭제되었습니다.',
+        Colors.green[100]!,
+      );
+
+      // 화면을 닫고 삭제 결과 반환
+      Get.back(result: 'deleted');
+    } catch (e) {
+      print('❌ 점심 기록 삭제 오류: $e');
+      _safeShowSnackbar(
+        '삭제 실패',
+        '점심 식사 기록을 삭제하는 중 오류가 발생했습니다.',
+        Colors.red[100]!,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

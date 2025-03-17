@@ -130,10 +130,16 @@ class LunchService extends GetxService {
   }
 
   // 점심 식사 기록 삭제
-  Future<void> deleteLunch(String id) async {
+  Future<bool> deleteLunch(String id) async {
     try {
+      if (_userId <= 0) {
+        throw Exception('유효하지 않은 사용자 ID ($_userId)');
+      }
+
       final url = '$baseUrl${ApiConstants.lunch}/$id/user/$_userId';
       print('🔷 점심 기록 삭제 요청: DELETE $url (사용자 ID: $_userId)');
+      print('요청 헤더: ${_getHeaders()}');
+      print('삭제할 ID: $id, 사용자 ID: $_userId');
 
       final response = await http.delete(
         Uri.parse(url),
@@ -141,14 +147,20 @@ class LunchService extends GetxService {
       );
 
       print('🔶 응답 상태 코드: ${response.statusCode}');
+      print('응답 본문: ${response.body}');
 
       if (response.statusCode != 204 && response.statusCode != 200) {
-        throw Exception('점심 기록 삭제 실패: ${response.statusCode}');
+        print('❌ 삭제 실패: 상태 코드 ${response.statusCode}');
+        throw Exception(
+            '점심 기록 삭제 실패: ${response.statusCode}, 응답: ${response.body}');
       }
 
       print('📝 점심 기록이 성공적으로 삭제되었습니다.');
+      return true;
     } catch (e) {
       print('❌ 점심 기록 삭제 오류: $e');
+      print('예외 타입: ${e.runtimeType}');
+      print('예외 스택 트레이스: ${StackTrace.current}');
       throw Exception('점심 기록 삭제 중 오류 발생: $e');
     }
   }
@@ -177,7 +189,7 @@ class LunchService extends GetxService {
       print('📦 응답 데이터: ${response.body}');
 
       if (response.statusCode == 200) {
-        print('�� 사용자 $_userId의 점심 기록이 성공적으로 수정되었습니다.');
+        print('📝 사용자 $_userId의 점심 기록이 성공적으로 수정되었습니다.');
 
         // 응답 데이터 파싱
         final responseData = json.decode(response.body);
