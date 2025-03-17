@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../models/lunch_model.dart';
 import '../services/lunch_service.dart';
 import '../controllers/auth_controller.dart';
+import 'package:flutter/material.dart';
 
 class LunchController extends GetxController {
   final LunchService _lunchService;
@@ -18,6 +19,13 @@ class LunchController extends GetxController {
 
   // 로그인 상태
   final RxBool isLoggedIn = false.obs;
+
+  // 오늘의 점심 기록 ID (있는 경우)
+  final Rx<String?> todayLunchId = Rx<String?>(null);
+
+  // 텍스트 입력 관련 상태
+  final RxBool hasText = false.obs;
+  final RxBool isLongText = false.obs;
 
   // 생성자
   LunchController({required LunchService lunchService})
@@ -161,6 +169,90 @@ class LunchController extends GetxController {
       return false;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  // 텍스트 길이 체크 및 상태 업데이트
+  void updateTextState(String text, int threshold) {
+    hasText.value = text.isNotEmpty;
+    isLongText.value = text.length > threshold;
+  }
+
+  // 텍스트 최대 길이 체크 및 처리
+  String enforceMaxLength(
+      String text, int maxLength, TextEditingController controller) {
+    if (text.length > maxLength) {
+      final truncated = text.substring(0, maxLength);
+      controller.text = truncated;
+      controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: maxLength),
+      );
+      return truncated;
+    }
+    return text;
+  }
+
+  // 태그 텍스트 삽입
+  void insertTag(String tag, TextEditingController controller, int maxLength) {
+    final currentText = controller.text;
+    final selection = controller.selection;
+
+    // 최대 글자 수 체크
+    if (currentText.length + tag.length > maxLength) {
+      errorMessage.value = '최대 글자 수를 초과했습니다.';
+      return;
+    }
+
+    // 현재 커서 위치 또는 텍스트 끝에 태그 삽입
+    final newText = selection.isValid
+        ? currentText.substring(0, selection.start) +
+            tag +
+            currentText.substring(selection.end)
+        : currentText + tag;
+
+    // 새 커서 위치 계산
+    final newCursorPosition =
+        selection.isValid ? selection.start + tag.length : newText.length;
+
+    // 텍스트 업데이트
+    controller.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newCursorPosition),
+    );
+
+    // 상태 업데이트
+    updateTextState(newText, 30); // 30은 alignmentChangeThreshold 값
+  }
+
+  // 점심 기록 저장 또는 수정 (오늘 기록이 있으면 수정, 없으면 추가)
+  Future<bool> saveOrUpdateLunch(String text) async {
+    if (text.isEmpty) {
+      errorMessage.value = '점심 식사 내용을 입력해주세요.';
+      return false;
+    }
+
+    try {
+      bool success;
+
+      // 오늘 기록이 있는지 확인 (lunches가 비어있지 않고 첫 번째 항목이 오늘 날짜인 경우)
+      if (lunches.isNotEmpty) {
+        final todayLunch = lunches.first;
+
+        // null 체크 추가
+        if (todayLunch.id != null) {
+          success = await updateLunch(todayLunch.id!, text);
+        } else {
+          // id가 null인 경우 새로 추가
+          success = await addLunch(text);
+        }
+      } else {
+        success = await addLunch(text);
+      }
+
+      return success;
+    } catch (e) {
+      errorMessage.value = e.toString();
+      return false;
     }
   }
 }
