@@ -49,7 +49,7 @@ class LunchService extends GetxService {
         throw Exception('유효하지 않은 사용자 ID ($_userId). 로그인이 필요합니다.');
       }
 
-      final url = '$baseUrl/launch/user/$_userId';
+      final url = '$baseUrl${ApiConstants.lunchByUser}/$_userId';
       print('🔷 점심 기록 조회 요청: GET $url (사용자 ID: $_userId)');
 
       final response = await http.get(
@@ -114,7 +114,9 @@ class LunchService extends GetxService {
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         print('📝 사용자 $_userId의 점심 기록이 성공적으로 추가되었습니다.');
-        return LunchModel.fromJson(json.decode(response.body));
+        final newLunch =
+            LunchModel.fromJson(json.decode(response.body)['lunch_record']);
+        return newLunch;
       } else {
         final error =
             '점심 기록 추가 실패: ${response.statusCode}, 응답: ${response.body}';
@@ -148,6 +150,52 @@ class LunchService extends GetxService {
     } catch (e) {
       print('❌ 점심 기록 삭제 오류: $e');
       throw Exception('점심 기록 삭제 중 오류 발생: $e');
+    }
+  }
+
+  // 점심 식사 기록 수정
+  Future<LunchModel> updateLunch(String id, String text) async {
+    try {
+      if (_userId <= 0) {
+        throw Exception('유효하지 않은 사용자 ID ($_userId)');
+      }
+
+      final lunch = {'lunch_text': text, 'lunch_date': _getTodayDate()};
+
+      final url = '$baseUrl${ApiConstants.lunch}/$id/user/$_userId';
+      final body = json.encode(lunch);
+      print('🔷 점심 기록 수정 요청: PUT $url (사용자 ID: $_userId)');
+      print('📦 요청 데이터: $body');
+
+      final response = await http.put(
+        Uri.parse(url),
+        headers: _getHeaders(),
+        body: body,
+      );
+
+      print('🔶 응답 상태 코드: ${response.statusCode}');
+      print('📦 응답 데이터: ${response.body}');
+
+      if (response.statusCode == 200) {
+        print('�� 사용자 $_userId의 점심 기록이 성공적으로 수정되었습니다.');
+
+        // 응답 데이터 파싱
+        final responseData = json.decode(response.body);
+        final updatedLunch = responseData is Map<String, dynamic> &&
+                responseData.containsKey('lunch_record')
+            ? LunchModel.fromJson(responseData['lunch_record'])
+            : LunchModel.fromJson(responseData);
+
+        return updatedLunch;
+      } else {
+        final error =
+            '점심 기록 수정 실패: ${response.statusCode}, 응답: ${response.body}';
+        print('❌ $error');
+        throw Exception(error);
+      }
+    } catch (e) {
+      print('❌ 점심 기록 수정 오류: $e');
+      throw Exception('점심 기록 수정 중 오류 발생: $e');
     }
   }
 }

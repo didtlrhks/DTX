@@ -1,9 +1,15 @@
+import 'package:dtxproject/models/lunch_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/lunch_controller.dart';
 
 class LaunchPage extends StatefulWidget {
-  const LaunchPage({super.key});
+  final String? savedLunchText; // 저장된 점심 텍스트를 받을 파라미터 추가
+
+  const LaunchPage({
+    super.key,
+    this.savedLunchText, // 생성자에 파라미터 추가
+  });
 
   @override
   State<LaunchPage> createState() => _LaunchPageState();
@@ -51,9 +57,42 @@ class _LaunchPageState extends State<LaunchPage> {
   // 점심 컨트롤러
   late LunchController lunchController;
 
+  // ever 리스너를 저장할 변수 추가
+  late Worker _lunchesSubscription;
+
+  // 수정할 점심 기록 ID
+  String? lunchIdToEdit;
+
   @override
   void initState() {
     super.initState();
+
+    // 점심 컨트롤러 초기화
+    lunchController = Get.find<LunchController>();
+
+    // 화면이 열릴 때 최신 데이터 가져오기
+    lunchController.fetchLunches();
+
+    // lunches 리스트 변화 감지
+    _lunchesSubscription =
+        ever(lunchController.lunches, (List<LunchModel> lunchList) {
+      if (lunchList.isNotEmpty && !disposed) {
+        // 첫 번째 기록을 가져옴 (오늘 날짜의 기록일 것임)
+        final todayLunch = lunchList.first;
+
+        // ID 저장 (수정 시 사용)
+        lunchIdToEdit = todayLunch.id;
+
+        // 텍스트 설정
+        textController.text = todayLunch.lunch_text;
+        hasText.value = true;
+        isLongText.value =
+            todayLunch.lunch_text.length > alignmentChangeThreshold;
+
+        print(
+            '🔍 오늘의 점심 기록 발견: ID ${todayLunch.id}, 텍스트: ${todayLunch.lunch_text}');
+      }
+    });
 
     // 텍스트 변경 리스너 추가
     textController.addListener(() {
@@ -78,13 +117,19 @@ class _LaunchPageState extends State<LaunchPage> {
         hasText.value = true;
       }
     });
-
-    // 점심 컨트롤러 초기화
-    lunchController = Get.find<LunchController>();
   }
+
+  // disposed 플래그 추가
+  bool disposed = false;
 
   @override
   void dispose() {
+    // disposed 플래그 설정
+    disposed = true;
+
+    // ever 리스너 제거
+    _lunchesSubscription.dispose();
+
     // 컨트롤러와 포커스 노드 해제
     textController.dispose();
     focusNode.dispose();
@@ -127,14 +172,38 @@ class _LaunchPageState extends State<LaunchPage> {
     isLoading.value = true;
 
     try {
-      final success = await lunchController.addLunch(lunchText);
+      bool success;
+
+      // 이미 오늘 기록이 있으면 업데이트, 없으면 새로 추가
+      if (lunchIdToEdit != null && lunchController.lunches.isNotEmpty) {
+        print('🔄 점심 기록 수정: ID $lunchIdToEdit');
+        success = await lunchController.updateLunch(lunchIdToEdit!, lunchText);
+
+        if (success) {
+          _safeShowSnackbar(
+            '수정 완료',
+            '점심 식사 기록이 수정되었습니다.',
+            Colors.green[100]!,
+          );
+        }
+      } else {
+        print('➕ 새 점심 기록 추가');
+        success = await lunchController.addLunch(lunchText);
+
+        if (success) {
+          _safeShowSnackbar(
+            '저장 완료',
+            '점심 식사가 기록되었습니다.',
+            Colors.green[100]!,
+          );
+        }
+      }
 
       if (success) {
-        _safeShowSnackbar(
-          '저장 완료',
-          '점심 식사가 기록되었습니다.',
-          Colors.green[100]!,
-        );
+        // 점심 기록 목록을 새로고침
+        await lunchController.fetchLunches();
+
+        // 화면을 닫고 결과 반환
         Get.back(result: lunchText);
       } else {
         if (lunchController.errorMessage.value.contains('로그인')) {

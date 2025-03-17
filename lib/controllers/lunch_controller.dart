@@ -129,4 +129,25 @@ class LunchController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  // 점심 기록 수정
+  Future<bool> updateLunch(String id, String text) async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      await _lunchService.updateLunch(id, text);
+
+      // 성공적으로 수정된 경우 lunches 리스트 업데이트
+      await fetchLunches();
+
+      return true;
+    } catch (e) {
+      errorMessage.value = e.toString();
+      print('❌ 점심 기록 수정 오류: $e');
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }
