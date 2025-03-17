@@ -1,3 +1,4 @@
+import 'package:dtxproject/screens/goal_weight_page.dart';
 import 'package:dtxproject/screens/survey_screens/exercise_survey/exercise_survey_start_page.dart';
 import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_start_page.dart';
 import 'package:dtxproject/screens/survey_screens/emotion_survey/emotion_survey_start_page.dart';
@@ -9,6 +10,7 @@ import 'sleep_survey/sleep_survey_start_page.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
 import 'package:dtxproject/screens/survey_screens/survey_result_page.dart';
+import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_page_1.dart';
 
 class SurveyHomePage extends GetView<SurveyController> {
   const SurveyHomePage({super.key});
@@ -24,7 +26,7 @@ class SurveyHomePage extends GetView<SurveyController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: () => Get.back(),
+                onTap: () => Get.to(GoalWeightPage()),
                 child: Container(
                   padding: const EdgeInsets.only(top: 8, bottom: 12),
                   alignment: Alignment.centerLeft,
@@ -117,11 +119,10 @@ class SurveyHomePage extends GetView<SurveyController> {
                                   controller.isEmotionSurveyCompleted.value,
                                 ),
                                 _buildSurveyCard(
-                                  '술 설문',
-                                  '술 실천',
+                                  '음주 설문',
+                                  '음주 실천',
                                   '소요시간 40초',
-                                  () => Get.to(
-                                      () => const AlcoholSurveyStartPage()),
+                                  () => Get.to(() => AlcoholSurveyPage1()),
                                   controller.isAlcoholSurveyCompleted.value,
                                 ),
                                 _buildSurveyCard(
