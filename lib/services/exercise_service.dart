@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:dtxproject/controllers/auth_controller.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:dtxproject/models/exercise_model.dart';

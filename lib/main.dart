@@ -5,7 +5,9 @@ import 'auth/verification_page.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/liver_controller.dart';
 import 'controllers/survey_controller.dart';
+import 'controllers/lunch_controller.dart';
 import 'services/exercise_service.dart';
+import 'services/lunch_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,13 +20,17 @@ void main() async {
 
 // 서비스 초기화 함수
 Future<void> initServices() async {
-  // AuthController 초기화
+  // 컨트롤러 초기화
   Get.put(AuthController());
   Get.put(LiverController());
   Get.put(SurveyController());
 
-  // ExerciseService 초기화
-  Get.put(ExerciseService());
+  // 서비스 초기화
+  final exerciseService = Get.put(ExerciseService());
+  final lunchService = Get.put(LunchService());
+
+  // 컨트롤러 초기화 (서비스 의존성 주입)
+  Get.put(LunchController(lunchService: lunchService));
 }
 
 class MyApp extends StatelessWidget {
