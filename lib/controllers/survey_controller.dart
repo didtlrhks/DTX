@@ -30,8 +30,7 @@ class SurveyController extends GetxController {
   }
 
   void _checkAllSurveysCompleted() {
-    isAllSurveysCompleted.value =
-        isDietSurveyCompleted.value &&
+    isAllSurveysCompleted.value = isDietSurveyCompleted.value &&
         isSleepSurveyCompleted.value &&
         isExerciseSurveyCompleted.value &&
         isAlcoholSurveyCompleted.value &&
@@ -81,7 +80,49 @@ class SurveyController extends GetxController {
     update();
   }
 
-  void clearSurveyData() {
+  void resetAlcoholSurveys() {
+    isAlcoholSurveyCompleted.value = false;
+
+    update();
+  }
+
+  void DietSurveySurveys() {
+    isDietSurveyCompleted.value = false;
+
+    update();
+  }
+
+  void resetSleepSurveys() {
+    isSleepSurveyCompleted.value = false;
+
+    update();
+  }
+
+  void resetExerciseSurveys() {
+    isExerciseSurveyCompleted.value = false;
+
+    update();
+  }
+
+  void resetEmotionSurveys() {
+    isEmotionSurveyCompleted.value = false;
+
+    update();
+  }
+
+  void resetLifeQualitySurveys() {
+    isLifeQualitySurveyCompleted.value = false;
+
+    update();
+  }
+
+  void resetSickSurveySurveys() {
+    isSickSurveyCompleted.value = false;
+
+    update();
+  }
+
+  void clearAlcoholSurveyData() {
     selectedOption.value = -1; // 객관식 초기화
     inputText.value = ""; // 주관식(페이지 1) 초기화
     inputText2.value = ""; // 주관식(페이지 2) 초기화

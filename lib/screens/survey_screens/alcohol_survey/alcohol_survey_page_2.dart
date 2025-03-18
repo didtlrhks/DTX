@@ -9,11 +9,11 @@ import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_
 class AlcoholSurveyPage2 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
 
-  // ✅ 이전 페이지의 응답 값 유지
-  final int previousSelectedOption = Get.arguments?["selectedOption"] ?? -1;
-  final String previousInputText = Get.arguments?["inputText"] ?? "";
+  // 이전 페이지의 응답 값 유지
+  // final int previousSelectedOption = Get.arguments?["selectedOption"] ?? -1;
+  // final String previousInputText = Get.arguments?["inputText"] ?? "";
 
-  // ✅ 새로운 문항을 위한 상태 변수 (초기화)
+  // 새로운 문항을 위한 상태 변수 (초기화)
   final RxInt selectedOption = (-1).obs;
   final RxString inputText = "".obs;
 
@@ -52,7 +52,7 @@ class AlcoholSurveyPage2 extends StatelessWidget {
                     ),
                   ),
                   RichText(
-                    text: TextSpan(
+                    text: const TextSpan(
                       style: TextStyle(fontSize: 20, color: Colors.black),
                       children: [
                         TextSpan(
@@ -95,7 +95,7 @@ class AlcoholSurveyPage2 extends StatelessWidget {
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xff4D4D4D), // 첫 번째 진행 바 색상
+                              color: Color(0xffD9D9D9), // 첫 번째 진행 바 색상
                             ),
                           ),
                           SizedBox(width: 4),
