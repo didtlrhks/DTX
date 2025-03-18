@@ -88,7 +88,7 @@ class SleepSurveyPage1 extends StatelessWidget {
                                     ),
                                     onPressed: () {
                                       surveyController
-                                          .clearSleepSurveyData(); // 모든 응답 초기화 (페이지 2 포함)
+                                          .clearAlcoholSurveyData(); // 모든 응답 초기화 (페이지 2 포함)
                                       surveyController
                                           .resetSleepSurveys(); // 홈 화면에서 비활성화
                                       Navigator.of(context).pop(true);
