@@ -11,6 +11,8 @@ class SleepSurveyPage1 extends StatelessWidget {
   // 선택된 옵션을 저장하는 RxInt 변수
   final RxInt selectedOption = (-1).obs;
 
+  SleepSurveyPage1({super.key});
+
   @override
   Widget build(BuildContext context) {
     // 화면의 전체 너비
@@ -21,7 +23,7 @@ class SleepSurveyPage1 extends StatelessWidget {
     // 진행 바 개당 너비
     double progressBarWidth = availableWidth / 7;
     return Scaffold(
-      backgroundColor: Color(0xFF9D9D9D), // 배경색 적용
+      backgroundColor: const Color(0xFF9D9D9D), // 배경색 적용
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,7 +44,7 @@ class SleepSurveyPage1 extends StatelessWidget {
                                 BorderRadius.circular(15.0), // 모서리 둥글게 설정
                           ),
                           backgroundColor: Colors.white, // 배경색 흰색으로 설정
-                          contentPadding: EdgeInsets.only(top: 30),
+                          contentPadding: const EdgeInsets.only(top: 30),
                           content: const Text('재시작 시,\n이전 문항의 기록이\n모두 사라집니다.',
                               textAlign: TextAlign.center,
                               style: TextStyle(fontSize: 16)),
@@ -56,9 +58,9 @@ class SleepSurveyPage1 extends StatelessWidget {
                                 Expanded(
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      minimumSize:
-                                          Size(double.infinity, 50), //버튼 크기
-                                      backgroundColor: Color(0xff00102B),
+                                      minimumSize: const Size(
+                                          double.infinity, 50), //버튼 크기
+                                      backgroundColor: const Color(0xff00102B),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
                                             12.0), // 버튼 모서리 둥글게
@@ -73,14 +75,14 @@ class SleepSurveyPage1 extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 8.0), // 버튼 사이의 간격
+                                const SizedBox(width: 8.0), // 버튼 사이의 간격
                                 Expanded(
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      minimumSize:
-                                          Size(double.infinity, 50), //버튼 크기
+                                      minimumSize: const Size(
+                                          double.infinity, 50), //버튼 크기
 
-                                      backgroundColor: Color(0xffD9D9D9),
+                                      backgroundColor: const Color(0xffD9D9D9),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
                                             12.0), // 버튼 모서리 둥글게
@@ -150,7 +152,7 @@ class SleepSurveyPage1 extends StatelessWidget {
                     topRight: Radius.circular(20.0),
                   ),
                 ),
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,66 +166,66 @@ class SleepSurveyPage1 extends StatelessWidget {
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xff4D4D4D), // 첫 번째 진행 바 색상
+                              color: const Color(0xff4D4D4D), // 첫 번째 진행 바 색상
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Container(
                             width: progressBarWidth,
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 두 번째 진행 바 색상
+                              color: const Color(0xffD9D9D9), // 두 번째 진행 바 색상
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Container(
                             width: progressBarWidth,
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Container(
                             width: progressBarWidth,
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 네 번째 진행 바 색상
+                              color: const Color(0xffD9D9D9), // 네 번째 진행 바 색상
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Container(
                             width: progressBarWidth,
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 다섯 번째 진행 바 색상
+                              color: const Color(0xffD9D9D9), // 다섯 번째 진행 바 색상
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Container(
                             width: progressBarWidth,
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 여섯 번째 진행 바 색상
+                              color: const Color(0xffD9D9D9), // 여섯 번째 진행 바 색상
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Container(
                             width: progressBarWidth,
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 일곱 번째 진행 바 색상
+                              color: const Color(0xffD9D9D9), // 일곱 번째 진행 바 색상
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 50),
+                      const SizedBox(height: 50),
                       // 질문 설명
                       RichText(
                         text: const TextSpan(
@@ -246,20 +248,20 @@ class SleepSurveyPage1 extends StatelessWidget {
                       ),
                       // 질문 설명
 
-                      SizedBox(height: 80),
+                      const SizedBox(height: 80),
                       const Text('1. 잠들기 어렵나요?',
                           style:
                               TextStyle(fontSize: 16, fontFamily: 'Paperlogy')),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
                       // 객관식 문항이 있는 사각형 박스
                       Container(
                         width: MediaQuery.of(context).size.width - 34,
                         decoration: BoxDecoration(
-                          color: Color(0xffF5F5F5),
+                          color: const Color(0xffF5F5F5),
                           borderRadius: BorderRadius.circular(12.0),
                         ),
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Stack(
                           children: [
                             Column(
@@ -290,7 +292,7 @@ class SleepSurveyPage1 extends StatelessWidget {
                                               vertical: 8.0, horizontal: 20.0),
                                           decoration: BoxDecoration(
                                             color: isSelected
-                                                ? Color(0xff4E4E4E)
+                                                ? const Color(0xff4E4E4E)
                                                 : Colors.white,
                                             borderRadius:
                                                 BorderRadius.circular(12.0),
@@ -334,10 +336,11 @@ class SleepSurveyPage1 extends StatelessWidget {
             height: 64,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    isButtonEnabled ? Color(0xff363636) : Color(0xffD9D9D9),
+                backgroundColor: isButtonEnabled
+                    ? const Color(0xff363636)
+                    : const Color(0xffD9D9D9),
                 foregroundColor: Colors.white,
-                disabledBackgroundColor: Color(0xffD9D9D9),
+                disabledBackgroundColor: const Color(0xffD9D9D9),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0), // 버튼 모서리 둥글게
                 ),
