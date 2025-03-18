@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
 import 'package:dtxproject/screens/survey_screens/survey_result_page.dart';
 import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_page_1.dart';
+import 'package:dtxproject/screens/survey_screens/sleep_survey/sleep_survey_page_1.dart';
 
 class SurveyHomePage extends GetView<SurveyController> {
   const SurveyHomePage({super.key});
@@ -98,8 +99,7 @@ class SurveyHomePage extends GetView<SurveyController> {
                                   '수면 설문',
                                   '수면 실천',
                                   '소요시간 2분 30초',
-                                  () => Get.to(
-                                      () => const SleepSurveyStartPage()),
+                                  () => Get.to(() => SleepSurveyPage1()),
                                   controller.isSleepSurveyCompleted.value,
                                 ),
                                 _buildSurveyCard(

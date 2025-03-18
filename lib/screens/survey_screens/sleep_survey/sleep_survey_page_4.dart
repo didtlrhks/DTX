@@ -4,22 +4,23 @@ import 'package:dtxproject/controllers/survey_controller.dart';
 import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_end_page.dart';
 //import 'package:dtxproject/constants/app_theme.dart';
 import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_page_2.dart';
+import 'package:dtxproject/screens/survey_screens/sleep_survey/sleep_survey_page_2.dart';
+import 'package:dtxproject/screens/survey_screens/sleep_survey/sleep_survey_page_5.dart';
 
-class AlcoholSurveyPage1 extends StatelessWidget {
+class SleepSurveyPage4 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
   // 선택된 옵션을 저장하는 RxInt 변수
   final RxInt selectedOption = (-1).obs;
-  // 입력된 텍스트를 저장하는 RxString 변수
-  final RxString inputText = ''.obs;
 
   @override
   Widget build(BuildContext context) {
     // 화면의 전체 너비
     double screenWidth = MediaQuery.of(context).size.width;
     // 좌우 패딩과 가운데 간격을 제외한 너비
-    double availableWidth = screenWidth - 50 - 4; // 50: 좌우 패딩 합, 4: 가운데 간격
+    double availableWidth =
+        screenWidth - 50 - (4 * 6); // 50: 좌우 패딩 합, 4: 가운데 간격 * 6 번
     // 진행 바 개당 너비
-    double progressBarWidth = availableWidth / 2;
+    double progressBarWidth = availableWidth / 7;
     return Scaffold(
       backgroundColor: Color(0xFF9D9D9D), // 배경색 적용
       body: SafeArea(
@@ -33,82 +34,8 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () async {
-                      bool shouldPop = await showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(15.0), // 모서리 둥글게 설정
-                          ),
-                          backgroundColor: Colors.white, // 배경색 흰색으로 설정
-                          contentPadding: EdgeInsets.only(top: 30),
-                          content: const Text('재시작 시,\n이전 문항의 기록이\n모두 사라집니다.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 16)),
-                          actionsPadding:
-                              const EdgeInsets.all(20), // 버튼 위쪽에 여백 추가
-
-                          actions: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Expanded(
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize:
-                                          Size(double.infinity, 50), //버튼 크기
-                                      backgroundColor: Color(0xff00102B),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            12.0), // 버튼 모서리 둥글게
-                                      ),
-                                    ),
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    child: const Text(
-                                      '취소',
-                                      style: TextStyle(
-                                          fontSize: 20, color: Colors.white),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 8.0), // 버튼 사이의 간격
-                                Expanded(
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize:
-                                          Size(double.infinity, 50), //버튼 크기
-
-                                      backgroundColor: Color(0xffD9D9D9),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            12.0), // 버튼 모서리 둥글게
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      surveyController
-                                          .clearAlcoholSurveyData(); // 모든 응답 초기화 (페이지 2 포함)
-                                      surveyController
-                                          .resetAllSurveys(); // 홈 화면에서 비활성화
-                                      Navigator.of(context).pop(true);
-                                    },
-                                    child: const Text(
-                                      '확인',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          color: Color(0xff656565)),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                      if (shouldPop) {
-                        Get.back();
-                      }
+                    onTap: () {
+                      Get.back();
                     },
                     child: Container(
                       padding: const EdgeInsets.only(top: 8, bottom: 12),
@@ -125,7 +52,7 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                       style: TextStyle(fontSize: 20, color: Colors.black),
                       children: [
                         TextSpan(
-                            text: '음주',
+                            text: '수면',
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -173,22 +100,83 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 두 번째 진행 바 색상
+                              color: Color(0xff4D4D4D), // 두 번째 진행 바 색상
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: Color(0xff4D4D4D), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: Color(0xff4D4D4D), // 네 번째 진행 바 색상
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: Color(0xffD9D9D9), // 다섯 번째 진행 바 색상
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: Color(0xffD9D9D9), // 여섯 번째 진행 바 색상
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: Color(0xffD9D9D9), // 일곱 번째 진행 바 색상
                             ),
                           ),
                         ],
                       ),
                       SizedBox(height: 50),
                       // 질문 설명
-                      const Text(
-                        '다음은 최근 1년 동안의\n음주(술) 경험에 대한 질문입니다.',
-                        style: TextStyle(fontSize: 16),
+                      RichText(
+                        text: const TextSpan(
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: '지난',
+                            ),
+                            TextSpan(
+                                text: ' 2주간',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(
+                              text: ' 귀하의 불면증 문제의 심한 정도에 대해 선택해 주시기 바랍니다.',
+                            ),
+                          ],
+                        ),
                       ),
-                      SizedBox(height: 130),
-                      const Text(
-                        '1. 술을 얼마나 자주 마십니까?',
-                        style: TextStyle(fontSize: 16),
-                      ),
+                      // 질문 설명
+
+                      SizedBox(height: 80),
+                      const Text('4. 현재 수면패턴에 대해 얼마나 만족하고 계십니까?',
+                          style:
+                              TextStyle(fontSize: 16, fontFamily: 'Paperlogy')),
                       SizedBox(height: 10),
 
                       // 객관식 문항이 있는 사각형 박스
@@ -203,12 +191,14 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                           children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: List.generate(3, (index) {
+                              children: List.generate(5, (index) {
                                 //객관식 문항
                                 List<String> options = [
-                                  '최근 1년간 전혀 마시지 않았다',
-                                  '한달에 1~2번 정도',
-                                  '주 1회 이상'
+                                  '0. 매우 만족하고 있습니다.',
+                                  '1. 만족합니다.',
+                                  '2. 그저 그렇습니다.',
+                                  '3. 불만족스럽습니다.',
+                                  '4. 매우 불만족스럽습니다.'
                                 ];
                                 return Obx(
                                   () {
@@ -220,6 +210,7 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                                       child: IntrinsicWidth(
                                         child: Container(
                                           alignment: Alignment.centerLeft,
+                                          height: 39,
                                           margin: const EdgeInsets.symmetric(
                                               vertical: 4.0),
                                           padding: const EdgeInsets.symmetric(
@@ -247,54 +238,6 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                                 );
                               }),
                             ),
-                            // 주관식 입력란 (한 주에 00잔)
-                            Obx(() {
-                              // '주 1회 이상' 옵션이 선택된 경우에만 표시
-                              if (selectedOption == 2) {
-                                return Positioned(
-                                  bottom: 8.0, // 세 번째 옵션의 위치에 맞춤 (밑에서부터 패딩 8만큼)
-                                  right: 8.0, //우측정렬
-                                  child: Row(
-                                    children: [
-                                      const Text(
-                                        '한 주에 ',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      SizedBox(width: 12),
-                                      Container(
-                                        width: 78,
-                                        height: 37,
-                                        child: TextField(
-                                          onChanged: (value) =>
-                                              inputText.value = value,
-                                          keyboardType: TextInputType.number,
-                                          textAlign: TextAlign.center,
-                                          decoration: InputDecoration(
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                    vertical: 5.0),
-                                            filled: true,
-                                            fillColor: Colors.white,
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12.0),
-                                              borderSide: BorderSide.none,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      const Text(
-                                        ' 잔',
-                                        style: TextStyle(fontSize: 16),
-                                      )
-                                    ],
-                                  ),
-                                );
-                              } else {
-                                return SizedBox.shrink(); // 표시하지 않음
-                              }
-                            }),
                           ],
                         ),
                       ),
@@ -309,8 +252,7 @@ class AlcoholSurveyPage1 extends StatelessWidget {
 
       // 다음 버튼
       bottomNavigationBar: Obx(() {
-        bool isButtonEnabled = selectedOption.value != -1 &&
-            (selectedOption.value != 2 || inputText.value.isNotEmpty);
+        bool isButtonEnabled = selectedOption.value != -1;
         return Container(
           color: Colors.white,
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 42.0),
@@ -328,7 +270,7 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                 ),
               ),
               onPressed: () async {
-                await Get.to(() => AlcoholSurveyPage2());
+                await Get.to(() => SleepSurveyPage5());
                 // 페이지 2에서 뒤로 가기를 해도, 페이지 1의 기존 선택값이 유지됨
               },
               child: const Text(
