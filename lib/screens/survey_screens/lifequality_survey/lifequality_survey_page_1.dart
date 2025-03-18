@@ -343,12 +343,17 @@ class LifeQualitySurveyPage1 extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.0), // 버튼 모서리 둥글게
                 ),
               ),
-              onPressed: isButtonEnabled
-                  ? () {
-                      // Get.to(() => SleepSurveyPage1()); // 다음 페이지 이동
-                      Get.back();
-                    }
-                  : null, // 선택하지 않으면 버튼 비활성화
+              // onPressed: isButtonEnabled
+              //     ? () {
+              //         // Get.to(() => SleepSurveyPage1()); // 다음 페이지 이동
+              //         Get.back();
+              //       }
+              //     : null, // 선택하지 않으면 버튼 비활성화
+
+              onPressed: () {
+                surveyController.completeLifeQualitySurvey();
+                Get.back();
+              },
               child: const Text(
                 '다음',
                 style: TextStyle(fontSize: 28),
