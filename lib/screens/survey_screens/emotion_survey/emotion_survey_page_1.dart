@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
 //import 'package:dtxproject/constants/app_theme.dart';
-import 'package:dtxproject/screens/survey_screens/sleep_survey/sleep_survey_page_7.dart';
 
-class SleepSurveyPage6 extends StatelessWidget {
+class EmotionSurveyPage1 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
   // 선택된 옵션을 저장하는 RxInt 변수
   final RxInt selectedOption = (-1).obs;
 
-  SleepSurveyPage6({super.key});
+  EmotionSurveyPage1({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +20,7 @@ class SleepSurveyPage6 extends StatelessWidget {
     // 진행 바 개당 너비
     double progressBarWidth = availableWidth / 7;
     return Scaffold(
-      backgroundColor: Color(0xFF9D9D9D), // 배경색 적용
+      backgroundColor: const Color(0xFF9D9D9D), // 배경색 적용
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,8 +32,82 @@ class SleepSurveyPage6 extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      Get.back();
+                    onTap: () async {
+                      bool shouldPop = await showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(15.0), // 모서리 둥글게 설정
+                          ),
+                          backgroundColor: Colors.white, // 배경색 흰색으로 설정
+                          contentPadding: const EdgeInsets.only(top: 30),
+                          content: const Text('재시작 시,\n이전 문항의 기록이\n모두 사라집니다.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 16)),
+                          actionsPadding:
+                              const EdgeInsets.all(20), // 버튼 위쪽에 여백 추가
+
+                          actions: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      minimumSize: const Size(
+                                          double.infinity, 50), //버튼 크기
+                                      backgroundColor: const Color(0xff00102B),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            12.0), // 버튼 모서리 둥글게
+                                      ),
+                                    ),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: const Text(
+                                      '취소',
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8.0), // 버튼 사이의 간격
+                                Expanded(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      minimumSize: const Size(
+                                          double.infinity, 50), //버튼 크기
+
+                                      backgroundColor: const Color(0xffD9D9D9),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            12.0), // 버튼 모서리 둥글게
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      // surveyController
+                                      //     .clearAlcoholSurveyData(); // 모든 응답 초기화 (페이지 2 포함)
+                                      surveyController
+                                          .resetSleepSurveys(); // 홈 화면에서 비활성화
+                                      Navigator.of(context).pop(true);
+                                    },
+                                    child: const Text(
+                                      '확인',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          color: Color(0xff656565)),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                      if (shouldPop) {
+                        Get.back();
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.only(top: 8, bottom: 12),
@@ -76,7 +149,7 @@ class SleepSurveyPage6 extends StatelessWidget {
                     topRight: Radius.circular(20.0),
                   ),
                 ),
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,66 +163,66 @@ class SleepSurveyPage6 extends StatelessWidget {
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), //1
+                              color: const Color(0xff4D4D4D), // 첫 번째 진행 바 색상
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Container(
                             width: progressBarWidth,
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), //2
+                              color: const Color(0xffD9D9D9), // 두 번째 진행 바 색상
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Container(
                             width: progressBarWidth,
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 3
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Container(
                             width: progressBarWidth,
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 4
+                              color: const Color(0xffD9D9D9), // 네 번째 진행 바 색상
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Container(
                             width: progressBarWidth,
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 5
+                              color: const Color(0xffD9D9D9), // 다섯 번째 진행 바 색상
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Container(
                             width: progressBarWidth,
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xff4D4D4D), // 6
+                              color: const Color(0xffD9D9D9), // 여섯 번째 진행 바 색상
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Container(
                             width: progressBarWidth,
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 7
+                              color: const Color(0xffD9D9D9), // 일곱 번째 진행 바 색상
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 50),
+                      const SizedBox(height: 50),
                       // 질문 설명
                       RichText(
                         text: const TextSpan(
@@ -172,21 +245,20 @@ class SleepSurveyPage6 extends StatelessWidget {
                       ),
                       // 질문 설명
 
-                      SizedBox(height: 80),
-                      const Text(
-                          '6. 삶의 질 저하 측면에서 귀하의 수면 장애를\n다른 사람이 얼마나 쉽게 알아차릴 수 있다고\n생각하십니까?',
+                      const SizedBox(height: 80),
+                      const Text('1. 잠들기 어렵나요?',
                           style:
                               TextStyle(fontSize: 16, fontFamily: 'Paperlogy')),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
                       // 객관식 문항이 있는 사각형 박스
                       Container(
                         width: MediaQuery.of(context).size.width - 34,
                         decoration: BoxDecoration(
-                          color: Color(0xffF5F5F5),
+                          color: const Color(0xffF5F5F5),
                           borderRadius: BorderRadius.circular(12.0),
                         ),
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Stack(
                           children: [
                             Column(
@@ -194,11 +266,11 @@ class SleepSurveyPage6 extends StatelessWidget {
                               children: List.generate(5, (index) {
                                 //객관식 문항
                                 List<String> options = [
-                                  '0. 전혀 현저하지 않습니다.',
-                                  '1. 조금 현저한 정도입니다.',
-                                  '2. 다소 현저한 정도입니다.',
-                                  '3. 꽤 현저합니다.',
-                                  '4. 매우 현저합니다.'
+                                  '0. 전혀 그렇지 않습니다.',
+                                  '1. 약간 그렇습니다.',
+                                  '2. 종종 그런편입니다.',
+                                  '3. 자주 그렇습니다.',
+                                  '4. 항상 그렇습니다.'
                                 ];
                                 return Obx(
                                   () {
@@ -217,7 +289,7 @@ class SleepSurveyPage6 extends StatelessWidget {
                                               vertical: 8.0, horizontal: 20.0),
                                           decoration: BoxDecoration(
                                             color: isSelected
-                                                ? Color(0xff4E4E4E)
+                                                ? const Color(0xff4E4E4E)
                                                 : Colors.white,
                                             borderRadius:
                                                 BorderRadius.circular(12.0),
@@ -262,19 +334,21 @@ class SleepSurveyPage6 extends StatelessWidget {
             height: 64,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    isButtonEnabled ? Color(0xff363636) : Color(0xffD9D9D9),
+                backgroundColor: isButtonEnabled
+                    ? const Color(0xff363636)
+                    : const Color(0xffD9D9D9),
                 foregroundColor: Colors.white,
-                disabledBackgroundColor: Color(0xffD9D9D9),
+                disabledBackgroundColor: const Color(0xffD9D9D9),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0), // 버튼 모서리 둥글게
                 ),
               ),
               onPressed: isButtonEnabled
                   ? () {
-                      Get.to(() => SleepSurveyPage7()); // 다음 페이지 이동
+                      // Get.to(() => SleepSurveyPage2()); // 다음 페이지 이동
+                      Get.back();
                     }
-                  : null,
+                  : null, // 선택하지 않으면 버튼 비활성화
               child: const Text(
                 '다음',
                 style: TextStyle(fontSize: 28),

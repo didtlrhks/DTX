@@ -12,6 +12,11 @@ import 'package:dtxproject/controllers/survey_controller.dart';
 import 'package:dtxproject/screens/survey_screens/survey_result_page.dart';
 import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_page_1.dart';
 import 'package:dtxproject/screens/survey_screens/sleep_survey/sleep_survey_page_1.dart';
+import 'package:dtxproject/screens/survey_screens/diet_survey/diet_survey_page_1.dart';
+import 'package:dtxproject/screens/survey_screens/emotion_survey/emotion_survey_page_1.dart';
+import 'package:dtxproject/screens/survey_screens/exercise_survey/exercise_survey_page_1.dart';
+import 'package:dtxproject/screens/survey_screens/lifequality_survey/lifequality_survey_page_1.dart';
+import 'package:dtxproject/screens/survey_screens/sick_survey/sick_survey_page_1.dart';
 
 class SurveyHomePage extends GetView<SurveyController> {
   const SurveyHomePage({super.key});
@@ -83,16 +88,14 @@ class SurveyHomePage extends GetView<SurveyController> {
                                   '운동 설문',
                                   '운동 실천',
                                   '소요시간 4분 30초',
-                                  () => Get.to(
-                                      () => const ExerciseSurveyStartPage()),
+                                  () => Get.to(() => ExerciseSurveyPage1()),
                                   controller.isExerciseSurveyCompleted.value,
                                 ),
                                 _buildSurveyCard(
                                   '식단 설문',
                                   '식단 실천',
                                   '소요시간 4분 30초',
-                                  () =>
-                                      Get.to(() => const DietSurveyStartPage()),
+                                  () => Get.to(() => DietSurveyPage1()),
                                   controller.isDietSurveyCompleted.value,
                                 ),
                                 _buildSurveyCard(
@@ -106,16 +109,14 @@ class SurveyHomePage extends GetView<SurveyController> {
                                   '삶의 질 설문',
                                   '삶의 질 실천',
                                   '소요시간 3분 30초',
-                                  () => Get.to(
-                                      () => const LifeQualitySurveyStartPage()),
+                                  () => Get.to(() => LifeQualitySurveyPage1()),
                                   controller.isLifeQualitySurveyCompleted.value,
                                 ),
                                 _buildSurveyCard(
                                   '감정 설문',
                                   '감정 실천',
                                   '소요시간 40초',
-                                  () => Get.to(
-                                      () => const EmotionSurveyStartPage()),
+                                  () => Get.to(() => EmotionSurveyPage1()),
                                   controller.isEmotionSurveyCompleted.value,
                                 ),
                                 _buildSurveyCard(
@@ -129,8 +130,7 @@ class SurveyHomePage extends GetView<SurveyController> {
                                   '질병 설문',
                                   '질병 실천',
                                   '소요시간 40초',
-                                  () =>
-                                      Get.to(() => const SickSurveyStartPage()),
+                                  () => Get.to(() => SickSurveyPage1()),
                                   controller.isSickSurveyCompleted.value,
                                 ),
                               ],

@@ -11,7 +11,7 @@ class SurveyController extends GetxController {
 
   final Rx<bool> isAllSurveysCompleted = false.obs;
 
-  //객관식, 주관식 응답값(현재 설문 진행 데이터)
+  // //객관식, 주관식 응답값(현재 설문 진행 데이터)
   var selectedOption = (-1).obs; // 객관식 선택값
   var inputText = "".obs; // 주관식(페이지 1)
   var inputText2 = "".obs; // 주관식(페이지 2)

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
-import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_end_page.dart';
 //import 'package:dtxproject/constants/app_theme.dart';
 import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_page_2.dart';
 
@@ -11,6 +10,8 @@ class AlcoholSurveyPage1 extends StatelessWidget {
   final RxInt selectedOption = (-1).obs;
   // 입력된 텍스트를 저장하는 RxString 변수
   final RxString inputText = ''.obs;
+
+  AlcoholSurveyPage1({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -87,10 +88,10 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                                       ),
                                     ),
                                     onPressed: () {
+                                      // surveyController
+                                      //     .clearAlcoholSurveyData(); // 모든 응답 초기화 (페이지 2 포함)
                                       surveyController
-                                          .clearAlcoholSurveyData(); // 모든 응답 초기화 (페이지 2 포함)
-                                      surveyController
-                                          .resetAllSurveys(); // 홈 화면에서 비활성화
+                                          .resetAlcoholSurveys(); // 홈 화면에서 비활성화
                                       Navigator.of(context).pop(true);
                                     },
                                     child: const Text(
@@ -327,10 +328,11 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.0), // 버튼 모서리 둥글게
                 ),
               ),
-              onPressed: () async {
-                await Get.to(() => AlcoholSurveyPage2());
-                // 페이지 2에서 뒤로 가기를 해도, 페이지 1의 기존 선택값이 유지됨
-              },
+              onPressed: isButtonEnabled
+                  ? () {
+                      Get.to(() => AlcoholSurveyPage2()); // 다음 페이지 이동
+                    }
+                  : null,
               child: const Text(
                 '다음',
                 style: TextStyle(fontSize: 28),
