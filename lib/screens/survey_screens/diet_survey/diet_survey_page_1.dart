@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
+import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_end_page.dart';
 //import 'package:dtxproject/constants/app_theme.dart';
+import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_page_2.dart';
 import 'package:dtxproject/screens/survey_screens/sleep_survey/sleep_survey_page_2.dart';
 
-class SleepSurveyPage1 extends StatelessWidget {
+class DietSurveyPage1 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
   // 선택된 옵션을 저장하는 RxInt 변수
   final RxInt selectedOption = (-1).obs;
 
-  SleepSurveyPage1({super.key});
+  DietSurveyPage1({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +19,9 @@ class SleepSurveyPage1 extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
     // 좌우 패딩과 가운데 간격을 제외한 너비
     double availableWidth =
-        screenWidth - 50 - (4 * 6); // 50: 좌우 패딩 합, 4: 가운데 간격 * 6 번
+        screenWidth - 50 - (4 * 40); // 50: 좌우 패딩 합, 4: 가운데 간격 * 31 번
     // 진행 바 개당 너비
-    double progressBarWidth = availableWidth / 7;
+    double progressBarWidth = availableWidth / 40;
     return Scaffold(
       backgroundColor: const Color(0xFF9D9D9D), // 배경색 적용
       body: SafeArea(
@@ -87,6 +89,8 @@ class SleepSurveyPage1 extends StatelessWidget {
                                       ),
                                     ),
                                     onPressed: () {
+                                      // surveyController
+                                      //     .clearAlcoholSurveyData(); // 모든 응답 초기화 (페이지 2 포함)
                                       surveyController
                                           .resetSleepSurveys(); // 홈 화면에서 비활성화
                                       Navigator.of(context).pop(true);
@@ -217,6 +221,303 @@ class SleepSurveyPage1 extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
                               color: const Color(0xffD9D9D9), // 일곱 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
                             ),
                           ),
                         ],
