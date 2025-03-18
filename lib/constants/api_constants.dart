@@ -19,6 +19,9 @@ class ApiConstants {
   static const String dinner = '/dinner';
   static const String dinnerByUser = '/dinner/user'; // 사용자별 저녁 기록 조회
 
+  static const String snack = '/snack';
+  static const String snackByUser = '/snack/user'; // 사용자별 간식 기록 조회
+
   // Headers
   static const Map<String, String> headers = {
     'Content-Type': 'application/json',

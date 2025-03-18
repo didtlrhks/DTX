@@ -12,6 +12,8 @@ import 'services/breakfast_service.dart';
 import 'controllers/breakfast_controller.dart';
 import 'services/dinner_service.dart';
 import 'controllers/dinner_controller.dart';
+import 'services/snack_service.dart';
+import 'controllers/snack_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,11 +36,13 @@ Future<void> initServices() async {
   final lunchService = Get.put(LunchService());
   final breakfastService = Get.put(BreakfastService());
   final dinnerService = Get.put(DinnerService());
+  final snackService = Get.put(SnackService());
 
   // 컨트롤러 초기화 (서비스 의존성 주입)
   Get.put(LunchController(lunchService: lunchService));
   Get.put(BreakfastController(breakfastService: breakfastService));
   Get.put(DinnerController(dinnerService: dinnerService));
+  Get.put(SnackController(snackService: snackService));
 }
 
 class MyApp extends StatelessWidget {
