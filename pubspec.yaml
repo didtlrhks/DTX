@@ -83,6 +83,7 @@ flutter:
   assets:
     - assets/images/check_circle.png
     - assets/images/check_circle_bold.png
+    - assets/images/running.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

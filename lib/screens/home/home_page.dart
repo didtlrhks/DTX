@@ -11,6 +11,7 @@ import 'package:timeline_tile/timeline_tile.dart';
 import 'package:dtxproject/controllers/auth_controller.dart';
 import 'package:dtxproject/utils/date_utils.dart';
 import 'package:dtxproject/controllers/mission_controller.dart';
+import 'package:dtxproject/screens/card_news/card_news_page.dart';
 
 class HomePage extends StatelessWidget {
   final String? goalTitle;
@@ -25,7 +26,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
-    // 미션 컨트롤러 등록
     final MissionController missionController = Get.put(MissionController());
 
     final dateInfo = DateUtil.getCurrentDateInfo();
@@ -180,32 +180,37 @@ class HomePage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 2),
-                          Container(
-                            width: 80,
-                            height: 77,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '카드',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(() => const CardNewsPage());
+                            },
+                            child: Container(
+                              width: 80,
+                              height: 77,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '카드',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  '뉴스',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                  SizedBox(width: 8),
+                                  Text(
+                                    '뉴스',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ],
