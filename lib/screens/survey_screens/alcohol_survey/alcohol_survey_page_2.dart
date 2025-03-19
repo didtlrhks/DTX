@@ -7,14 +7,6 @@ import 'package:dtxproject/controllers/survey_controller.dart';
 class AlcoholSurveyPage2 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
 
-  // 이전 페이지의 응답 값 유지
-  // final int previousSelectedOption = Get.arguments?["selectedOption"] ?? -1;
-  // final String previousInputText = Get.arguments?["inputText"] ?? "";
-
-  // 새로운 문항을 위한 상태 변수 (초기화)
-  final RxInt selectedOption = (-1).obs;
-  final RxString inputText = "".obs;
-
   AlcoholSurveyPage2({super.key});
 
   @override
@@ -144,9 +136,7 @@ class AlcoholSurveyPage2 extends StatelessWidget {
                             // 주관식 입력필드
                             Obx(() {
                               return Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.end, // 오른쪽 정렬
-
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   const Text(
                                     '한 번에 ',
@@ -157,16 +147,14 @@ class AlcoholSurveyPage2 extends StatelessWidget {
                                     width: 78,
                                     height: 37,
                                     child: TextField(
-                                      onChanged: (value) =>
-                                          inputText.value = value,
+                                      onChanged: (value) {
+                                        surveyController.alcoholQ2InputText
+                                            .value = value; // 값 업데이트
+                                      },
                                       controller: TextEditingController(
                                         text: surveyController
-                                            .inputText.value, // 현재 값 유지
+                                            .alcoholQ2InputText.value,
                                       ),
-                                      // onChanged: (value) {
-                                      //   surveyController.inputText.value =
-                                      //       value; // 값 업데이트
-                                      // },
                                       keyboardType: TextInputType.number,
                                       textAlign: TextAlign.center,
                                       decoration: InputDecoration(
@@ -205,7 +193,8 @@ class AlcoholSurveyPage2 extends StatelessWidget {
 
       // 다음 버튼
       bottomNavigationBar: Obx(() {
-        bool isButtonEnabled = inputText.value.isNotEmpty; // 값 입력 여부만 확인
+        bool isButtonEnabled =
+            surveyController.alcoholQ2InputText.value.isNotEmpty; // 값 입력 여부만 확인
 
         return Container(
           color: Colors.white,

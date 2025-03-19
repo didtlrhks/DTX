@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
 //import 'package:dtxproject/constants/app_theme.dart';
-import 'package:dtxproject/screens/survey_screens/sleep_survey/sleep_survey_page_6.dart';
+import 'package:dtxproject/screens/survey_screens/lifequality_survey/lifequality_survey_page_4.dart';
 
-class SleepSurveyPage5 extends StatelessWidget {
+class LifeQualitySurveyPage3 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
 
-  SleepSurveyPage5({super.key});
+  LifeQualitySurveyPage3({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +15,9 @@ class SleepSurveyPage5 extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
     // 좌우 패딩과 가운데 간격을 제외한 너비
     double availableWidth =
-        screenWidth - 50 - (4 * 6); // 50: 좌우 패딩 합, 4: 가운데 간격 * 6 번
+        screenWidth - 50 - (4 * 7); // 50: 좌우 패딩 합, 4: 가운데 간격 * 7 번
     // 진행 바 개당 너비
-    double progressBarWidth = availableWidth / 7;
+    double progressBarWidth = availableWidth / 8;
     return Scaffold(
       backgroundColor: Color(0xFF9D9D9D), // 배경색 적용
       body: SafeArea(
@@ -49,7 +49,7 @@ class SleepSurveyPage5 extends StatelessWidget {
                       style: TextStyle(fontSize: 20, color: Colors.black),
                       children: [
                         TextSpan(
-                            text: '수면',
+                            text: '삶의질',
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -106,7 +106,7 @@ class SleepSurveyPage5 extends StatelessWidget {
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 세 번째 진행 바 색상
+                              color: Color(0xff4D4D4D), // 세 번째 진행 바 색상
                             ),
                           ),
                           SizedBox(width: 4),
@@ -124,7 +124,7 @@ class SleepSurveyPage5 extends StatelessWidget {
                             height: 8,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xff4D4D4D), // 다섯 번째 진행 바 색상
+                              color: Color(0xffD9D9D9), // 다섯 번째 진행 바 색상
                             ),
                           ),
                           SizedBox(width: 4),
@@ -145,6 +145,15 @@ class SleepSurveyPage5 extends StatelessWidget {
                               color: Color(0xffD9D9D9), // 일곱 번째 진행 바 색상
                             ),
                           ),
+                          SizedBox(width: 4),
+                          Container(
+                            width: progressBarWidth,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5),
+                              color: Color(0xffD9D9D9), // 여덟 번째 진행 바 색상
+                            ),
+                          ),
                         ],
                       ),
                       SizedBox(height: 50),
@@ -157,13 +166,11 @@ class SleepSurveyPage5 extends StatelessWidget {
                           ),
                           children: [
                             TextSpan(
-                              text: '지난',
-                            ),
-                            TextSpan(
-                                text: ' 2주간',
+                                text: '지난 1주일 동안',
                                 style: TextStyle(fontWeight: FontWeight.bold)),
                             TextSpan(
-                              text: ' 귀하의 불면증 문제의 심한 정도에 대해 선택해 주시기 바랍니다.',
+                              text:
+                                  ' 귀하의 건강과 관련된 질문입니다.\n보기를 읽고 귀하의 상태를 가장 잘 표현하는 것을\n선택하여 주십시오',
                             ),
                           ],
                         ),
@@ -171,7 +178,7 @@ class SleepSurveyPage5 extends StatelessWidget {
                       // 질문 설명
 
                       SizedBox(height: 80),
-                      const Text('5. 경험하는 수면장애가\n 일상기능을 어느 정도로 방해한다고 생각하십니까?',
+                      const Text('3. 기운',
                           style:
                               TextStyle(fontSize: 16, fontFamily: 'Paperlogy')),
                       SizedBox(height: 10),
@@ -188,24 +195,23 @@ class SleepSurveyPage5 extends StatelessWidget {
                           children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: List.generate(5, (index) {
+                              children: List.generate(4, (index) {
                                 //객관식 문항
                                 List<String> options = [
-                                  '0. 전혀 그렇지 않습니다.',
-                                  '1. 약간 그렇습니다.',
-                                  '2. 종종 그런편입니다.',
-                                  '3. 자주 그렇습니다.',
-                                  '4. 항상 그렇습니다.'
+                                  '나는 항상 기운이 있었다.',
+                                  '나는 자주 기운이 있었다.',
+                                  '나는 가끔 기운이 있었다.',
+                                  '나는 가끔 기운이 있었다.',
                                 ];
                                 return Obx(
                                   () {
                                     // 옵션 선택 확인
-                                    bool isSelected =
-                                        surveyController.SleepQ5Option.value ==
-                                            index;
+                                    bool isSelected = surveyController
+                                            .LifeQualityQ3Option.value ==
+                                        index;
                                     return GestureDetector(
                                       onTap: () => surveyController
-                                          .SleepQ5Option.value = index,
+                                          .LifeQualityQ3Option.value = index,
                                       child: IntrinsicWidth(
                                         child: Container(
                                           alignment: Alignment.centerLeft,
@@ -251,8 +257,8 @@ class SleepSurveyPage5 extends StatelessWidget {
 
       // 다음 버튼
       bottomNavigationBar: Obx(() {
-        bool isButtonEnabled =
-            surveyController.SleepQ5Option.value != -1; // 선택된 옵션이 있어야 버튼 활성화됨.
+        bool isButtonEnabled = surveyController.LifeQualityQ3Option.value !=
+            -1; // 선택된 옵션이 있어야 버튼 활성화됨.
         return Container(
           color: Colors.white,
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 42.0),
@@ -271,7 +277,7 @@ class SleepSurveyPage5 extends StatelessWidget {
               ),
               onPressed: isButtonEnabled
                   ? () {
-                      Get.to(() => SleepSurveyPage6()); // 다음 페이지 이동
+                      Get.to(() => LifeQualitySurveyPage4()); // 다음 페이지 이동
                     }
                   : null,
               child: const Text(
