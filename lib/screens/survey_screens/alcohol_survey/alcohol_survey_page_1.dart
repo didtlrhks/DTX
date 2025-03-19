@@ -6,10 +6,6 @@ import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_
 
 class AlcoholSurveyPage1 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
-  // 선택된 옵션을 저장하는 RxInt 변수
-  final RxInt selectedOption = (-1).obs;
-  // 입력된 텍스트를 저장하는 RxString 변수
-  final RxString inputText = ''.obs;
 
   AlcoholSurveyPage1({super.key});
 
@@ -20,7 +16,7 @@ class AlcoholSurveyPage1 extends StatelessWidget {
     // 좌우 패딩과 가운데 간격을 제외한 너비
     double availableWidth = screenWidth - 50 - 4; // 50: 좌우 패딩 합, 4: 가운데 간격
     // 진행 바 개당 너비
-    double progressBarWidth = availableWidth / 2;
+    double progressBarWidth = availableWidth / 2; // 문항 수 만큼 나누기
     return Scaffold(
       backgroundColor: Color(0xFF9D9D9D), // 배경색 적용
       body: SafeArea(
@@ -88,8 +84,8 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                                       ),
                                     ),
                                     onPressed: () {
-                                      // surveyController
-                                      //     .clearAlcoholSurveyData(); // 모든 응답 초기화 (페이지 2 포함)
+                                      surveyController
+                                          .clearAlcoholSurveys(); // 모든 응답 초기화
                                       surveyController
                                           .resetAlcoholSurveys(); // 홈 화면에서 비활성화
                                       Navigator.of(context).pop(true);
@@ -214,10 +210,12 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                                 return Obx(
                                   () {
                                     // 옵션 선택 확인
-                                    bool isSelected =
-                                        selectedOption.value == index;
+                                    bool isSelected = surveyController
+                                            .alcoholQ1Option.value ==
+                                        index;
                                     return GestureDetector(
-                                      onTap: () => selectedOption.value = index,
+                                      onTap: () => surveyController
+                                          .alcoholQ1Option.value = index,
                                       child: IntrinsicWidth(
                                         child: Container(
                                           alignment: Alignment.centerLeft,
@@ -251,7 +249,7 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                             // 주관식 입력란 (한 주에 00잔)
                             Obx(() {
                               // '주 1회 이상' 옵션이 선택된 경우에만 표시
-                              if (selectedOption == 2) {
+                              if (surveyController.alcoholQ1Option.value == 2) {
                                 return Positioned(
                                   bottom: 8.0, // 세 번째 옵션의 위치에 맞춤 (밑에서부터 패딩 8만큼)
                                   right: 8.0, //우측정렬
@@ -266,8 +264,10 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                                         width: 78,
                                         height: 37,
                                         child: TextField(
-                                          onChanged: (value) =>
-                                              inputText.value = value,
+                                          onChanged: (value) {
+                                            surveyController.alcoholQ1InputText
+                                                .value = value;
+                                          },
                                           keyboardType: TextInputType.number,
                                           textAlign: TextAlign.center,
                                           decoration: InputDecoration(
@@ -310,8 +310,9 @@ class AlcoholSurveyPage1 extends StatelessWidget {
 
       // 다음 버튼
       bottomNavigationBar: Obx(() {
-        bool isButtonEnabled = selectedOption.value != -1 &&
-            (selectedOption.value != 2 || inputText.value.isNotEmpty);
+        bool isButtonEnabled = surveyController.alcoholQ1Option.value != -1 &&
+            (surveyController.alcoholQ1Option.value != 2 ||
+                surveyController.alcoholQ1InputText.value.isNotEmpty);
         return Container(
           color: Colors.white,
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 42.0),

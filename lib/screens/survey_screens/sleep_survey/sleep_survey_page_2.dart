@@ -6,8 +6,6 @@ import 'package:dtxproject/screens/survey_screens/sleep_survey/sleep_survey_page
 
 class SleepSurveyPage2 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
-  // 선택된 옵션을 저장하는 RxInt 변수
-  final RxInt selectedOption = (-1).obs;
 
   SleepSurveyPage2({super.key});
 
@@ -203,9 +201,11 @@ class SleepSurveyPage2 extends StatelessWidget {
                                   () {
                                     // 옵션 선택 확인
                                     bool isSelected =
-                                        selectedOption.value == index;
+                                        surveyController.SleepQ2Option.value ==
+                                            index;
                                     return GestureDetector(
-                                      onTap: () => selectedOption.value = index,
+                                      onTap: () => surveyController
+                                          .SleepQ2Option.value = index,
                                       child: IntrinsicWidth(
                                         child: Container(
                                           alignment: Alignment.centerLeft,
@@ -252,7 +252,7 @@ class SleepSurveyPage2 extends StatelessWidget {
       // 다음 버튼
       bottomNavigationBar: Obx(() {
         bool isButtonEnabled =
-            selectedOption.value != -1; // 선택된 옵션이 있어야 버튼 활성화됨.
+            surveyController.SleepQ2Option.value != -1; // 선택된 옵션이 있어야 버튼 활성화됨.
         return Container(
           color: Colors.white,
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 42.0),

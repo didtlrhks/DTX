@@ -6,8 +6,6 @@ import 'package:dtxproject/screens/survey_screens/sleep_survey/sleep_survey_page
 
 class SleepSurveyPage1 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
-  // 선택된 옵션을 저장하는 RxInt 변수
-  final RxInt selectedOption = (-1).obs;
 
   SleepSurveyPage1({super.key});
 
@@ -87,6 +85,8 @@ class SleepSurveyPage1 extends StatelessWidget {
                                       ),
                                     ),
                                     onPressed: () {
+                                      surveyController
+                                          .clearSleepSurveys(); // 모든 응답 초기화
                                       surveyController
                                           .resetSleepSurveys(); // 홈 화면에서 비활성화
                                       Navigator.of(context).pop(true);
@@ -275,9 +275,11 @@ class SleepSurveyPage1 extends StatelessWidget {
                                   () {
                                     // 옵션 선택 확인
                                     bool isSelected =
-                                        selectedOption.value == index;
+                                        surveyController.SleepQ1Option.value ==
+                                            index;
                                     return GestureDetector(
-                                      onTap: () => selectedOption.value = index,
+                                      onTap: () => surveyController
+                                          .SleepQ1Option.value = index,
                                       child: IntrinsicWidth(
                                         child: Container(
                                           alignment: Alignment.centerLeft,
@@ -324,7 +326,7 @@ class SleepSurveyPage1 extends StatelessWidget {
       // 다음 버튼
       bottomNavigationBar: Obx(() {
         bool isButtonEnabled =
-            selectedOption.value != -1; // 선택된 옵션이 있어야 버튼 활성화됨.
+            surveyController.SleepQ1Option.value != -1; // 선택된 옵션이 있어야 버튼 활성화됨.
         return Container(
           color: Colors.white,
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 42.0),

@@ -11,10 +11,29 @@ class SurveyController extends GetxController {
 
   final Rx<bool> isAllSurveysCompleted = false.obs;
 
-  // //객관식, 주관식 응답값(현재 설문 진행 데이터)
-  var selectedOption = (-1).obs; // 객관식 선택값
-  var inputText = "".obs; // 주관식(페이지 1)
-  var inputText2 = "".obs; // 주관식(페이지 2)
+  // 음주 문항
+  final RxInt alcoholQ1Option = (-1).obs;
+  final RxString alcoholQ1InputText = "".obs;
+  final RxString alcoholQ2InputText = "".obs;
+
+  // 수면 문항
+  final RxInt SleepQ1Option = (-1).obs;
+  final RxInt SleepQ2Option = (-1).obs;
+  final RxInt SleepQ3Option = (-1).obs;
+  final RxInt SleepQ4Option = (-1).obs;
+  final RxInt SleepQ5Option = (-1).obs;
+  final RxInt SleepQ6Option = (-1).obs;
+  final RxInt SleepQ7Option = (-1).obs;
+
+  // 삶의질 문항
+  final RxInt LifeQualityQ1Option = (-1).obs;
+  final RxInt LifeQualityQ2Option = (-1).obs;
+  final RxInt LifeQualityQ3Option = (-1).obs;
+  final RxInt LifeQualityQ4Option = (-1).obs;
+  final RxInt LifeQualityQ5Option = (-1).obs;
+  final RxInt LifeQualityQ6Option = (-1).obs;
+  final RxInt LifeQualityQ7Option = (-1).obs;
+  final RxInt LifeQualityQ8Option = (-1).obs;
 
   @override
   void onInit() {
@@ -82,51 +101,59 @@ class SurveyController extends GetxController {
 
   void resetAlcoholSurveys() {
     isAlcoholSurveyCompleted.value = false;
-
-    update();
   }
 
-  void DietSurveySurveys() {
+  void resetDietSurveys() {
     isDietSurveyCompleted.value = false;
-
-    update();
   }
 
   void resetSleepSurveys() {
     isSleepSurveyCompleted.value = false;
-
-    update();
   }
 
   void resetExerciseSurveys() {
     isExerciseSurveyCompleted.value = false;
-
-    update();
   }
 
   void resetEmotionSurveys() {
     isEmotionSurveyCompleted.value = false;
-
-    update();
   }
 
   void resetLifeQualitySurveys() {
     isLifeQualitySurveyCompleted.value = false;
-
-    update();
   }
 
   void resetSickSurveySurveys() {
     isSickSurveyCompleted.value = false;
-
-    update();
   }
 
-  void clearAlcoholSurveyData() {
-    selectedOption.value = -1; // 객관식 초기화
-    inputText.value = ""; // 주관식(페이지 1) 초기화
-    inputText2.value = ""; // 주관식(페이지 2) 초기화
+  // 음주 설문 초기화)
+  void clearAlcoholSurveys() {
+    alcoholQ1Option.value = -1;
+    alcoholQ1InputText.value = "";
+    alcoholQ2InputText.value = "";
+  }
 
-    update(); // UI 업데이트
+  // 수면 설문 초기화)
+  void clearSleepSurveys() {
+    SleepQ1Option.value = -1;
+    SleepQ2Option.value = -1;
+    SleepQ3Option.value = -1;
+    SleepQ4Option.value = -1;
+    SleepQ5Option.value = -1;
+    SleepQ6Option.value = -1;
+    SleepQ7Option.value = -1;
+  }
+
+  // 삶의질설문 초기화)
+  void clearLifeQualitySurveys() {
+    LifeQualityQ1Option.value = -1;
+    LifeQualityQ2Option.value = -1;
+    LifeQualityQ3Option.value = -1;
+    LifeQualityQ4Option.value = -1;
+    LifeQualityQ5Option.value = -1;
+    LifeQualityQ6Option.value = -1;
+    LifeQualityQ7Option.value = -1;
+    LifeQualityQ8Option.value = -1;
   }
 }
