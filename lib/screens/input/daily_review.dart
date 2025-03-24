@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:dtxproject/models/dailyreview_model.dart';
+import 'package:dtxproject/services/dailyreview_service.dart';
+import 'package:dtxproject/controllers/auth_controller.dart';
 
 class DailyReviewPage extends StatefulWidget {
   const DailyReviewPage({super.key});
@@ -9,6 +12,12 @@ class DailyReviewPage extends StatefulWidget {
 }
 
 class _DailyReviewPageState extends State<DailyReviewPage> {
+  // AuthController 인스턴스 가져오기
+  final AuthController _authController = Get.find<AuthController>();
+
+  // API 호출 상태 관리
+  final RxBool isLoading = false.obs;
+
   // 각 탭별 선택된 항목 인덱스 관리
   final Map<String, int> _selectedIndices = {
     '배고픔': -1,
@@ -113,6 +122,16 @@ class _DailyReviewPageState extends State<DailyReviewPage> {
       }
     }
     return true; // 모든 이전 탭이 완료됨
+  }
+
+  // 모든 탭이 완료되었는지 확인
+  bool get _allTabsCompleted {
+    for (String tab in _tabOrder) {
+      if (_selectedIndices[tab]! < 0) {
+        return false; // 완료되지 않은 탭이 있으면 false
+      }
+    }
+    return true; // 모든 탭이 완료됨
   }
 
   @override
@@ -242,36 +261,44 @@ class _DailyReviewPageState extends State<DailyReviewPage> {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: _currentSelectedIndex >= 0
-                            ? Colors.grey[600]
-                            : Colors.grey[400],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: TextButton(
-                        onPressed: _currentSelectedIndex >= 0
-                            ? () {
-                                if (_isLastTab && _allPreviousTabsCompleted) {
-                                  // 모든 이전 탭이 완료된 경우에만 완료 처리
-                                  _completeReview();
-                                } else {
-                                  // 다음 탭으로 이동
-                                  _moveToNextTab();
-                                }
-                              }
-                            : null,
-                        child: Text(
-                          nextButtonText,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                    child: Obx(() => Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: _currentSelectedIndex >= 0
+                                ? Colors.grey[600]
+                                : Colors.grey[400],
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        ),
-                      ),
-                    ),
+                          child: TextButton(
+                            onPressed:
+                                (_currentSelectedIndex >= 0 && !isLoading.value)
+                                    ? () {
+                                        if (_isLastTab &&
+                                            _allPreviousTabsCompleted) {
+                                          // 모든 이전 탭이 완료된 경우에만 완료 처리
+                                          _submitDailyReview();
+                                        } else {
+                                          // 다음 탭으로 이동
+                                          _moveToNextTab();
+                                        }
+                                      }
+                                    : null,
+                            child: isLoading.value
+                                ? const CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                    strokeWidth: 3,
+                                  )
+                                : Text(
+                                    nextButtonText,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                          ),
+                        )),
                   ),
                 ],
               ),
@@ -280,6 +307,116 @@ class _DailyReviewPageState extends State<DailyReviewPage> {
         ),
       ),
     );
+  }
+
+  // 하루 리뷰 API 제출
+  Future<void> _submitDailyReview() async {
+    // 사용자 로그인 확인
+    if (_authController.user.value == null) {
+      Get.snackbar(
+        '오류',
+        '로그인이 필요합니다.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red[100],
+        colorText: Colors.red[800],
+      );
+      return;
+    }
+
+    // 모든 탭이 완료되었는지 확인
+    if (!_allTabsCompleted) {
+      Get.snackbar(
+        '알림',
+        '모든 항목을 선택해주세요.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.orange[100],
+        colorText: Colors.orange[800],
+      );
+      return;
+    }
+
+    try {
+      isLoading.value = true; // 로딩 시작
+
+      // 사용자 ID 가져오기
+      final userId = _authController.user.value!.id!;
+
+      // 선택된 데이터 가져오기
+      final hungerIndex = _selectedIndices['배고픔']!;
+      final sleepIndex = _selectedIndices['수면']!;
+      final activityIndex = _selectedIndices['활동량']!;
+      final emotionIndex = _selectedIndices['감정']!;
+      final alcoholIndex = _selectedIndices['음주']!;
+
+      // 선택된 텍스트 가져오기
+      final hungerText = _tabReviewItems['배고픔']![hungerIndex].title;
+      final sleepText = _tabReviewItems['수면']![sleepIndex].title;
+      final activityText = _tabReviewItems['활동량']![activityIndex].title;
+      final emotionText = _tabReviewItems['감정']![emotionIndex].title;
+      final alcoholText = _tabReviewItems['음주']![alcoholIndex].title;
+
+      // 선택한 옵션 번호 (1부터 시작)
+      final hungerOption = hungerIndex + 1;
+      final sleepOption = sleepIndex + 1;
+      final activityOption = activityIndex + 1;
+      final emotionOption = emotionIndex + 1;
+      final alcoholOption = alcoholIndex + 1;
+
+      // DailyReview 모델 생성
+      final dailyReview = DailyReview(
+        userId: userId,
+        reviewDate: DailyReviewService.getTodayFormatted(),
+        hungerOption: hungerOption,
+        hungerText: hungerText,
+        sleepOption: sleepOption,
+        sleepText: sleepText,
+        activityOption: activityOption,
+        activityText: activityText,
+        emotionOption: emotionOption,
+        emotionText: emotionText,
+        alcoholOption: alcoholOption,
+        alcoholText: alcoholText,
+      );
+
+      // API 호출
+      final success = await DailyReviewService.saveDailyReview(dailyReview);
+
+      if (success) {
+        // 성공 시 결과 반환 및 이전 화면으로 이동
+        Get.back(result: dailyReview);
+
+        // 메시지는 홈 화면에서 표시
+        Future.delayed(const Duration(milliseconds: 100), () {
+          Get.snackbar(
+            '성공',
+            '하루 리뷰가 성공적으로 저장되었습니다.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.green[100],
+            colorText: Colors.green[800],
+          );
+        });
+      } else {
+        // 실패 시 에러 메시지
+        Get.snackbar(
+          '오류',
+          '하루 리뷰 저장에 실패했습니다. 다시 시도해주세요.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red[100],
+          colorText: Colors.red[800],
+        );
+      }
+    } catch (e) {
+      // 예외 발생 시 에러 메시지
+      Get.snackbar(
+        '오류',
+        '하루 리뷰 저장 중 오류가 발생했습니다: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red[100],
+        colorText: Colors.red[800],
+      );
+    } finally {
+      isLoading.value = false; // 로딩 종료
+    }
   }
 
   // 뒤로가기 처리
@@ -340,25 +477,6 @@ class _DailyReviewPageState extends State<DailyReviewPage> {
         _currentTab = _tabOrder[currentIndex - 1];
       });
     }
-  }
-
-  // 리뷰 완료 및 결과 반환
-  void _completeReview() {
-    // 모든 탭의 선택 결과 수집
-    final Map<String, String> results = {};
-
-    for (var tab in _tabOrder) {
-      final selectedIndex = _selectedIndices[tab];
-      if (selectedIndex != null && selectedIndex >= 0) {
-        final items = _tabReviewItems[tab];
-        if (items != null && selectedIndex < items.length) {
-          results[tab] = items[selectedIndex].id.toString();
-        }
-      }
-    }
-
-    // 결과 반환 및 화면 닫기
-    Get.back(result: results);
   }
 
   // 탭 선택 시 호출
