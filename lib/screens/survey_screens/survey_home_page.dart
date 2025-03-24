@@ -144,20 +144,35 @@ class SurveyHomePage extends GetView<SurveyController> {
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: controller.isAllSurveysCompleted.value
-                                ? () async {
-                                    Get.dialog(
-                                      const Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                      barrierDismissible: false,
-                                    );
-                                    await Future.delayed(
-                                        const Duration(seconds: 2));
-                                    Get.back();
-                                    Get.to(() => const SurveyResultPage());
-                                  }
-                                : null,
+                            //나중에 지우기 설문 넘어가는 용으로 있음
+                            onPressed: () async {
+                              // 설문 완료 상관없이 다음 페이지로 이동
+                              Get.dialog(
+                                const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                                barrierDismissible: false,
+                              );
+                              await Future.delayed(const Duration(seconds: 2));
+                              Get.back();
+                              Get.to(() => const SurveyResultPage());
+                            },
+
+                            //원래 코드
+                            // onPressed: controller.isAllSurveysCompleted.value
+                            //     ? () async {
+                            //         Get.dialog(
+                            //           const Center(
+                            //             child: CircularProgressIndicator(),
+                            //           ),
+                            //           barrierDismissible: false,
+                            //         );
+                            //         await Future.delayed(
+                            //             const Duration(seconds: 2));
+                            //         Get.back();
+                            //         Get.to(() => const SurveyResultPage());
+                            //       }
+                            //     : null,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
