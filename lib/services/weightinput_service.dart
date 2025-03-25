@@ -36,9 +36,12 @@ class WeightInputService {
   }
 
   // 오늘 날짜를 API에서 요구하는 형식(YYYY-MM-DD)으로 반환
+  // 서버 시간이 하루 전으로 기록되는 문제 해결
   static String getTodayFormatted() {
     final now = DateTime.now();
-    return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    // 임시 해결책: 서버가 하루 이전 날짜로 저장한다면, 클라이언트에서 하루를 더함
+    final adjustedDate = now.add(const Duration(days: 1));
+    return '${adjustedDate.year}-${adjustedDate.month.toString().padLeft(2, '0')}-${adjustedDate.day.toString().padLeft(2, '0')}';
   }
 
   // 사용자 체중 기록 조회 API 호출

@@ -38,7 +38,14 @@ class WeightPage extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(result: 'cancel'),
+          onPressed: () {
+            // 이미 체중 기록이 있는 경우 결과 없이 뒤로가기
+            if (latestWeight.value != null) {
+              Get.back(); // 결과를 전달하지 않음
+            } else {
+              Get.back(result: 'cancel'); // 취소 결과 전달
+            }
+          },
         ),
       ),
       body: Obx(() {
@@ -265,6 +272,10 @@ class WeightPage extends StatelessWidget {
       if (latestWeightRecord != null) {
         latestWeight.value = latestWeightRecord;
 
+        // 디버깅용 로그 추가
+        print('최신 체중 기록 날짜: ${latestWeightRecord.weightDate}');
+        print('오늘 날짜 형식: ${WeightInputService.getTodayFormatted()}');
+
         // 소수점 첫째자리까지만 표시하도록 포맷팅
         final weightStr = latestWeightRecord.weight.toStringAsFixed(1);
         weightController.text = weightStr;
@@ -287,6 +298,36 @@ class WeightPage extends StatelessWidget {
 
   // 하단 완료 버튼 - API 호출 로직 추가
   Widget _buildCompleteButton() {
+    // 오늘 날짜인지 확인하는 변수를 미리 계산 - 날짜 문제 해결
+    bool isToday = false;
+    if (latestWeight.value != null) {
+      // 날짜를 파싱하여 년, 월, 일만 비교
+      try {
+        // ISO 8601 형식(YYYY-MM-DDT...) 에서 YYYY-MM-DD 부분만 추출
+        final recordDateStr = latestWeight.value!.weightDate.split('T')[0];
+
+        // 오늘 날짜 문자열
+        final todayDateStr = WeightInputService.getTodayFormatted();
+
+        // 만약 서버 시간이 항상 하루 전으로 기록된다면, 아래 조건문을 사용
+        // (서버 시간과 로컬 시간의 차이가 정확히 1일인 경우)
+        final DateTime recordDate = DateTime.parse(recordDateStr);
+        final DateTime todayDate = DateTime.parse(todayDateStr);
+
+        // 날짜 차이 계산 (일수)
+        final difference = todayDate.difference(recordDate).inDays;
+
+        // 서버 시간이 하루 이내로 차이 나면 "오늘"로 간주
+        isToday = difference <= 1;
+
+        print(
+            '버튼 렌더링 - 날짜 비교: $recordDateStr vs $todayDateStr = $isToday (차이: $difference일)');
+      } catch (e) {
+        print('날짜 비교 오류: $e');
+        isToday = false;
+      }
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFE0E0E0),
@@ -318,6 +359,42 @@ class WeightPage extends StatelessWidget {
                               colorText: Colors.red[800],
                             );
                             return;
+                          }
+
+                          // 이미 오늘 체중 기록이 있는 경우 토스트 메시지 표시
+                          if (latestWeight.value != null) {
+                            try {
+                              // ISO 8601 형식(YYYY-MM-DDT...) 에서 YYYY-MM-DD 부분만 추출
+                              final recordDateStr =
+                                  latestWeight.value!.weightDate.split('T')[0];
+
+                              // 오늘 날짜 문자열
+                              final todayDateStr =
+                                  WeightInputService.getTodayFormatted();
+
+                              // 날짜 차이 계산
+                              final DateTime recordDate =
+                                  DateTime.parse(recordDateStr);
+                              final DateTime todayDate =
+                                  DateTime.parse(todayDateStr);
+                              final difference =
+                                  todayDate.difference(recordDate).inDays;
+
+                              // 서버 시간이 하루 이내로 차이 나면 "오늘"로 간주
+                              if (difference <= 1) {
+                                Get.snackbar(
+                                  '알림',
+                                  '오늘 체중은 이미 기록되었습니다. 내일 다시 기록해 주세요.',
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  backgroundColor: Colors.blue[100],
+                                  colorText: Colors.blue[800],
+                                  duration: const Duration(seconds: 3),
+                                );
+                                return;
+                              }
+                            } catch (e) {
+                              print('날짜 비교 오류: $e');
+                            }
                           }
 
                           // 체중 저장 로직
@@ -402,9 +479,10 @@ class WeightPage extends StatelessWidget {
                           valueColor:
                               AlwaysStoppedAnimation<Color>(Colors.black),
                         )
-                      : const Text(
-                          '완료',
-                          style: TextStyle(
+                      : Text(
+                          // 오늘 체중 기록이 있는 경우 '확인했습니다'로 표시
+                          isToday ? '확인했습니다' : '완료',
+                          style: const TextStyle(
                             color: Colors.black,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

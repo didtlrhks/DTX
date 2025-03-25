@@ -17,6 +17,7 @@ class _DailyReviewPageState extends State<DailyReviewPage> {
 
   // API 호출 상태 관리
   final RxBool isLoading = false.obs;
+  final RxBool isInitializing = true.obs; // 초기 데이터 로딩 상태
 
   // 각 탭별 선택된 항목 인덱스 관리
   final Map<String, int> _selectedIndices = {
@@ -26,6 +27,9 @@ class _DailyReviewPageState extends State<DailyReviewPage> {
     '감정': -1,
     '음주': -1,
   };
+
+  // 최신 하루 리뷰
+  Rx<DailyReview?> latestReview = Rx<DailyReview?>(null);
 
   // 현재 선택된 탭
   String _currentTab = '배고픔';
@@ -96,6 +100,62 @@ class _DailyReviewPageState extends State<DailyReviewPage> {
     ],
   };
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchLatestReview();
+  }
+
+  // 최신 하루 리뷰 조회 및 선택 항목 설정
+  Future<void> _fetchLatestReview() async {
+    if (_authController.user.value == null) {
+      isInitializing.value = false;
+      return;
+    }
+
+    try {
+      isInitializing.value = true;
+      final userId = _authController.user.value!.id!;
+
+      // 최신 하루 리뷰 조회
+      final review = await DailyReviewService.getLatestDailyReview(userId);
+
+      if (review != null) {
+        latestReview.value = review;
+
+        // 조회된 리뷰에 맞게 선택 항목 설정
+        _setSelectedIndicesFromReview(review);
+      }
+    } catch (e) {
+      print('하루 리뷰 조회 오류: $e');
+    } finally {
+      isInitializing.value = false;
+    }
+  }
+
+  // 조회된 리뷰에 맞게 선택 항목 설정
+  void _setSelectedIndicesFromReview(DailyReview review) {
+    // 각 탭별로 선택 항목 찾기
+    _setTabSelectionByOption('배고픔', review.hungerOption);
+    _setTabSelectionByOption('수면', review.sleepOption);
+    _setTabSelectionByOption('활동량', review.activityOption);
+    _setTabSelectionByOption('감정', review.emotionOption);
+    _setTabSelectionByOption('음주', review.alcoholOption);
+  }
+
+  // 특정 탭의 선택 항목 설정 (옵션 번호로)
+  void _setTabSelectionByOption(String tab, int optionNumber) {
+    // 옵션 번호는 1부터 시작하므로 인덱스는 optionNumber - 1
+    int index = optionNumber - 1;
+
+    // 유효한 범위인지 확인
+    if (index >= 0 && index < (_tabReviewItems[tab]?.length ?? 0)) {
+      setState(() {
+        _selectedIndices[tab] = index;
+      });
+    }
+  }
+
   // 마지막 탭인지 확인
   bool get _isLastTab {
     return _currentTab == _tabOrder.last;
@@ -144,9 +204,11 @@ class _DailyReviewPageState extends State<DailyReviewPage> {
     final currentDescription = _tabQuestions[_currentTab]?['description'] ?? '';
 
     // 다음 버튼 텍스트 결정 - 수정된 로직
-    // 마지막 탭이고, 현재 탭에서 선택을 했고, 모든 이전 탭이 완료된 경우에만 "완료"로, 아니면 "다음"으로
-    final nextButtonText =
-        (_isLastTab && _currentSelectedIndex >= 0 && _allPreviousTabsCompleted)
+    final nextButtonText = latestReview.value != null
+        ? '확인했습니다'
+        : (_isLastTab &&
+                _currentSelectedIndex >= 0 &&
+                _allPreviousTabsCompleted)
             ? '완료'
             : '다음';
 
@@ -172,141 +234,184 @@ class _DailyReviewPageState extends State<DailyReviewPage> {
             onPressed: () => _onWillPop(),
           ),
         ),
-        body: Column(
-          children: [
-            // 탭 메뉴 - 스크롤 제거 및 화면에 꽉 차게 변경
-            Container(
-              width: MediaQuery.of(context).size.width, // 전체 화면 너비 사용
-              color: Colors.white,
-              padding: const EdgeInsets.symmetric(
-                  vertical: 10.0), // 가로 패딩 제거, 세로 패딩만 유지
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly, // 균등 배치
-                children: _tabOrder.map((tab) {
-                  bool isSelected = _currentTab == tab;
-                  return _buildTabItem(
-                    tab,
-                    isSelected: isSelected,
-                  );
-                }).toList(),
+        body: Obx(() {
+          if (isInitializing.value) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return Column(
+            children: [
+              // 탭 메뉴 - 스크롤 제거 및 화면에 꽉 차게 변경
+              Container(
+                width: MediaQuery.of(context).size.width, // 전체 화면 너비 사용
+                color: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                    vertical: 10.0), // 가로 패딩 제거, 세로 패딩만 유지
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly, // 균등 배치
+                  children: _tabOrder.map((tab) {
+                    bool isSelected = _currentTab == tab;
+                    return _buildTabItem(
+                      tab,
+                      isSelected: isSelected,
+                    );
+                  }).toList(),
+                ),
               ),
-            ),
 
-            // 질문 영역
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    currentQuestion,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    currentDescription,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black54,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // 리뷰 항목들
-                  ...currentReviewItems.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final item = entry.value;
-                    return _buildReviewItem(item, index);
-                  }),
-                ],
-              ),
-            ),
-
-            const Spacer(),
-
-            // 하단 네비게이션 버튼
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color:
-                            _isFirstTab ? Colors.grey[200] : Colors.grey[300],
-                        borderRadius: BorderRadius.circular(8),
+              // 질문 영역
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      currentQuestion,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                      child: TextButton(
-                        onPressed: _isFirstTab
-                            ? null // 첫 번째 탭에서는 이전 버튼 비활성화
-                            : () {
-                                _moveToPreviousTab();
-                              },
-                        child: Text(
-                          '이전',
-                          style: TextStyle(
-                            color:
-                                _isFirstTab ? Colors.grey[400] : Colors.black54,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      currentDescription,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // 리뷰 항목들
+                    ...currentReviewItems.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final item = entry.value;
+                      return _buildReviewItem(item, index);
+                    }),
+                  ],
+                ),
+              ),
+
+              const Spacer(),
+
+              // 최신 리뷰 정보 표시 (있는 경우)
+              // if (latestReview.value != null)
+              //   Padding(
+              //     padding: const EdgeInsets.symmetric(horizontal: 20),
+              //     child: Container(
+              //       width: double.infinity,
+              //       padding: const EdgeInsets.all(10),
+              //       decoration: BoxDecoration(
+              //         color: Colors.grey[100],
+              //         borderRadius: BorderRadius.circular(8),
+              //         border: Border.all(color: Colors.grey[300]!),
+              //       ),
+              //       child: Text(
+              //         '이전 리뷰: ${_formatDate(latestReview.value!.reviewDate)}',
+              //         textAlign: TextAlign.center,
+              //         style: TextStyle(
+              //           color: Colors.grey[700],
+              //           fontSize: 14,
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+
+              // 하단 네비게이션 버튼
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color:
+                              _isFirstTab ? Colors.grey[200] : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: TextButton(
+                          onPressed: _isFirstTab
+                              ? null // 첫 번째 탭에서는 이전 버튼 비활성화
+                              : () {
+                                  _moveToPreviousTab();
+                                },
+                          child: Text(
+                            '이전',
+                            style: TextStyle(
+                              color: _isFirstTab
+                                  ? Colors.grey[400]
+                                  : Colors.black54,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Obx(() => Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: _currentSelectedIndex >= 0
-                                ? Colors.grey[600]
-                                : Colors.grey[400],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: TextButton(
-                            onPressed:
-                                (_currentSelectedIndex >= 0 && !isLoading.value)
-                                    ? () {
-                                        if (_isLastTab &&
-                                            _allPreviousTabsCompleted) {
-                                          // 모든 이전 탭이 완료된 경우에만 완료 처리
-                                          _submitDailyReview();
-                                        } else {
-                                          // 다음 탭으로 이동
-                                          _moveToNextTab();
-                                        }
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Obx(() => Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: _currentSelectedIndex >= 0
+                                  ? Colors.grey[600]
+                                  : Colors.grey[400],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: TextButton(
+                              onPressed: (_currentSelectedIndex >= 0 &&
+                                      !isLoading.value)
+                                  ? () {
+                                      if (_isLastTab &&
+                                          _allPreviousTabsCompleted) {
+                                        // 모든 이전 탭이 완료된 경우에만 완료 처리
+                                        _submitDailyReview();
+                                      } else {
+                                        // 다음 탭으로 이동
+                                        _moveToNextTab();
                                       }
-                                    : null,
-                            child: isLoading.value
-                                ? const CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white),
-                                    strokeWidth: 3,
-                                  )
-                                : Text(
-                                    nextButtonText,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
+                                    }
+                                  : null,
+                              child: isLoading.value
+                                  ? const CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                      strokeWidth: 3,
+                                    )
+                                  : Text(
+                                      nextButtonText,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
-                                  ),
-                          ),
-                        )),
-                  ),
-                ],
+                            ),
+                          )),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        }),
       ),
     );
+  }
+
+  // 날짜 포맷 변환 (YYYY-MM-DDT00:00:00.000Z -> YYYY년 MM월 DD일)
+  String _formatDate(String dateStr) {
+    try {
+      final DateTime dateTime = DateTime.parse(dateStr);
+      return '${dateTime.year}년 ${dateTime.month}월 ${dateTime.day}일';
+    } catch (e) {
+      print('날짜 변환 오류: $e');
+      return dateStr;
+    }
   }
 
   // 하루 리뷰 API 제출
@@ -319,6 +424,19 @@ class _DailyReviewPageState extends State<DailyReviewPage> {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red[100],
         colorText: Colors.red[800],
+      );
+      return;
+    }
+
+    // 이미 완료된 리뷰가 있는 경우 토스트 메시지 표시
+    if (latestReview.value != null) {
+      Get.snackbar(
+        '알림',
+        '하루 리뷰는 변경할 수 없습니다. 자정 12시에 초기화됩니다.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.blue[100],
+        colorText: Colors.blue[800],
+        duration: const Duration(seconds: 3),
       );
       return;
     }
@@ -421,6 +539,12 @@ class _DailyReviewPageState extends State<DailyReviewPage> {
 
   // 뒤로가기 처리
   Future<bool> _onWillPop() async {
+    // 이미 완료된 리뷰가 있는 경우 결과 없이 바로 뒤로가기
+    if (latestReview.value != null) {
+      Get.back(); // 결과를 전달하지 않음 - 이렇게 하면 홈 화면에서 상태가 변경되지 않음
+      return true;
+    }
+
     // 모든 탭에서 선택된 항목이 있는지 확인
     bool hasSelections = _selectedIndices.values.any((index) => index >= 0);
 
@@ -446,7 +570,7 @@ class _DailyReviewPageState extends State<DailyReviewPage> {
 
       // 사용자가 확인을 누른 경우 (true) 뒤로 가기
       if (result == true) {
-        Get.back(result: 'cancel');
+        Get.back(result: 'cancel'); // 취소 결과 전달
         return true;
       }
 
@@ -455,7 +579,7 @@ class _DailyReviewPageState extends State<DailyReviewPage> {
     }
 
     // 선택된 항목이 없는 경우 바로 뒤로 가기
-    Get.back(result: 'cancel');
+    Get.back(result: 'cancel'); // 취소 결과 전달
     return true;
   }
 
