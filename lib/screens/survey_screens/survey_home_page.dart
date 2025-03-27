@@ -1,12 +1,5 @@
 import 'package:dtxproject/screens/goal_weight_page.dart';
-import 'package:dtxproject/screens/survey_screens/exercise_survey/exercise_survey_start_page.dart';
-import 'package:dtxproject/screens/survey_screens/alcohol_survey/alcohol_survey_start_page.dart';
-import 'package:dtxproject/screens/survey_screens/emotion_survey/emotion_survey_start_page.dart';
-import 'package:dtxproject/screens/survey_screens/lifequality_survey/lifequality_survey_start_page.dart';
-import 'package:dtxproject/screens/survey_screens/sick_survey/sick_survey_start_page.dart';
 import 'package:flutter/material.dart';
-import 'diet_survey/diet_survey_start_page.dart';
-import 'sleep_survey/sleep_survey_start_page.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
 import 'package:dtxproject/screens/survey_screens/survey_result_page.dart';

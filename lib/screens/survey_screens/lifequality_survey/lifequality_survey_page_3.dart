@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
 //import 'package:dtxproject/constants/app_theme.dart';
 import 'package:dtxproject/screens/survey_screens/lifequality_survey/lifequality_survey_page_4.dart';
+import 'package:dtxproject/utils/survey_progress_bar_utils.dart';
 
 class LifeQualitySurveyPage3 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
@@ -11,13 +12,6 @@ class LifeQualitySurveyPage3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 화면의 전체 너비
-    double screenWidth = MediaQuery.of(context).size.width;
-    // 좌우 패딩과 가운데 간격을 제외한 너비
-    double availableWidth =
-        screenWidth - 50 - (4 * 7); // 50: 좌우 패딩 합, 4: 가운데 간격 * 7 번
-    // 진행 바 개당 너비
-    double progressBarWidth = availableWidth / 8;
     return Scaffold(
       backgroundColor: Color(0xFF9D9D9D), // 배경색 적용
       body: SafeArea(
@@ -79,82 +73,11 @@ class LifeQualitySurveyPage3 extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 진행 상태 표시
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 첫 번째 진행 바 색상
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 두 번째 진행 바 색상
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xff4D4D4D), // 세 번째 진행 바 색상
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 네 번째 진행 바 색상
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 다섯 번째 진행 바 색상
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 여섯 번째 진행 바 색상
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 일곱 번째 진행 바 색상
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 여덟 번째 진행 바 색상
-                            ),
-                          ),
-                        ],
+                      // 설문 상태바 (현재 문항 current : 0부터 시작)
+                      SurveyProgressBar(
+                        total: 8,
+                        current: 2,
+                        screenWidth: MediaQuery.of(context).size.width,
                       ),
                       SizedBox(height: 50),
                       // 질문 설명
@@ -207,11 +130,11 @@ class LifeQualitySurveyPage3 extends StatelessWidget {
                                   () {
                                     // 옵션 선택 확인
                                     bool isSelected = surveyController
-                                            .LifeQualityQ3Option.value ==
+                                            .lifeQualityQ3Option.value ==
                                         index;
                                     return GestureDetector(
                                       onTap: () => surveyController
-                                          .LifeQualityQ3Option.value = index,
+                                          .lifeQualityQ3Option.value = index,
                                       child: IntrinsicWidth(
                                         child: Container(
                                           alignment: Alignment.centerLeft,
@@ -257,7 +180,7 @@ class LifeQualitySurveyPage3 extends StatelessWidget {
 
       // 다음 버튼
       bottomNavigationBar: Obx(() {
-        bool isButtonEnabled = surveyController.LifeQualityQ3Option.value !=
+        bool isButtonEnabled = surveyController.lifeQualityQ3Option.value !=
             -1; // 선택된 옵션이 있어야 버튼 활성화됨.
         return Container(
           color: Colors.white,
