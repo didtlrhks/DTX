@@ -2,6 +2,8 @@ import 'package:dtxproject/screens/survey_screens/survey_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
+import 'package:dtxproject/utils/survey_progress_bar_utils.dart';
+
 //import 'package:dtxproject/constants/app_theme.dart';
 
 class AlcoholSurveyPage2 extends StatelessWidget {
@@ -11,12 +13,6 @@ class AlcoholSurveyPage2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 화면의 전체 너비
-    double screenWidth = MediaQuery.of(context).size.width;
-    // 좌우 패딩과 가운데 간격을 제외한 너비
-    double availableWidth = screenWidth - 50 - 4; // 50: 좌우 패딩 합, 4: 가운데 간격
-    // 진행 바 개당 너비
-    double progressBarWidth = availableWidth / 2;
     return Scaffold(
       backgroundColor: Color(0xFF9D9D9D), // 배경색 적용
       body: SafeArea(
@@ -78,28 +74,11 @@ class AlcoholSurveyPage2 extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 진행 상태 표시
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xffD9D9D9), // 첫 번째 진행 바 색상
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: Color(0xff4D4D4D), // 두 번째 진행 바 색상
-                            ),
-                          ),
-                        ],
+                      // 설문 상태바 (현재 문항 current : 0부터 시작)
+                      SurveyProgressBar(
+                        total: 2,
+                        current: 1,
+                        screenWidth: MediaQuery.of(context).size.width,
                       ),
                       SizedBox(height: 50),
                       // 질문 설명

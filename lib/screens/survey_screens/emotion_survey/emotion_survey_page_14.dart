@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
 //import 'package:dtxproject/constants/app_theme.dart';
-import 'package:dtxproject/screens/survey_screens/sleep_survey/sleep_survey_page_3.dart';
 import 'package:dtxproject/utils/survey_progress_bar_utils.dart';
+import 'package:dtxproject/screens/survey_screens/survey_home_page.dart';
 
-class SleepSurveyPage2 extends StatelessWidget {
+class EmotionSurveyPage14 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
 
-  SleepSurveyPage2({super.key});
+  EmotionSurveyPage14({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class SleepSurveyPage2 extends StatelessWidget {
                       style: TextStyle(fontSize: 20, color: Colors.black),
                       children: [
                         TextSpan(
-                            text: '수면',
+                            text: '감정',
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -75,8 +75,8 @@ class SleepSurveyPage2 extends StatelessWidget {
                     children: [
                       // 설문 상태바 (현재 문항 current : 0부터 시작)
                       SurveyProgressBar(
-                        total: 7,
-                        current: 1,
+                        total: 14,
+                        current: 13,
                         screenWidth: MediaQuery.of(context).size.width,
                       ),
                       SizedBox(height: 50),
@@ -89,13 +89,8 @@ class SleepSurveyPage2 extends StatelessWidget {
                           ),
                           children: [
                             TextSpan(
-                              text: '지난',
-                            ),
-                            TextSpan(
-                                text: ' 2주간',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            TextSpan(
-                              text: ' 귀하의 불면증 문제의 심한 정도에 대해 선택해 주시기 바랍니다.',
+                              text:
+                                  '[삶의 만족도] 다음 문항을 잘 읽으시고, 문항의 내용이\n자기 자신과 어느 정도 일치하는지를 체크해 주십시오.',
                             ),
                           ],
                         ),
@@ -103,7 +98,7 @@ class SleepSurveyPage2 extends StatelessWidget {
                       // 질문 설명
 
                       SizedBox(height: 80),
-                      const Text('2. 잠을 유지하기 어렵나요?',
+                      const Text('14. 만약 다시 태어난다 해도 내 삶은 거의 그대로 유지할 것이다.',
                           style:
                               TextStyle(fontSize: 16, fontFamily: 'Paperlogy')),
                       SizedBox(height: 10),
@@ -120,24 +115,26 @@ class SleepSurveyPage2 extends StatelessWidget {
                           children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: List.generate(5, (index) {
+                              children: List.generate(7, (index) {
                                 //객관식 문항
                                 List<String> options = [
-                                  '0. 전혀 그렇지 않습니다.',
-                                  '1. 약간 그렇습니다.',
-                                  '2. 종종 그런편입니다.',
-                                  '3. 자주 그렇습니다.',
-                                  '4. 항상 그렇습니다.'
+                                  '전혀 그렇지않다.',
+                                  '거의 그렇지 않다.',
+                                  '약간 그렇지 않다.',
+                                  '보통이다.',
+                                  '약간 그렇다.',
+                                  '거의 그렇다.',
+                                  '매우 그렇다.',
                                 ];
                                 return Obx(
                                   () {
                                     // 옵션 선택 확인
-                                    bool isSelected =
-                                        surveyController.sleepQ2Option.value ==
-                                            index;
+                                    bool isSelected = surveyController
+                                            .emotionQ14Option.value ==
+                                        index;
                                     return GestureDetector(
                                       onTap: () => surveyController
-                                          .sleepQ2Option.value = index,
+                                          .emotionQ14Option.value = index,
                                       child: IntrinsicWidth(
                                         child: Container(
                                           alignment: Alignment.centerLeft,
@@ -183,8 +180,8 @@ class SleepSurveyPage2 extends StatelessWidget {
 
       // 다음 버튼
       bottomNavigationBar: Obx(() {
-        bool isButtonEnabled =
-            surveyController.sleepQ2Option.value != -1; // 선택된 옵션이 있어야 버튼 활성화됨.
+        bool isButtonEnabled = surveyController.emotionQ14Option.value !=
+            -1; // 선택된 옵션이 있어야 버튼 활성화됨.
         return Container(
           color: Colors.white,
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 42.0),
@@ -203,7 +200,8 @@ class SleepSurveyPage2 extends StatelessWidget {
               ),
               onPressed: isButtonEnabled
                   ? () {
-                      Get.to(() => SleepSurveyPage3()); // 다음 페이지 이동
+                      surveyController.completeEmotionSurvey();
+                      Get.to(SurveyHomePage());
                     }
                   : null,
               child: const Text(

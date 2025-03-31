@@ -1,14 +1,14 @@
+import 'package:dtxproject/screens/survey_screens/survey_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
-//import 'package:dtxproject/constants/app_theme.dart';
-import 'package:dtxproject/screens/survey_screens/sleep_survey/sleep_survey_page_3.dart';
 import 'package:dtxproject/utils/survey_progress_bar_utils.dart';
+//import 'package:dtxproject/constants/app_theme.dart';
 
-class SleepSurveyPage2 extends StatelessWidget {
+class ExerciseSurveyPage2 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
 
-  SleepSurveyPage2({super.key});
+  ExerciseSurveyPage2({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class SleepSurveyPage2 extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Get.back();
-                    },
+                    }, // 현재 선택한 값을 이전 페이지로 전달
                     child: Container(
                       padding: const EdgeInsets.only(top: 8, bottom: 12),
                       alignment: Alignment.centerLeft,
@@ -43,7 +43,7 @@ class SleepSurveyPage2 extends StatelessWidget {
                       style: TextStyle(fontSize: 20, color: Colors.black),
                       children: [
                         TextSpan(
-                            text: '수면',
+                            text: '운동',
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -81,94 +81,77 @@ class SleepSurveyPage2 extends StatelessWidget {
                       ),
                       SizedBox(height: 50),
                       // 질문 설명
-                      RichText(
-                        text: const TextSpan(
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: '지난',
-                            ),
-                            TextSpan(
-                                text: ' 2주간',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            TextSpan(
-                              text: ' 귀하의 불면증 문제의 심한 정도에 대해 선택해 주시기 바랍니다.',
-                            ),
-                          ],
-                        ),
+                      const Text(
+                        '활동량에 대한 평가입니다.',
+                        style: TextStyle(fontSize: 16),
                       ),
-                      // 질문 설명
+                      SizedBox(height: 50),
 
-                      SizedBox(height: 80),
-                      const Text('2. 잠을 유지하기 어렵나요?',
-                          style:
-                              TextStyle(fontSize: 16, fontFamily: 'Paperlogy')),
-                      SizedBox(height: 10),
-
-                      // 객관식 문항이 있는 사각형 박스
+                      // 사각형 박스
                       Container(
                         width: MediaQuery.of(context).size.width - 34,
                         decoration: BoxDecoration(
                           color: Color(0xffF5F5F5),
                           borderRadius: BorderRadius.circular(12.0),
                         ),
-                        padding: EdgeInsets.all(8.0),
-                        child: Stack(
+                        padding: EdgeInsets.all(15),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: List.generate(5, (index) {
-                                //객관식 문항
-                                List<String> options = [
-                                  '0. 전혀 그렇지 않습니다.',
-                                  '1. 약간 그렇습니다.',
-                                  '2. 종종 그런편입니다.',
-                                  '3. 자주 그렇습니다.',
-                                  '4. 항상 그렇습니다.'
-                                ];
-                                return Obx(
-                                  () {
-                                    // 옵션 선택 확인
-                                    bool isSelected =
-                                        surveyController.sleepQ2Option.value ==
-                                            index;
-                                    return GestureDetector(
-                                      onTap: () => surveyController
-                                          .sleepQ2Option.value = index,
-                                      child: IntrinsicWidth(
-                                        child: Container(
-                                          alignment: Alignment.centerLeft,
-                                          height: 39,
-                                          margin: const EdgeInsets.symmetric(
-                                              vertical: 4.0),
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 8.0, horizontal: 20.0),
-                                          decoration: BoxDecoration(
-                                            color: isSelected
-                                                ? Color(0xff4E4E4E)
-                                                : Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(12.0),
-                                          ),
-                                          child: Text(
-                                            options[index],
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: isSelected
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                            ),
-                                          ),
+                            const Text(
+                              '소주, 양주 등 술의 종류와 상관없이 각각의 술잔으로 계산합니다.\n'
+                              '  · 캔맥주 1개(355cc)는 맥주 1.5잔과 같습니다.\n '
+                              '  · 소주 1병은 7잔과 같습니다.',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 20), // 텍스트와 입력 필드 사이 여백 추가
+
+                            // 주관식 입력필드
+                            Obx(() {
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  const Text(
+                                    '한 번에 ',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  SizedBox(width: 12),
+                                  Container(
+                                    width: 78,
+                                    height: 37,
+                                    child: TextField(
+                                      onChanged: (value) {
+                                        surveyController.alcoholQ2InputText
+                                            .value = value; // 값 업데이트
+                                      },
+                                      controller: TextEditingController(
+                                        text: surveyController
+                                            .alcoholQ2InputText.value,
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      textAlign: TextAlign.center,
+                                      decoration: InputDecoration(
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 5.0),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                          borderSide: BorderSide.none,
                                         ),
                                       ),
-                                    );
-                                  },
-                                );
-                              }),
-                            ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Text(
+                                    ' 잔',
+                                    style: TextStyle(fontSize: 16),
+                                  )
+                                ],
+                              );
+                            }),
                           ],
                         ),
                       ),
@@ -184,7 +167,8 @@ class SleepSurveyPage2 extends StatelessWidget {
       // 다음 버튼
       bottomNavigationBar: Obx(() {
         bool isButtonEnabled =
-            surveyController.sleepQ2Option.value != -1; // 선택된 옵션이 있어야 버튼 활성화됨.
+            surveyController.alcoholQ2InputText.value.isNotEmpty; // 값 입력 여부만 확인
+
         return Container(
           color: Colors.white,
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 42.0),
@@ -203,7 +187,8 @@ class SleepSurveyPage2 extends StatelessWidget {
               ),
               onPressed: isButtonEnabled
                   ? () {
-                      Get.to(() => SleepSurveyPage3()); // 다음 페이지 이동
+                      surveyController.completeAlcoholSurvey();
+                      Get.to(SurveyHomePage());
                     }
                   : null,
               child: const Text(
