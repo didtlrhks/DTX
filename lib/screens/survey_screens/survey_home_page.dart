@@ -201,63 +201,142 @@ class SurveyHomePage extends GetView<SurveyController> {
           Get.dialog(
             AlertDialog(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0), // 모서리 둥글게 설정
+                borderRadius: BorderRadius.circular(15.0),
               ),
-              backgroundColor: Colors.white, // 배경색 흰색으로 설정
-              contentPadding: const EdgeInsets.only(top: 30),
-              title: const Text(
-                '다시 설문하시나요?',
+              backgroundColor: Colors.white,
+              titlePadding: EdgeInsets.zero,
+              contentPadding: const EdgeInsets.only(
+                  top: 16, left: 20, right: 20, bottom: 0),
+              actionsPadding: const EdgeInsets.all(20),
+              title: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  // 겹치는 아이콘 부분
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 56,
+                        height: 71,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD9D9D9),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        margin: const EdgeInsets.only(right: 10, top: 8),
+                      ),
+                      Container(
+                        width: 40,
+                        height: 51,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFBFBFBF),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        margin: const EdgeInsets.only(left: 50, top: 35),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    '다시 설문하시나요?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Paperlogy',
+                      fontSize: 20,
+                    ),
+                  ),
+                ],
+              ),
+              content: const Text(
+                '재시작 시,\n이전 문항의 기록이\n모두 사라집니다.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                style: TextStyle(fontSize: 16),
               ),
-              content: const Text('재시작 시,\n이전 문항의 기록이\n모두 사라집니다.',
-                  textAlign: TextAlign.center, style: TextStyle(fontSize: 16)),
-              actionsPadding: const EdgeInsets.all(20), // 버튼 위쪽에 여백 추가
+              //actionsPadding: const EdgeInsets.all(20),
               actions: [
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    TextButton(
-                      onPressed: () => Get.back(),
-                      child: const Text('취소'),
-                    ),
-                    const SizedBox(height: 8),
-                    ElevatedButton(
-                      onPressed: () {
-                        Get.back();
+                    // 재설문하기 버튼
+                    Align(
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: 137,
+                        height: 47,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF00102B),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                          ),
+                          onPressed: () {
+                            Get.back();
 
-                        // 설문별 초기화 및 페이지 이동
-                        if (title == '운동 설문') {
-                          controller.clearExerciseSurveys();
-                          controller.resetExerciseSurveys();
-                          Get.to(() => ExerciseSurveyPage1());
-                        } else if (title == '식단 설문') {
-                          controller.clearDietSurveys();
-                          controller.resetDietSurveys();
-                          Get.to(() => DietSurveyPage1());
-                        } else if (title == '수면 설문') {
-                          controller.clearSleepSurveys();
-                          controller.resetSleepSurveys();
-                          Get.to(() => SleepSurveyPage1());
-                        } else if (title == '음주 설문') {
-                          controller.clearAlcoholSurveys();
-                          controller.resetAlcoholSurveys();
-                          Get.to(() => AlcoholSurveyPage1());
-                        } else if (title == '감정 설문') {
-                          controller.clearEmotionSurveys();
-                          controller.resetEmotionSurveys();
-                          Get.to(() => EmotionSurveyPage1());
-                        } else if (title == '삶의 질 설문') {
-                          controller.clearLifeQualitySurveys();
-                          controller.resetLifeQualitySurveys();
-                          Get.to(() => LifeQualitySurveyPage1());
-                        } else if (title == '질병 설문') {
-                          controller.clearSickSurveys();
-                          controller.resetSickSurveys();
-                          Get.to(() => SickSurveyPage1());
-                        }
-                      },
-                      child: const Text('재설문하기'),
+                            if (title == '운동 설문') {
+                              controller.clearExerciseSurveys();
+                              controller.resetExerciseSurveys();
+                              Get.to(() => ExerciseSurveyPage1());
+                            } else if (title == '식단 설문') {
+                              controller.clearDietSurveys();
+                              controller.resetDietSurveys();
+                              Get.to(() => DietSurveyPage1());
+                            } else if (title == '수면 설문') {
+                              controller.clearSleepSurveys();
+                              controller.resetSleepSurveys();
+                              Get.to(() => SleepSurveyPage1());
+                            } else if (title == '음주 설문') {
+                              controller.clearAlcoholSurveys();
+                              controller.resetAlcoholSurveys();
+                              Get.to(() => AlcoholSurveyPage1());
+                            } else if (title == '감정 설문') {
+                              controller.clearEmotionSurveys();
+                              controller.resetEmotionSurveys();
+                              Get.to(() => EmotionSurveyPage1());
+                            } else if (title == '삶의 질 설문') {
+                              controller.clearLifeQualitySurveys();
+                              controller.resetLifeQualitySurveys();
+                              Get.to(() => LifeQualitySurveyPage1());
+                            } else if (title == '질병 설문') {
+                              controller.clearSickSurveys();
+                              controller.resetSickSurveys();
+                              Get.to(() => SickSurveyPage1());
+                            }
+                          },
+                          child: const Text(
+                            '재설문하기',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                              fontFamily: 'Paperlogy',
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    // 취소 버튼
+                    SizedBox(
+                      width: 137,
+                      height: 47,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: const Color(0xFFD9D9D9),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                        ),
+                        onPressed: () => Get.back(),
+                        child: const Text(
+                          '취소',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Color(0xFF656565),
+                            fontFamily: 'Paperlogy',
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -266,7 +345,7 @@ class SurveyHomePage extends GetView<SurveyController> {
             barrierDismissible: false,
           );
         } else {
-          // 완료 안 된 설문 → 바로 진입
+          // 완료되지 않은 설문은 바로 진입
           if (title == '운동 설문') {
             Get.to(() => ExerciseSurveyPage1());
           } else if (title == '식단 설문') {
@@ -284,6 +363,7 @@ class SurveyHomePage extends GetView<SurveyController> {
           }
         }
       },
+
       child: Container(
         width: 140,
         height: 125,
