@@ -201,7 +201,7 @@ class LifeQualitySurveyPage8 extends StatelessWidget {
               onPressed: isButtonEnabled
                   ? () {
                       surveyController.completeLifeQualitySurvey();
-                      Get.to(SurveyHomePage());
+                      Get.to(() => const SurveyHomePage());
                     }
                   : null,
               child: const Text(

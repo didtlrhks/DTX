@@ -205,7 +205,7 @@ class SleepSurveyPage7 extends StatelessWidget {
               onPressed: isButtonEnabled
                   ? () {
                       surveyController.completeSleepSurvey();
-                      Get.to(SurveyHomePage());
+                      Get.to(() => const SurveyHomePage());
                     }
                   : null,
               child: const Text(

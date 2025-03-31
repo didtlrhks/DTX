@@ -3,17 +3,17 @@ import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
 //import 'package:dtxproject/constants/app_theme.dart';
 import 'package:dtxproject/utils/survey_progress_bar_utils.dart';
-import 'package:dtxproject/screens/survey_screens/diet_survey/diet_survey_page_2.dart';
+import 'package:dtxproject/screens/survey_screens/diet_survey/diet_survey_page_27.dart';
 
-class DietSurveyPage1 extends StatelessWidget {
+class DietSurveyPage26 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
 
-  DietSurveyPage1({super.key});
+  DietSurveyPage26({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF9D9D9D), // 배경색 적용
+      backgroundColor: Color(0xFF9D9D9D), // 배경색 적용
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,88 +25,8 @@ class DietSurveyPage1 extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () async {
-                      bool shouldPop = (await showDialog<bool>(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(15.0), // 모서리 둥글게 설정
-                              ),
-                              backgroundColor: Colors.white, // 배경색 흰색으로 설정
-                              contentPadding: const EdgeInsets.only(top: 30),
-                              content: const Text(
-                                  '재시작 시,\n이전 문항의 기록이\n모두 사라집니다.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 16)),
-                              actionsPadding:
-                                  const EdgeInsets.all(20), // 버튼 위쪽에 여백 추가
-
-                              actions: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          minimumSize: const Size(
-                                              double.infinity, 50), //버튼 크기
-                                          backgroundColor:
-                                              const Color(0xff00102B),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                12.0), // 버튼 모서리 둥글게
-                                          ),
-                                        ),
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(false),
-                                        child: const Text(
-                                          '취소',
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.white),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8.0), // 버튼 사이의 간격
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          minimumSize: const Size(
-                                              double.infinity, 50), //버튼 크기
-
-                                          backgroundColor:
-                                              const Color(0xffD9D9D9),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                12.0), // 버튼 모서리 둥글게
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          surveyController
-                                              .clearDietSurveys(); // 모든 응답 초기화
-                                          surveyController
-                                              .resetDietSurveys(); // 홈 화면에서 비활성화
-                                          Navigator.of(context).pop(true);
-                                        },
-                                        child: const Text(
-                                          '확인',
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              color: Color(0xff656565)),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          )) ??
-                          false; // null일 경우 false로 처리
-                      if (shouldPop) {
-                        Get.back();
-                      }
+                    onTap: () {
+                      Get.back();
                     },
                     child: Container(
                       padding: const EdgeInsets.only(top: 8, bottom: 12),
@@ -148,7 +68,7 @@ class DietSurveyPage1 extends StatelessWidget {
                     topRight: Radius.circular(20.0),
                   ),
                 ),
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,11 +76,10 @@ class DietSurveyPage1 extends StatelessWidget {
                       // 설문 상태바 (현재 문항 current : 0부터 시작)
                       SurveyProgressBar(
                         total: 40,
-                        current: 0,
+                        current: 25,
                         screenWidth: MediaQuery.of(context).size.width,
                       ),
-                      const SizedBox(height: 50),
-
+                      SizedBox(height: 50),
                       // 질문 설명
                       RichText(
                         text: const TextSpan(
@@ -175,23 +94,23 @@ class DietSurveyPage1 extends StatelessWidget {
                           ],
                         ),
                       ),
-
                       // 질문 설명
 
-                      const SizedBox(height: 80),
-                      const Text('1. 매일 일정한 시간에 식사를 드십니까?',
+                      SizedBox(height: 80),
+                      const Text(
+                          '26. 기름진 육류(등심, 삼겹살, 갈비, 곱창 등의 내장, 닭껍질 등)를 얼마나 자주 드십니까?  ',
                           style:
                               TextStyle(fontSize: 16, fontFamily: 'Paperlogy')),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10),
 
                       // 객관식 문항이 있는 사각형 박스
                       Container(
                         width: MediaQuery.of(context).size.width - 34,
                         decoration: BoxDecoration(
-                          color: const Color(0xffF5F5F5),
+                          color: Color(0xffF5F5F5),
                           borderRadius: BorderRadius.circular(12.0),
                         ),
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: Stack(
                           children: [
                             Column(
@@ -199,21 +118,21 @@ class DietSurveyPage1 extends StatelessWidget {
                               children: List.generate(5, (index) {
                                 //객관식 문항
                                 List<String> options = [
-                                  '1. 매번 다르다',
-                                  '2. 다른편이다',
-                                  '3. 보통이다',
-                                  '4. 일정한 편이다',
-                                  '5. 항상 일정하다',
+                                  '1. 하루 1번 이상',
+                                  '2. 일주일에 4~6번',
+                                  '3. 일주일에 1~3번',
+                                  '4. 한달에 1~3번',
+                                  '5. 거의 먹지 않는다',
                                 ];
                                 return Obx(
                                   () {
                                     // 옵션 선택 확인
                                     bool isSelected =
-                                        surveyController.dietQ1Option.value ==
+                                        surveyController.dietQ26Option.value ==
                                             index;
                                     return GestureDetector(
                                       onTap: () => surveyController
-                                          .dietQ1Option.value = index,
+                                          .dietQ26Option.value = index,
                                       child: IntrinsicWidth(
                                         child: Container(
                                           alignment: Alignment.centerLeft,
@@ -224,7 +143,7 @@ class DietSurveyPage1 extends StatelessWidget {
                                               vertical: 8.0, horizontal: 20.0),
                                           decoration: BoxDecoration(
                                             color: isSelected
-                                                ? const Color(0xff4E4E4E)
+                                                ? Color(0xff4E4E4E)
                                                 : Colors.white,
                                             borderRadius:
                                                 BorderRadius.circular(12.0),
@@ -260,7 +179,7 @@ class DietSurveyPage1 extends StatelessWidget {
       // 다음 버튼
       bottomNavigationBar: Obx(() {
         bool isButtonEnabled =
-            surveyController.dietQ1Option.value != -1; // 선택된 옵션이 있어야 버튼 활성화됨.
+            surveyController.dietQ26Option.value != -1; // 선택된 옵션이 있어야 버튼 활성화됨.
         return Container(
           color: Colors.white,
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 42.0),
@@ -269,20 +188,19 @@ class DietSurveyPage1 extends StatelessWidget {
             height: 64,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: isButtonEnabled
-                    ? const Color(0xff363636)
-                    : const Color(0xffD9D9D9),
+                backgroundColor:
+                    isButtonEnabled ? Color(0xff363636) : Color(0xffD9D9D9),
                 foregroundColor: Colors.white,
-                disabledBackgroundColor: const Color(0xffD9D9D9),
+                disabledBackgroundColor: Color(0xffD9D9D9),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0), // 버튼 모서리 둥글게
                 ),
               ),
               onPressed: isButtonEnabled
                   ? () {
-                      Get.to(() => DietSurveyPage2()); // 다음 페이지 이동
+                      Get.to(() => DietSurveyPage27()); // 다음 페이지 이동
                     }
-                  : null, // 선택하지 않으면 버튼 비활성화
+                  : null,
               child: const Text(
                 '다음',
                 style: TextStyle(fontSize: 28),

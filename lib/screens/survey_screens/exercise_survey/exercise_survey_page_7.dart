@@ -1,15 +1,14 @@
-import 'package:dtxproject/screens/survey_screens/survey_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
 import 'package:dtxproject/utils/survey_progress_bar_utils.dart';
-
 //import 'package:dtxproject/constants/app_theme.dart';
+import 'package:dtxproject/screens/survey_screens/survey_home_page.dart';
 
-class AlcoholSurveyPage2 extends StatelessWidget {
+class ExerciseSurveyPage7 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
 
-  AlcoholSurveyPage2({super.key});
+  ExerciseSurveyPage7({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +43,7 @@ class AlcoholSurveyPage2 extends StatelessWidget {
                       style: TextStyle(fontSize: 20, color: Colors.black),
                       children: [
                         TextSpan(
-                            text: '음주',
+                            text: '운동',
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -76,19 +75,24 @@ class AlcoholSurveyPage2 extends StatelessWidget {
                     children: [
                       // 설문 상태바 (현재 문항 current : 0부터 시작)
                       SurveyProgressBar(
-                        total: 2,
-                        current: 1,
+                        total: 7,
+                        current: 6,
                         screenWidth: MediaQuery.of(context).size.width,
                       ),
                       SizedBox(height: 50),
                       // 질문 설명
                       const Text(
-                        '다음은 최근 1년 동안의\n음주(술) 경험에 대한 질문입니다.',
+                        '다음은 평소 일주일 동안 본인이 참여하고 있는 다양한 신체활동 시간과 관련된 질문입니다.',
                         style: TextStyle(fontSize: 16),
                       ),
-                      SizedBox(height: 130),
                       const Text(
-                        '2. 한번에 술을 얼마나 마십니까?',
+                        '※ ‘중강도 활동’은 중간 정도의 신체활동으로 숨이 약간 차거나 심장이 약간 빠르게 뛰는 활동을 말합니다.',
+                        style: TextStyle(fontSize: 14),
+                      ),
+
+                      SizedBox(height: 80),
+                      const Text(
+                        '7. 최근 1주일 동안 한번에 적어도 10분 이상 중강도 활동을 한 경우,\n하루 동안 활동  시간은 보통 얼마나 됩니까?',
                         style: TextStyle(fontSize: 16, fontFamily: 'Paperlogy'),
                       ),
                       SizedBox(height: 10),
@@ -104,12 +108,6 @@ class AlcoholSurveyPage2 extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              '소주, 양주 등 술의 종류와 상관없이 각각의 술잔으로 계산합니다.\n'
-                              '  · 캔맥주 1개(355cc)는 맥주 1.5잔과 같습니다.\n '
-                              '  · 소주 1병은 7잔과 같습니다.',
-                              style: TextStyle(fontSize: 16),
-                            ),
                             SizedBox(height: 20), // 텍스트와 입력 필드 사이 여백 추가
 
                             // 주관식 입력필드
@@ -118,21 +116,23 @@ class AlcoholSurveyPage2 extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   const Text(
-                                    '한 번에 ',
+                                    '하루에 ',
                                     style: TextStyle(fontSize: 16),
                                   ),
                                   SizedBox(width: 12),
+
+                                  // 시간 입력
                                   Container(
                                     width: 78,
                                     height: 37,
                                     child: TextField(
                                       onChanged: (value) {
-                                        surveyController.alcoholQ2InputText
+                                        surveyController.exerciseQ71InputText
                                             .value = value; // 값 업데이트
                                       },
                                       controller: TextEditingController(
                                         text: surveyController
-                                            .alcoholQ2InputText.value,
+                                            .exerciseQ71InputText.value,
                                       ),
                                       keyboardType: TextInputType.number,
                                       textAlign: TextAlign.center,
@@ -151,10 +151,43 @@ class AlcoholSurveyPage2 extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(width: 4),
-                                  const Text(
-                                    ' 잔',
-                                    style: TextStyle(fontSize: 16),
-                                  )
+                                  const Text(' 시간',
+                                      style: TextStyle(fontSize: 16)),
+
+                                  const SizedBox(width: 12),
+
+                                  // 분 입력 (필수)
+                                  SizedBox(
+                                    width: 78,
+                                    height: 37,
+                                    child: TextField(
+                                      onChanged: (value) {
+                                        surveyController
+                                            .exerciseQ72InputText.value = value;
+                                      },
+                                      controller: TextEditingController(
+                                        text: surveyController
+                                            .exerciseQ72InputText.value,
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      textAlign: TextAlign.center,
+                                      decoration: InputDecoration(
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 5.0),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Text('분',
+                                      style: TextStyle(fontSize: 16)),
                                 ],
                               );
                             }),
@@ -173,7 +206,9 @@ class AlcoholSurveyPage2 extends StatelessWidget {
       // 다음 버튼
       bottomNavigationBar: Obx(() {
         bool isButtonEnabled =
-            surveyController.alcoholQ2InputText.value.isNotEmpty; // 값 입력 여부만 확인
+            surveyController.exerciseQ71InputText.value.isNotEmpty ||
+                surveyController.exerciseQ72InputText.value
+                    .isNotEmpty; // 시간, 분 둘 중 하나만 입력되어도 넘어가게
 
         return Container(
           color: Colors.white,
@@ -193,7 +228,7 @@ class AlcoholSurveyPage2 extends StatelessWidget {
               ),
               onPressed: isButtonEnabled
                   ? () {
-                      surveyController.completeAlcoholSurvey();
+                      surveyController.completeExerciseSurvey();
                       Get.to(() => const SurveyHomePage());
                     }
                   : null,

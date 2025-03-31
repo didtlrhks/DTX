@@ -54,7 +54,7 @@ class SurveyController extends GetxController {
   // 운동 문항
   final RxInt exerciseQ1Option = (-1).obs;
   final RxString exerciseQ21InputText = "".obs; //2번 문항 시간
-  final RxString exerciseQ22nputText = "".obs; //2번 문항 분
+  final RxString exerciseQ22InputText = "".obs; //2번 문항 분
   final RxInt exerciseQ3Option = (-1).obs;
   final RxInt exerciseQ4Option = (-1).obs;
   final RxString exerciseQ51InputText = "".obs; //5번 문항 시간
@@ -104,6 +104,9 @@ class SurveyController extends GetxController {
   final RxInt dietQ38Option = (-1).obs;
   final RxInt dietQ39Option = (-1).obs;
   final RxInt dietQ40Option = (-1).obs;
+
+  // 질병 문항
+  final RxInt sickQ1Option = (-1).obs;
 
   @override
   void onInit() {
@@ -193,7 +196,7 @@ class SurveyController extends GetxController {
     isLifeQualitySurveyCompleted.value = false;
   }
 
-  void resetSickSurveySurveys() {
+  void resetSickSurveys() {
     isSickSurveyCompleted.value = false;
   }
 
@@ -249,7 +252,7 @@ class SurveyController extends GetxController {
   void clearExerciseSurveys() {
     exerciseQ1Option.value = -1;
     exerciseQ21InputText.value = "";
-    exerciseQ22nputText.value = "";
+    exerciseQ22InputText.value = "";
     exerciseQ3Option.value = -1;
     exerciseQ4Option.value = -1;
     exerciseQ51InputText.value = "";
@@ -301,5 +304,10 @@ class SurveyController extends GetxController {
     dietQ38Option.value = -1;
     dietQ39Option.value = -1;
     dietQ40Option.value = -1;
+  }
+
+  // 질병 설문 초기화
+  void clearSickSurveys() {
+    sickQ1Option.value = -1;
   }
 }

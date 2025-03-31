@@ -195,7 +195,95 @@ class SurveyHomePage extends GetView<SurveyController> {
   Widget _buildSurveyCard(String title, String subtitle, String time,
       VoidCallback onTap, bool isCompleted) {
     return InkWell(
-      onTap: onTap,
+      // 재설문하기 시 초기화 팝업알림
+      onTap: () {
+        if (isCompleted) {
+          Get.dialog(
+            AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0), // 모서리 둥글게 설정
+              ),
+              backgroundColor: Colors.white, // 배경색 흰색으로 설정
+              contentPadding: const EdgeInsets.only(top: 30),
+              title: const Text(
+                '다시 설문하시나요?',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              content: const Text('재시작 시,\n이전 문항의 기록이\n모두 사라집니다.',
+                  textAlign: TextAlign.center, style: TextStyle(fontSize: 16)),
+              actionsPadding: const EdgeInsets.all(20), // 버튼 위쪽에 여백 추가
+              actions: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextButton(
+                      onPressed: () => Get.back(),
+                      child: const Text('취소'),
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        Get.back();
+
+                        // 설문별 초기화 및 페이지 이동
+                        if (title == '운동 설문') {
+                          controller.clearExerciseSurveys();
+                          controller.resetExerciseSurveys();
+                          Get.to(() => ExerciseSurveyPage1());
+                        } else if (title == '식단 설문') {
+                          controller.clearDietSurveys();
+                          controller.resetDietSurveys();
+                          Get.to(() => DietSurveyPage1());
+                        } else if (title == '수면 설문') {
+                          controller.clearSleepSurveys();
+                          controller.resetSleepSurveys();
+                          Get.to(() => SleepSurveyPage1());
+                        } else if (title == '음주 설문') {
+                          controller.clearAlcoholSurveys();
+                          controller.resetAlcoholSurveys();
+                          Get.to(() => AlcoholSurveyPage1());
+                        } else if (title == '감정 설문') {
+                          controller.clearEmotionSurveys();
+                          controller.resetEmotionSurveys();
+                          Get.to(() => EmotionSurveyPage1());
+                        } else if (title == '삶의 질 설문') {
+                          controller.clearLifeQualitySurveys();
+                          controller.resetLifeQualitySurveys();
+                          Get.to(() => LifeQualitySurveyPage1());
+                        } else if (title == '질병 설문') {
+                          controller.clearSickSurveys();
+                          controller.resetSickSurveys();
+                          Get.to(() => SickSurveyPage1());
+                        }
+                      },
+                      child: const Text('재설문하기'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            barrierDismissible: false,
+          );
+        } else {
+          // 완료 안 된 설문 → 바로 진입
+          if (title == '운동 설문') {
+            Get.to(() => ExerciseSurveyPage1());
+          } else if (title == '식단 설문') {
+            Get.to(() => DietSurveyPage1());
+          } else if (title == '수면 설문') {
+            Get.to(() => SleepSurveyPage1());
+          } else if (title == '음주 설문') {
+            Get.to(() => AlcoholSurveyPage1());
+          } else if (title == '감정 설문') {
+            Get.to(() => EmotionSurveyPage1());
+          } else if (title == '삶의 질 설문') {
+            Get.to(() => LifeQualitySurveyPage1());
+          } else if (title == '질병 설문') {
+            Get.to(() => SickSurveyPage1());
+          }
+        }
+      },
       child: Container(
         width: 140,
         height: 125,

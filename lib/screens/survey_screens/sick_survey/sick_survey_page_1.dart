@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
 //import 'package:dtxproject/constants/app_theme.dart';
+import 'package:dtxproject/utils/survey_progress_bar_utils.dart';
 
 class SickSurveyPage1 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
@@ -12,13 +13,6 @@ class SickSurveyPage1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 화면의 전체 너비
-    double screenWidth = MediaQuery.of(context).size.width;
-    // 좌우 패딩과 가운데 간격을 제외한 너비
-    double availableWidth =
-        screenWidth - 50 - (4 * 6); // 50: 좌우 패딩 합, 4: 가운데 간격 * 6 번
-    // 진행 바 개당 너비
-    double progressBarWidth = availableWidth / 7;
     return Scaffold(
       backgroundColor: const Color(0xFF9D9D9D), // 배경색 적용
       body: SafeArea(
@@ -86,10 +80,10 @@ class SickSurveyPage1 extends StatelessWidget {
                                       ),
                                     ),
                                     onPressed: () {
-                                      // surveyController
-                                      //     .clearAlcoholSurveyData(); // 모든 응답 초기화 (페이지 2 포함)
                                       surveyController
-                                          .resetSleepSurveys(); // 홈 화면에서 비활성화
+                                          .clearSickSurveys(); // 모든 응답 초기화
+                                      surveyController
+                                          .resetSickSurveys(); // 홈 화면에서 비활성화
                                       Navigator.of(context).pop(true);
                                     },
                                     child: const Text(
@@ -124,7 +118,7 @@ class SickSurveyPage1 extends StatelessWidget {
                       style: TextStyle(fontSize: 20, color: Colors.black),
                       children: [
                         TextSpan(
-                            text: '수면',
+                            text: '질병',
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -154,99 +148,22 @@ class SickSurveyPage1 extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 진행 상태 표시
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: const Color(0xff4D4D4D), // 첫 번째 진행 바 색상
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: const Color(0xffD9D9D9), // 두 번째 진행 바 색상
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: const Color(0xffD9D9D9), // 세 번째 진행 바 색상
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: const Color(0xffD9D9D9), // 네 번째 진행 바 색상
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: const Color(0xffD9D9D9), // 다섯 번째 진행 바 색상
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: const Color(0xffD9D9D9), // 여섯 번째 진행 바 색상
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Container(
-                            width: progressBarWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.5),
-                              color: const Color(0xffD9D9D9), // 일곱 번째 진행 바 색상
-                            ),
-                          ),
-                        ],
+                      // 설문 상태바 (현재 문항 current : 0부터 시작)
+                      SurveyProgressBar(
+                        total: 2,
+                        current: 0,
+                        screenWidth: MediaQuery.of(context).size.width,
                       ),
                       const SizedBox(height: 50),
                       // 질문 설명
-                      RichText(
-                        text: const TextSpan(
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: '지난',
-                            ),
-                            TextSpan(
-                                text: ' 2주간',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            TextSpan(
-                              text: ' 귀하의 불면증 문제의 심한 정도에 대해 선택해 주시기 바랍니다.',
-                            ),
-                          ],
-                        ),
+                      const Text(
+                        '귀하의 질병상태 대해 선택해 주시기 바랍니다.',
+                        style: TextStyle(fontSize: 16),
                       ),
-                      // 질문 설명
 
                       const SizedBox(height: 80),
-                      const Text('1. 잠들기 어렵나요?',
+                      //문항
+                      const Text('1. 다음과 같은 질병으로 진단을 받았거나 현재 약물 치료 중이십니까? ',
                           style:
                               TextStyle(fontSize: 16, fontFamily: 'Paperlogy')),
                       const SizedBox(height: 10),
@@ -263,22 +180,25 @@ class SickSurveyPage1 extends StatelessWidget {
                           children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: List.generate(5, (index) {
+                              children: List.generate(6, (index) {
                                 //객관식 문항
                                 List<String> options = [
-                                  '0. 전혀 그렇지 않습니다.',
-                                  '1. 약간 그렇습니다.',
-                                  '2. 종종 그런편입니다.',
-                                  '3. 자주 그렇습니다.',
-                                  '4. 항상 그렇습니다.'
+                                  '심장병(심근경색, 협심증)',
+                                  '뇌졸중 (중풍, 일과성 뇌허혈발작)',
+                                  '경동맥 협착증',
+                                  '말초동맥질환 ',
+                                  '복부대동맥류',
+                                  '당뇨',
                                 ];
                                 return Obx(
                                   () {
                                     // 옵션 선택 확인
                                     bool isSelected =
-                                        selectedOption.value == index;
+                                        surveyController.sickQ1Option.value ==
+                                            index;
                                     return GestureDetector(
-                                      onTap: () => selectedOption.value = index,
+                                      onTap: () => surveyController
+                                          .sickQ1Option.value = index,
                                       child: IntrinsicWidth(
                                         child: Container(
                                           alignment: Alignment.centerLeft,
@@ -325,7 +245,7 @@ class SickSurveyPage1 extends StatelessWidget {
       // 다음 버튼
       bottomNavigationBar: Obx(() {
         bool isButtonEnabled =
-            selectedOption.value != -1; // 선택된 옵션이 있어야 버튼 활성화됨.
+            surveyController.sickQ1Option.value != -1; // 선택된 옵
         return Container(
           color: Colors.white,
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 42.0),
@@ -343,16 +263,14 @@ class SickSurveyPage1 extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.0), // 버튼 모서리 둥글게
                 ),
               ),
-              // onPressed: isButtonEnabled
-              //     ? () {
-              //         // Get.to(() => SleepSurveyPage1()); // 다음 페이지 이동
-              //         Get.back();
-              //       }
-              //     : null, // 선택하지 않으면 버튼 비활성화
-              onPressed: () {
-                surveyController.completeSickSurvey();
-                Get.back();
-              },
+
+              onPressed: isButtonEnabled
+                  ? () {
+                      surveyController.completeSickSurvey();
+
+                      Get.back();
+                    }
+                  : null, // 선택
               child: const Text(
                 '다음',
                 style: TextStyle(fontSize: 28),
