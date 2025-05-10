@@ -4,6 +4,7 @@ import 'package:dtxproject/controllers/survey_controller.dart';
 //import 'package:dtxproject/constants/app_theme.dart';
 import 'package:dtxproject/utils/survey_progress_bar_utils.dart';
 import 'package:dtxproject/screens/survey_screens/exercise_survey/exercise_survey_page_2.dart';
+import 'package:dtxproject/screens/survey_screens/exercise_survey/exercise_survey_page_3.dart';
 
 class ExerciseSurveyPage1 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
@@ -166,55 +167,17 @@ class ExerciseSurveyPage1 extends StatelessWidget {
                         '활동량에 대한 평가입니다.',
                         style: TextStyle(fontSize: 16),
                       ),
+                      const SizedBox(height: 30), // 원래는 80, 길이가 길어서 조정함
 
-                      // 질문 설명
-                      const SizedBox(height: 40), // 원래는 80, 길이가 길어서 조정함
-                      RichText(
-                        text: const TextSpan(
-                          children: [
-                            TextSpan(
-                              text: '1. 최근 1주일 동안 ',
-                              style: TextStyle(
-                                  color: Color(0xff000000),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold, // 볼드 처리
-                                  decoration: TextDecoration.underline, // 밑줄 처리
-                                  fontFamily: 'Paperlogy'),
-                            ),
-                            TextSpan(
-                              text: ' 한 번에 적어도 ',
-                              style: TextStyle(
-                                  color: Color(0xff000000),
-                                  fontSize: 16,
-                                  fontFamily: 'Paperlogy'),
-                            ),
-                            TextSpan(
-                              text: '10분 이상 걸은 날',
-                              style: TextStyle(
-                                color: Color(0xff000000),
-
-                                fontSize: 16,
-                                fontFamily: 'Paperlogy',
-                                fontWeight: FontWeight.bold, // 볼드 처리
-                              ),
-                            ),
-                            TextSpan(
-                              text: '은 며칠입니까?',
-                              style: TextStyle(
-                                  color: Color(0xff000000),
-                                  fontSize: 16,
-                                  fontFamily: 'Paperlogy'),
-                            ),
-                            TextSpan(
-                              text:
-                                  '\n※ 출퇴근 또는 등하교, 이동 및 운동을 위해 걷는 것을 모두 포함하여 대답해 주십시오.',
-                              style: TextStyle(
-                                  color: Color(0xff222222),
-                                  fontSize: 14,
-                                  fontFamily: 'Paperlogy'),
-                            ),
-                          ],
-                        ),
+                      // 문항
+                      const Text(
+                        '1. 최근 1주일 동안 한 번에 적어도 10분 이상 걸은 날은 며칠입니까?',
+                        style: TextStyle(fontSize: 16, fontFamily: 'Paperlogy'),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        '※ 출퇴근 또는 등하교, 이동 및 운동을 위해 걷는 것을 모두 포함하여 대답해 주십시오.',
+                        style: TextStyle(fontSize: 14, fontFamily: 'Paperlogy'),
                       ),
 
                       const SizedBox(height: 10),
@@ -318,9 +281,16 @@ class ExerciseSurveyPage1 extends StatelessWidget {
               ),
               onPressed: isButtonEnabled
                   ? () {
-                      Get.to(() => ExerciseSurveyPage2()); // 다음 페이지 이동
+                      if (surveyController.exerciseQ1Option.value == 0) {
+                        // "전혀 하지 않았다" 선택 시, 다음 질문 생략 & 3번 질문으로 이동
+                        Get.to(() =>
+                            ExerciseSurveyPage3()); // 혹은 Get.back() 등 원하는 동작
+                      } else {
+                        // 1일 이상 걸은 경우 → 걷는 시간 묻는 다음 페이지로 이동
+                        Get.to(() => ExerciseSurveyPage2());
+                      }
                     }
-                  : null, // 선택하지 않으면 버튼 비활성화
+                  : null,
               child: const Text(
                 '다음',
                 style: TextStyle(fontSize: 28),

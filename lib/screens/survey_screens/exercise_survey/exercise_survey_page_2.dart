@@ -1,9 +1,9 @@
-import 'package:dtxproject/screens/survey_screens/survey_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dtxproject/controllers/survey_controller.dart';
 import 'package:dtxproject/utils/survey_progress_bar_utils.dart';
 //import 'package:dtxproject/constants/app_theme.dart';
+import 'package:dtxproject/screens/survey_screens/exercise_survey/exercise_survey_page_3.dart';
 
 class ExerciseSurveyPage2 extends StatelessWidget {
   final surveyController = Get.find<SurveyController>();
@@ -85,7 +85,12 @@ class ExerciseSurveyPage2 extends StatelessWidget {
                         '활동량에 대한 평가입니다.',
                         style: TextStyle(fontSize: 16),
                       ),
-                      SizedBox(height: 50),
+                      SizedBox(height: 80),
+                      const Text(
+                        '2. 최근 1주일 동안 한번에 적어도 10분 이상 걸은 날 중\n하루 동안 걷는 시간은 보통 얼마나 됩니까?',
+                        style: TextStyle(fontSize: 16, fontFamily: 'Paperlogy'),
+                      ),
+                      SizedBox(height: 10),
 
                       // 사각형 박스
                       Container(
@@ -98,12 +103,6 @@ class ExerciseSurveyPage2 extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              '소주, 양주 등 술의 종류와 상관없이 각각의 술잔으로 계산합니다.\n'
-                              '  · 캔맥주 1개(355cc)는 맥주 1.5잔과 같습니다.\n '
-                              '  · 소주 1병은 7잔과 같습니다.',
-                              style: TextStyle(fontSize: 16),
-                            ),
                             SizedBox(height: 20), // 텍스트와 입력 필드 사이 여백 추가
 
                             // 주관식 입력필드
@@ -112,21 +111,23 @@ class ExerciseSurveyPage2 extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   const Text(
-                                    '한 번에 ',
+                                    '하루에 ',
                                     style: TextStyle(fontSize: 16),
                                   ),
                                   SizedBox(width: 12),
+
+                                  // 시간 입력
                                   Container(
                                     width: 78,
                                     height: 37,
                                     child: TextField(
                                       onChanged: (value) {
-                                        surveyController.alcoholQ2InputText
+                                        surveyController.exerciseQ21InputText
                                             .value = value; // 값 업데이트
                                       },
                                       controller: TextEditingController(
                                         text: surveyController
-                                            .alcoholQ2InputText.value,
+                                            .exerciseQ21InputText.value,
                                       ),
                                       keyboardType: TextInputType.number,
                                       textAlign: TextAlign.center,
@@ -145,10 +146,43 @@ class ExerciseSurveyPage2 extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(width: 4),
-                                  const Text(
-                                    ' 잔',
-                                    style: TextStyle(fontSize: 16),
-                                  )
+                                  const Text(' 시간',
+                                      style: TextStyle(fontSize: 16)),
+
+                                  const SizedBox(width: 12),
+
+                                  // 분 입력 (필수)
+                                  SizedBox(
+                                    width: 78,
+                                    height: 37,
+                                    child: TextField(
+                                      onChanged: (value) {
+                                        surveyController
+                                            .exerciseQ22InputText.value = value;
+                                      },
+                                      controller: TextEditingController(
+                                        text: surveyController
+                                            .exerciseQ22InputText.value,
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      textAlign: TextAlign.center,
+                                      decoration: InputDecoration(
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 5.0),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Text('분',
+                                      style: TextStyle(fontSize: 16)),
                                 ],
                               );
                             }),
@@ -167,7 +201,9 @@ class ExerciseSurveyPage2 extends StatelessWidget {
       // 다음 버튼
       bottomNavigationBar: Obx(() {
         bool isButtonEnabled =
-            surveyController.alcoholQ2InputText.value.isNotEmpty; // 값 입력 여부만 확인
+            surveyController.exerciseQ21InputText.value.isNotEmpty ||
+                surveyController.exerciseQ22InputText.value
+                    .isNotEmpty; // 시간, 분 둘 중 하나만 입력되어도 넘어가게
 
         return Container(
           color: Colors.white,
@@ -187,8 +223,7 @@ class ExerciseSurveyPage2 extends StatelessWidget {
               ),
               onPressed: isButtonEnabled
                   ? () {
-                      surveyController.completeAlcoholSurvey();
-                      Get.to(SurveyHomePage());
+                      Get.to(() => ExerciseSurveyPage3()); // 다음 페이지 이동
                     }
                   : null,
               child: const Text(

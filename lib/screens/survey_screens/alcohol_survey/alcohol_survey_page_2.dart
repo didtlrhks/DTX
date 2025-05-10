@@ -89,7 +89,7 @@ class AlcoholSurveyPage2 extends StatelessWidget {
                       SizedBox(height: 130),
                       const Text(
                         '2. 한번에 술을 얼마나 마십니까?',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16, fontFamily: 'Paperlogy'),
                       ),
                       SizedBox(height: 10),
 
@@ -194,7 +194,7 @@ class AlcoholSurveyPage2 extends StatelessWidget {
               onPressed: isButtonEnabled
                   ? () {
                       surveyController.completeAlcoholSurvey();
-                      Get.to(SurveyHomePage());
+                      Get.to(() => const SurveyHomePage());
                     }
                   : null,
               child: const Text(

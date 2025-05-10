@@ -201,7 +201,7 @@ class EmotionSurveyPage14 extends StatelessWidget {
               onPressed: isButtonEnabled
                   ? () {
                       surveyController.completeEmotionSurvey();
-                      Get.to(SurveyHomePage());
+                      Get.to(() => const SurveyHomePage());
                     }
                   : null,
               child: const Text(

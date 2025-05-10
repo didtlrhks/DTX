@@ -167,7 +167,7 @@ class AlcoholSurveyPage1 extends StatelessWidget {
                       SizedBox(height: 130),
                       const Text(
                         '1. 술을 얼마나 자주 마십니까?',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16, fontFamily: 'Paperlogy'),
                       ),
                       SizedBox(height: 10),
 
